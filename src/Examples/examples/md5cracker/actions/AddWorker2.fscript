@@ -1,0 +1,10 @@
+-- Add a new worker. Assumes that is executed from the composite solver component.
+-- The workers have not monitors.
+
+gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+worker = gcm-new("examples.md5cracker.cracker.solver.Worker", $gcma);
+set-name($worker, "Generated Worker");
+--stop($this);
+--add($this, $worker);
+--bind($this/interface::
+--start($this);
