@@ -14,6 +14,7 @@ import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
 import org.objectweb.proactive.extra.component.mape.reconfiguration.Action;
+import org.objectweb.proactive.extra.component.mape.reconfiguration.ExecutionController;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
@@ -47,7 +48,7 @@ public class Main {
 	private static int MAX_WORKERS = 4;
 
 	private static double EXPECTED_SPM = 3000.0;
-	private static long actionDelay = 30000;
+	private static long actionDelay = 20000;
 	
 	private static final String alphabet = "0Aa1BbCc2DdEe3FfGg4HhIi5JjKk6LlMm7NnOo8PpQq9RrSsTtUuVvWwXxYyZz";
 
@@ -135,9 +136,9 @@ public class Main {
 			solverMon.addMetric(UpgradabilityStatusMetric.DEFAULT_NAME, new UpgradabilityStatusMetric(true));
 			solverMon.addMetric(NumberOfWorkers.DEFAULT_NAME, new NumberOfWorkers(N_OF_WORKERS));
 			
-			byte[] encoded = Files.readAllBytes(Paths.get(Main.class.getResource("actions/AddWorker"  + (i+1) + ".fscript").getPath()));
-			String addWorkerScript = new String(encoded, StandardCharsets.UTF_8);
-			Remmos.getExecutionController(solvers[i]).addActionScript("add-worker-script", addWorkerScript);
+			// load definition of add-worker action. This action will be caled by QoSAction
+			Remmos.getExecutionController(solvers[i]).load(Main.class.getResource("actions/AddWorker1.fscript").getPath());
+			
 		}
 		for (int i = 0; i < N_OF_SOLVERS; i++) {
 			Action action = new AddWorkerAction(new Object[] {alphabet, MAX_WORD_LENGTH}, null, MAX_WORKERS);
@@ -152,6 +153,16 @@ public class Main {
 		brutus.start(alphabet, MAX_WORD_LENGTH);		
 		Thread.sleep(2000);
 		
+		
+		/*
+		System.out.println("\n\n\n------");
+		ExecutionController ec = Remmos.getExecutionController(solvers[0]);
+		ec.load(Main.class.getResource("test.fscript").getPath());
+		System.out.println("RESULT = " + ec.execute("stop($this/child::SolverManager;"));
+	
+		Thread.sleep(10000000);
+		*/
+	
 		// MAPE RUN 
 		
 		long startTime = System.currentTimeMillis();

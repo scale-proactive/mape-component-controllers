@@ -38,6 +38,7 @@ package org.objectweb.proactive.extra.component.mape.reconfiguration;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -175,16 +176,17 @@ public class ExecutionControllerImpl extends AbstractPAComponentController imple
     public Object execute(String source) {
         try {
         	checkInitialized();
-        	System.out.println("Executing source: "+ source);
-        	Object result = engine.execute(source);
-        	return new String("PAGCMScript executed!");
+        	return this.engine.execute(source);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new Object();
+        return "EXECUTION_FAIL";
     }
 
+    private void executeSource(String source) {
 
+    }
+    
 	@Override
 	public boolean addAction(String name, Action action) {
 		if (executables.containsKey(name)) return false;
@@ -203,7 +205,7 @@ public class ExecutionControllerImpl extends AbstractPAComponentController imple
 	}
 
 	@Override
-	public void executeAction(String actionName) {
+	public Object executeAction(String actionName) {
 		
 		Executable exec = executables.get(actionName);
 		if (exec == null) {
@@ -212,18 +214,19 @@ public class ExecutionControllerImpl extends AbstractPAComponentController imple
 		
 		if (exec instanceof Action) {
 			checkFactories();
-			((Action) exec).execute(this.hostComponent, patf, pagf);
+			return ((Action) exec).execute(this.hostComponent, patf, pagf);
 		} else if (exec instanceof ActionScript){
-			execute(((ActionScript) exec).getScript());
+			return execute(((ActionScript) exec).getScript());
 		} else {
 			(new Exception("Can not handle the action \"" + actionName + "\"")).printStackTrace();
 		}
+		return null;
 	}
 
 	@Override
-	public void executeAction(Action action) {
+	public Object executeAction(Action action) {
 		checkFactories();
-		action.execute(this.hostComponent, patf, pagf);
+		return action.execute(this.hostComponent, patf, pagf);
 	}
 
 	/**

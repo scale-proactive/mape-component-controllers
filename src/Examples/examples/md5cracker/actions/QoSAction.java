@@ -1,10 +1,13 @@
 package examples.md5cracker.actions;
 
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
+import org.objectweb.proactive.core.component.PAInterface;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.extra.component.mape.reconfiguration.Action;
+import org.objectweb.proactive.extra.component.mape.reconfiguration.ExecutionController;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.MetricValue;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
@@ -18,7 +21,9 @@ import examples.md5cracker.cracker.Cracker;
 import examples.md5cracker.cracker.SolverMulticast;
 import examples.md5cracker.cracker.solver.ResultRepository;
 import examples.md5cracker.cracker.solver.Solver;
+import examples.md5cracker.cracker.solver.SolverAttributes;
 import examples.md5cracker.cracker.solver.TaskRepository;
+import examples.md5cracker.cracker.solver.WorkerMulticast;
 import examples.md5cracker.metrics.LocalSPMMetric;
 import examples.md5cracker.metrics.NumberOfSolvers;
 import examples.md5cracker.metrics.NumberOfWorkers;
@@ -60,15 +65,15 @@ public class QoSAction extends Action {
 	}
 
 	@Override
-	public void execute(Component crackerComp, PAGCMTypeFactory tf, PAGenericFactory cf) {
+	public Object execute(Component crackerComp, PAGCMTypeFactory tf, PAGenericFactory cf) {
 		try {
 			if (!upgradability) {
-				return; // nothing to do
+				return false; // nothing to do
 			}
 			
 			synchronized (this) {
 				if (System.currentTimeMillis() - lastTime < delay) {
-					return; // is not the moment yet, try later.
+					return false; // is not the moment yet, try later.
 				}
 				lastTime = Long.MAX_VALUE; // this ensures that nobody else will met the delay condition.
 			}
@@ -89,10 +94,13 @@ public class QoSAction extends Action {
 					String solverName = GCM.getNameController(solver).getFcName();
 					System.out.println("[EXECUTION_CONTROLLER] Improving Solver " + solverName);
 					
-					Remmos.getExecutionController(solver).executeAction("add-worker-script");
+					Remmos.getExecutionController(solver).execute("add-worker();").toString();
+					Component solverManager = getBindComponent(solver, Solver.ITF_NAME);
+					SolverAttributes sa = (SolverAttributes) GCM.getAttributeController(solverManager);
+					sa.setNumberOfWorkers(sa.getNumberOfWorkers() + 1);
 
 					lastTime = System.currentTimeMillis();
-					return;
+					return true;
 				}
 			}
 
@@ -107,7 +115,7 @@ public class QoSAction extends Action {
 				upgradability = false;
 				
 				lastTime = System.currentTimeMillis();
-				return;
+				return false;
 			}
 			
 			// add new solver
@@ -150,13 +158,15 @@ public class QoSAction extends Action {
 			Utils.getPAGCMLifeCycleController(crackerComp).startFc();
 			crackerMonitoring.setMetricValue(NumberOfSolvers.DEFAULT_NAME, solversNumber);
 
-			((Solver) solverComp.getFcInterface(Solver.ITF_NAME)).start((String) workerArgs[0], (int) workerArgs[1]);
+			((Solver) solverComp.getFcInterface(Solver.ITF_NAME)).start();
 			
 			System.out.println("[EXECUTION_CONTROLLER] Adding Solver Finish.");
 			
 			lastTime = System.currentTimeMillis();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 }

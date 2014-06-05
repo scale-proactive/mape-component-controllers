@@ -10,6 +10,6 @@ public interface SolverMulticast {
 	public static final String ITF_NAME = "solver-multicast-itf";
 	
 	@MethodDispatchMetadata(mode = @ParamDispatchMetadata(mode = ParamDispatchMode.BROADCAST))
-	public void start(String alphabet, int maxLength);
+	public void start();
 	
 }

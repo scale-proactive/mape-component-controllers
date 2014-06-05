@@ -4,6 +4,6 @@ public interface Solver {
 
 	public static final String ITF_NAME = "solver-itf";
 	
-	public void start(String alphabet, int maxLength);
+	public void start();
 
 }

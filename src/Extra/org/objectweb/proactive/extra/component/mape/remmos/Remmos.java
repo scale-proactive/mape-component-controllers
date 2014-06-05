@@ -406,26 +406,6 @@ public class Remmos {
 		
 		boolean isComposite = ((PAComponent) component).getComponentParameters().getHierarchicalType().equals(Constants.COMPOSITE);
 
-		for(InterfaceType itfType : ((PAComponent) component).getComponentParameters().getInterfaceTypes()) {
-			
-			if ( !isComposite && !itfType.isFcClientItf() ) continue; // save some time, nothing to do with them.
-			
-			boolean isSingleton = ((PAGCMInterfaceType) itfType).isGCMSingletonItf() && !((PAGCMInterfaceType)itfType).isGCMCollectiveItf();
-			if(isComposite && isSingleton && !itfType.isFcClientItf()) {
-				String clientItfName = itfType.getFcItfName() + "-internal-" + MonitorController.ITF_NAME;
-				String serverItfName = itfType.getFcItfName() + "-internal-" + Constants.MONITOR_CONTROLLER;
-				membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
-				membrane.nfBindFc(MONITOR_SERVICE_COMP+"."+clientItfName, serverItfName);
-			}
-			
-			// Bind client interfaces
-			if(!itfType.isFcClientItf()) continue;
-			String clientItfName = itfType.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
-			String serverItfName = itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER;
-			membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
-			membrane.nfBindFc(MONITOR_SERVICE_COMP + "." + clientItfName, serverItfName);
-		}
-
 		if (isComposite) {
 			// and the binding from the internal server monitor interface, back to the NF Monitor Component
 			String clientItfName = "internal-server-" + Constants.MONITOR_CONTROLLER;
@@ -946,73 +926,82 @@ public class Remmos {
 			parent = ((PAComponent)parents[0]);
 		}
 		
-		for(InterfaceType itf : pacomponent.getComponentParameters().getComponentType().getFcInterfaceTypes()) {
+		for(InterfaceType itf : ((PAComponent) component).getComponentParameters().getInterfaceTypes()) {
 			
 			PAGCMInterfaceType itfType = (PAGCMInterfaceType) itf;
 			boolean isSingleton = itfType.isGCMSingletonItf() && ! itfType.isGCMCollectiveItf();
 
-			// Composite server interfaces, only singleton supported
-			if(isComposite && isSingleton && !itfType.isFcClientItf()) {
+			if ( !isComposite && !itfType.isFcClientItf() ) {
+				continue; // primitive server, nothing to do with them.
+			}
 
-				if (isAlreadyBound(itfType.getFcItfName() + "-internal-" + Constants.MONITOR_CONTROLLER, membrane)) {
+			if(isComposite && isSingleton && !itfType.isFcClientItf()) {
+				
+				if ( isAlreadyBound(itfType.getFcItfName() + "-internal-" + Constants.MONITOR_CONTROLLER, membrane) ) {
 					continue; // break loops
 				}
-			
+		
 				Component destComp = getItfOwnerComponentOrNull(itfType.getFcItfName(), bc);
 				MonitorController internalMonitor = getMonitorControllerOrNull(destComp);
-				
 				if (internalMonitor == null) {
 					continue; // assumes no monitors on purpose
 				}
-				
+	
+				String clientItfName = itfType.getFcItfName() + "-internal-" + MonitorController.ITF_NAME;
+				String serverItfName = itfType.getFcItfName() + "-internal-" + Constants.MONITOR_CONTROLLER;
 				try {
 					membrane.stopMembrane();
-					membrane.nfBindFc(itfType.getFcItfName() + "-internal-" + Constants.MONITOR_CONTROLLER, internalMonitor);
+					membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
+					membrane.nfBindFc(MONITOR_SERVICE_COMP+"."+clientItfName, serverItfName);
+					membrane.nfBindFc(serverItfName, internalMonitor);
 					membrane.startMembrane();
 				} catch (Exception e) {
 					e.printStackTrace();
-					continue; // something fails
 				}
 
 				enableMonitoring(destComp);
 			}
 
-			// Singleton and Gathercast client interfaces
-			else if (itfType.isFcClientItf() && (isSingleton || itfType.isGCMGathercastItf())) {
-
+			// Bind client interfaces
+			if (!itfType.isFcClientItf()) continue;
+			
+			if (isSingleton || itfType.isGCMGathercastItf()) {
+				
 				if (isAlreadyBound(itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER, membrane)) {
 					continue; // break loops
 				}
 				
-				Component destComp = getItfOwnerComponentOrNull(itfType.getFcItfName(), bc);
-		
 				// ignore not PAComponentRepresentative (WSComponent for example)
+				Component destComp = getItfOwnerComponentOrNull(itfType.getFcItfName(), bc);
 				if ( !(destComp instanceof PAComponentRepresentative) ) continue;
 				
 				boolean isNotParent = !destComp.equals(parent);
+			
 				MonitorController externalMonitor = isNotParent ?
 						getMonitorControllerOrNull(destComp) : getInternalMonitorControllerOrNull(destComp);
-				
 				if (externalMonitor == null) {
 					continue; // assumes no monitors on purpose
 				}
-
+				
+				String clientItfName = itfType.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
+				String serverItfName = itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER;
+				
 				try {
 					membrane.stopMembrane();
+					membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
+					membrane.nfBindFc(MONITOR_SERVICE_COMP + "." + clientItfName, serverItfName);
 					membrane.nfBindFc(itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER, externalMonitor);
 					membrane.startMembrane();
-				} catch (Exception e) {
+				} catch(Exception e) {
 					e.printStackTrace();
 				}
-
+			
 				if (isNotParent) {
 					enableMonitoring(destComp);
 				}
 			}
 			
-			// Multicast client interfaces
-			else if (itfType.isFcClientItf() && itfType.isGCMMulticastItf()) {
-
+			if (itfType.isGCMMulticastItf()) {
 				try {
 					PAMulticastController pamc = Utils.getPAMulticastController(pacomponent);
 					
@@ -1053,8 +1042,13 @@ public class Remmos {
 							continue; // assumes no monitors on purpose
 						}
 			
+						String clientItfName = itfType.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
+						String serverItfName = itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER;
+						
 						try {
 							membrane.stopMembrane();
+							membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
+							membrane.nfBindFc(MONITOR_SERVICE_COMP + "." + clientItfName, serverItfName);
 							membrane.nfBindFc(itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER, externalMonitor);
 							membrane.startMembrane();
 						} catch (Exception e) {
@@ -1071,7 +1065,6 @@ public class Remmos {
 				}
 			}
 		}
-		
 	}
 
 

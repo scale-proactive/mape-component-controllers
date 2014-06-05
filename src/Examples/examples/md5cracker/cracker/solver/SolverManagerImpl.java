@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
+import org.objectweb.fractal.api.control.IllegalLifeCycleException;
+import org.objectweb.fractal.api.control.LifeCycleController;
 
 
 public class SolverManagerImpl implements Solver, SolverAttributes, SolverManager, BindingController {
@@ -16,16 +18,14 @@ public class SolverManagerImpl implements Solver, SolverAttributes, SolverManage
 	private WorkerMulticast workers;
 	private SolverManager mySelf;
 	
-	private int maxLength = 0;
-	private int alphabetBase = 0;
+	private int maxLength = 3;
+	private int alphabetBase = 62;
+
 	private int numberOfWorkers = 1;
    
 	@Override
-	public void start(String alphabet, int maxLength) {
-		workers.setAlphabet(alphabet, maxLength);
+	public void start() {
 		mySelf.solve();
-		alphabetBase = alphabet.length();
-		this.maxLength = maxLength;
 	}
 
 	@Override
@@ -61,11 +61,12 @@ public class SolverManagerImpl implements Solver, SolverAttributes, SolverManage
 
 	@Override
 	public void setNumberOfWorkers(int number) {
+		System.out.println(" NUMBER OF WORKERS CHANGES:::: OLD = " + numberOfWorkers  + " ---> NEW = " + number);
 		numberOfWorkers = number;
 	}
 
 	@Override
-	public Integer getNumberOfWorkers() {
+	public int getNumberOfWorkers() {
 		return numberOfWorkers;
 	}
 

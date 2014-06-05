@@ -101,7 +101,7 @@ public class APITest {
 		Action action = new Action() {
 			private static final long serialVersionUID = 1L;
 			@Override
-			public void execute(Component component, PAGCMTypeFactory tf, PAGenericFactory cf) {
+			public Object execute(Component component, PAGCMTypeFactory tf, PAGenericFactory cf) {
 				try {
 					Utils.getPAGCMLifeCycleController(component).stopFc();
 					Utils.getPAContentController(composite).addFcSubComponent(slave2);
@@ -113,9 +113,11 @@ public class APITest {
 					System.out.println("[REC] start again");
 					GCM.getLifeCycleController(composite).startFc();
 					System.out.println("[REC] done");
+					return true;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				return false;
 			}
 		};
 		

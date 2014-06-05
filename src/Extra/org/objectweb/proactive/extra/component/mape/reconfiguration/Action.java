@@ -58,6 +58,6 @@ public abstract class Action implements Serializable, Executable {
 		}
 	}
 
-	public abstract void execute(Component component, PAGCMTypeFactory tf, PAGenericFactory cf);
+	public abstract Object execute(Component component, PAGCMTypeFactory tf, PAGenericFactory cf);
 
 }

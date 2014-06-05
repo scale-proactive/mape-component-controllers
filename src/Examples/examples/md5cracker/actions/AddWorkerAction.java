@@ -47,10 +47,10 @@ public class AddWorkerAction extends Action {
 	}
 
 	@Override
-	public void execute(Component solverComp, PAGCMTypeFactory tf, PAGenericFactory cf) {
+	public Object execute(Component solverComp, PAGCMTypeFactory tf, PAGenericFactory cf) {
 		try {			
 			if (!upgradability) {
-				return; // nothing to do
+				return false; // nothing to do
 			}
 	
 			Component solverManager = this.getBindComponent(solverComp, Solver.ITF_NAME);
@@ -61,7 +61,7 @@ public class AddWorkerAction extends Action {
 				System.out.println("[EXECUTION_CONTROLLER] Imposible to add new Worker, the maximum " 
 						+ " number of workers had been reached. Finish.");
 				upgradability = false;
-				return;
+				return false;
 			}
 
 			// Add new worker
@@ -73,7 +73,6 @@ public class AddWorkerAction extends Action {
 			// Set up new worker
 			Utils.getPAGCMLifeCycleController(workerComp).startFc();
 			Worker worker = (Worker) workerComp.getFcInterface(Worker.ITF_NAME);
-			worker.setAlphabet((String) workerArgs[0], (Integer) workerArgs[1]);
 
 			// Set up solver
 			Utils.getPAGCMLifeCycleController(solverComp).startFc();
@@ -85,10 +84,11 @@ public class AddWorkerAction extends Action {
 			solverMonitor.setMetricValue(NumberOfWorkers.DEFAULT_NAME, workersNumber);
 
 			System.out.println("[EXECUTION_CONTROLLER] Adding Worker Finished.");
-
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 	private Component createWorker(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {

@@ -7,6 +7,6 @@ public interface SolverAttributes extends AttributeController {
 	public static final String ITF_NAME = "solver-attributes-itf";
 
 	public void setNumberOfWorkers(int number);
-	public Integer getNumberOfWorkers();
+	public int getNumberOfWorkers();
 
 }

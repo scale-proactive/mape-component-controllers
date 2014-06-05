@@ -10,29 +10,17 @@ import org.objectweb.fractal.api.control.LifeCycleController;
 public class WorkerImpl implements Worker {
 
 	public static final String COMP_NAME = "worker-comp";
-	
-	private boolean ready = false;
-    private int base;
-    private int maxLength;
-    private String alphabet;
 
-	@Override
-	public void setAlphabet(String alphabet, int maxLength) {
-		this.alphabet = alphabet;
-		this.maxLength = maxLength;
-		base = alphabet.length();
-		ready = true;
-	}
+    private int maxLength = 3;
+	private String alphabet = "0Aa1BbCc2DdEe3FfGg4HhIi5JjKk6LlMm7NnOo8PpQq9RrSsTtUuVvWwXxYyZz";
+    private int base = alphabet.length();
 
 	@Override
 	public Wrapper<String> solve(Instruction inst) {
 		long init = inst.from;
 		long end = inst.until;
 		MD5Hash md5hash = inst.hash;
-		if ( !ready ) {
-			(new Exception("Workers are not ready. You need to set an alphabet.")).printStackTrace();
-			return new Wrapper<String>(false, null);
-		}
+
 		// ALGORITHM BASED ON http://code.google.com/p/javamd5cracker/ solution
 		
 		byte[] hash = md5hash.getHash();

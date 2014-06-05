@@ -6,7 +6,6 @@ import java.io.Serializable;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
 
-import examples.md5cracker.cracker.solver.TaskRepository;
 
 
 
@@ -21,7 +20,7 @@ public class CrackerManagerImpl implements Cracker, BindingController, Serializa
 	
 	@Override
 	public void start(String alphabet, int maxLength) {
-		solvers.start(alphabet, maxLength);
+		solvers.start();
 	}
 
 	// BINDING CONTROLLER

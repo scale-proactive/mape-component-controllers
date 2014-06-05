@@ -8,9 +8,6 @@ public interface WorkerMulticast {
 
 	public static final String ITF_NAME = "worker-multicast-itf";
 
-	@MethodDispatchMetadata(mode = @ParamDispatchMetadata(mode = ParamDispatchMode.BROADCAST))
-	void setAlphabet(String alphabet, int maxLength);
-	
 	@MethodDispatchMetadata(mode = @ParamDispatchMetadata(mode = ParamDispatchMode.ROUND_ROBIN))
 	List<Wrapper<String>> solve(List<Instruction> inst);
 
