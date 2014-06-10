@@ -10,17 +10,30 @@ import org.objectweb.fractal.api.control.BindingController;
 
 
 
-public class CrackerManagerImpl implements Cracker, BindingController, Serializable {
+public class CrackerManagerImpl implements Cracker, CrackerAttributes, BindingController, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final String COMP_NAME = "cracker-manager-comp";
+	
+	private SolverMulticast solvers;
+	private SolverAttributesMulticast solversAttributes;
+	private double numberOfSolvers = 0; // default value
 
-	SolverMulticast solvers;
-	SolverAttributesMulticast solversAttributes;
+	@Override
+	public void start() {
+		solvers.start();
+	}
+
+	// CRACKER ATTRIBUTES
 	
 	@Override
-	public void start(String alphabet, int maxLength) {
-		solvers.start();
+	public double getNumberOfSolvers() {
+		return numberOfSolvers;
+	}
+
+	@Override
+	public void setNumberOfSolvers(double numberOfSolvers) {
+		this.numberOfSolvers = numberOfSolvers;
 	}
 
 	// BINDING CONTROLLER

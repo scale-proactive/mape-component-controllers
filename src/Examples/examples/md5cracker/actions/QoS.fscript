@@ -1,0 +1,110 @@
+
+action add-worker(solver, vn) {
+	worker = gcm-new("examples.md5cracker.cracker.solver.Worker", $vn);
+	set-name($worker, "Worker");
+	
+	stop($solver);
+	add($solver, $worker);
+	start($solver);
+
+	solverManager = $solver/child::SolverManager;
+	stop($solverManager);
+	bind($solverManager/interface::worker-multicast-itf, $worker/interface::worker-itf);
+	start($solverManager);
+
+	start($worker);
+	wAttribute = $solverManager/attribute::numberOfWorkers;
+	set-value($wAttribute, value($wAttribute) + 1);
+	
+	return true();
+}
+
+action add-worker-on-vn0(solver) {
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	return add-worker($solver, $gcma/gcmvn::VN0);
+}
+
+action add-worker-on-vn1(solver) {
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	return add-worker($solver, $gcma/gcmvn::VN1);
+}
+
+action add-worker-on-vn2(solver) {
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	return add-worker($solver, $gcma/gcmvn::VN2);
+}
+
+action add-worker-on-vn3(solver) {
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	return add-worker($solver, $gcma/gcmvn::VN3);
+}
+
+action improve-solvers(cracker, max) {
+
+	for solver : $cracker/child::*[name(.) == "Solver"] {
+		numOfWorkers = value($solver/child::"SolverManager"/attribute::numberOfWorkers);
+		if ( $numOfWorkers < $max ) {
+			id = value($solver/child::"SolverManager"/attribute::id);
+			if ($id == 1) {
+				return add-worker-on-vn1($solver);
+			}
+			if ($id == 2) {
+				return add-worker-on-vn1($solver);
+			}
+			if ($id == 3) {
+				return add-worker-on-vn1($solver);
+			}
+			return add-worker-on-vn0($solver);
+		}
+	}
+
+	return false();
+}
+
+
+action remove-worker(cracker) {
+
+	-- First find the solver with the maximum id
+	solver = false();
+	id = -1;
+	for comp : $cracker/child::*[name(.) == "Solver"] {
+		solverId = value($comp/child::"SolverManager"/attribute::id);
+		if ( $solverId > $id ) {
+			id = $solverId;
+			solver = $comp;
+		}
+	}
+
+	-- No solver was found, could do nothing...
+	--
+	if ($solver == false()) {
+		return false();
+	}
+
+	-- Check if this solver has more than 1 worker otherwise,
+	-- better remove the whole solver (return false)
+	--
+	solverManager = $solver/child::"SolverManager";
+	numOfWorkers = value($solverManager/attribute::numberOfWorkers);
+	if ($numOfWorkers <= 1) {
+		return false(); 
+	}
+
+	worker = false();
+	for w : $solver/child::"Worker" {
+		worker = $w;
+	}
+
+	stop($solver);
+
+	-- unbind and remove
+	unbind-unit($solverManager/interface::worker-multicast-itf, $worker/interface::worker-itf);	
+	remove($solver, $worker);
+
+	-- start
+	set-value($solverManager/attribute::numberOfWorkers, $numOfWorkers - 1);
+	start($solver);
+
+	-- kill($worker);
+	return true();
+}

@@ -51,7 +51,8 @@ import org.objectweb.proactive.extra.component.mape.monitoring.records.OutgoingR
 
 public interface MonitorController {
 
-	public static final String ITF_NAME = "monitor-controller-nf";
+	public static final String MONITOR_CONTROLLER = "monitor-controller";
+	public static final String ITF_NAME = "monitor-service-nf";
 
 	void startGCMMonitoring();
 	void stopGCMMonitoring();

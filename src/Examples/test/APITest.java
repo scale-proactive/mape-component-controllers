@@ -14,7 +14,7 @@ import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.Composite;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extra.component.mape.reconfiguration.Action;
+import org.objectweb.proactive.extra.component.mape.execution.Action;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
@@ -90,13 +90,13 @@ public class APITest {
 		System.out.println("ASDASDASD");
 		Remmos.addObjectControllers((PAComponent) composite);
 		Utils.getPAMembraneController(composite).startMembrane();
-		Remmos.addExecution(composite);
+		Remmos.addExecutorController(composite);
 	
 		Utils.getPAGCMLifeCycleController(composite).startFc();
 		
 		final Master test = (Master) composite.getFcInterface("test");
 
-		Remmos.getExecutionController(composite).execute("1+1");
+		Remmos.getExecutorController(composite).execute("1+1");
 		
 		Action action = new Action() {
 			private static final long serialVersionUID = 1L;
@@ -121,7 +121,7 @@ public class APITest {
 			}
 		};
 		
-		Remmos.getExecutionController(composite).executeAction(action);
+		Remmos.getExecutorController(composite).executeAction(action);
 	
 		test.run();
 		Thread.sleep(1000);

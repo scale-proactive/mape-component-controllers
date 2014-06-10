@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
-import org.objectweb.fractal.api.control.IllegalLifeCycleException;
-import org.objectweb.fractal.api.control.LifeCycleController;
 
 
 public class SolverManagerImpl implements Solver, SolverAttributes, SolverManager, BindingController {
@@ -21,8 +19,8 @@ public class SolverManagerImpl implements Solver, SolverAttributes, SolverManage
 	private int maxLength = 3;
 	private int alphabetBase = 62;
 
-	private int numberOfWorkers = 1;
-   
+	private double numberOfWorkers = 1, idNumber = 0;
+
 	@Override
 	public void start() {
 		mySelf.solve();
@@ -31,8 +29,8 @@ public class SolverManagerImpl implements Solver, SolverAttributes, SolverManage
 	@Override
 	public void solve() {
 		Wrapper<MD5Hash> hashWrapper = taskRepo.getTask();
-		if( !hashWrapper.isValid() ) return;
-		
+		if ( !hashWrapper.isValid() ) return;
+
 		long possibilities = 0;
 		for (int i = 1; i <= maxLength; i++) {
 			possibilities += Math.pow(alphabetBase, i);
@@ -45,29 +43,49 @@ public class SolverManagerImpl implements Solver, SolverAttributes, SolverManage
 			long end = (long) Math.floor((w+1)*slice);
 			insts.add(new Instruction(start, end, hashWrapper.getValue()));
 		}
+
 		List<Wrapper<String>> results = workers.solve(insts);
+	
+		boolean isValid = false;
+		String validResult = null;
 		for( Wrapper<String> w : results ) {
 			if (w.isValid()) {
-				resultRepo.setResult(w.getValue(), hashWrapper.getValue());
-				mySelf.solve();
-				return;
+				isValid = true;
+				validResult = w.getValue();
 			}
 		}
-		System.out.println("[WorkManager][Warning] key not found for " + hashWrapper.getValue().getHash());
+
+		if (isValid) {
+			resultRepo.setResult(validResult, hashWrapper.getValue());
+		} else {
+			System.out.println("[WorkManager][Warning] key not found for " + hashWrapper.getValue().getHash()
+					+ " Stopping solver..... ");
+		}
+		
 		mySelf.solve();
 	}
 
 	// ATTRIBUTES CONTROLLER
 
 	@Override
-	public void setNumberOfWorkers(int number) {
+	public void setNumberOfWorkers(double number) {
 		System.out.println(" NUMBER OF WORKERS CHANGES:::: OLD = " + numberOfWorkers  + " ---> NEW = " + number);
 		numberOfWorkers = number;
 	}
 
 	@Override
-	public int getNumberOfWorkers() {
+	public double getNumberOfWorkers() {
 		return numberOfWorkers;
+	}
+
+	@Override
+	public void setId(double number) {
+		idNumber = number;
+	}
+
+	@Override
+	public double getId() {
+		return idNumber;
 	}
 
 	// BINDING CONTROLLER

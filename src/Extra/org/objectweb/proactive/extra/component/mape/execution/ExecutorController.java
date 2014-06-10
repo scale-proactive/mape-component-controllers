@@ -1,13 +1,15 @@
-package org.objectweb.proactive.extra.component.mape.reconfiguration;
+package org.objectweb.proactive.extra.component.mape.execution;
 
 import java.util.Set;
 
-import org.objectweb.proactive.extra.component.fscript.control.PAReconfigurationController;
 import org.objectweb.proactive.extra.component.fscript.exceptions.ReconfigurationException;
+import org.objectweb.proactive.extra.component.mape.utils.ObjectWrapper;
 
-public interface ExecutionController {
-    /** Controller name. */
-    public static final String RECONFIGURATION_CONTROLLER = "reconfiguration-controller";
+
+public interface ExecutorController {
+
+    public static final String EXECUTOR_CONTROLLER = "executor-controller";
+    public static final String ITF_NAME = "execution-service-nf";
 
     /**
      * Instantiates a new GCMScript engine from the default GCMScript ADL file and sets it as
@@ -52,11 +54,10 @@ public interface ExecutionController {
      * @return The value of the code fragment, if successfully executed.
      * @throws ReconfigurationException If an error occurred during the execution of the code fragment.
      */
-    Object execute(String source);
-   
-	// DEFAULT NAME
-	public static final String ITF_NAME = "execution-controller-nf";
+    public ObjectWrapper execute(String source);
 
+    // ----- API -----
+    
 	/**
 	 * Adds a new Action. This Action will be stored and can be executed by {@link #executeAction(String)}
 	 * using its name.
@@ -65,16 +66,6 @@ public interface ExecutionController {
 	 * @return true if success
 	 */
 	public boolean addAction(String name, Action action);
-	
-	/**
-	 * Adds a new Action. This Action will be stored and can be executed by {@link #executeAction(String)}
-	 * using its name.
-	 * @param name unique name to identify this action.
-	 * @param script a script in GCMScript language.
-	 * @return true if success
-	 */
-	public boolean addActionScript(String name, String script);
-
 
 	/**
 	 * Remove the action identified by the given name.
@@ -86,12 +77,12 @@ public interface ExecutionController {
 	 * Executes the stored action identified by the given name
 	 * @param actionName name of the stored Action to be executed
 	 */
-	public Object executeAction(String actionName);
+	public ObjectWrapper executeAction(String actionName);
 	
 	/**
 	 * Executes the given Action
 	 * @param action Action to be executed
 	 */
-	public Object executeAction(Action action);
+	public ObjectWrapper executeAction(Action action);
 
 }

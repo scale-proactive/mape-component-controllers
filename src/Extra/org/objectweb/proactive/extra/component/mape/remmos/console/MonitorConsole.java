@@ -43,7 +43,6 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.type.InterfaceType;
@@ -67,7 +66,6 @@ import org.objectweb.proactive.extra.component.mape.monitoring.metrics.library.M
 import org.objectweb.proactive.extra.component.mape.monitoring.records.ComponentRequestID;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 import org.objectweb.proactive.extra.component.mape.remmos.utils.RemmosUtils;
-import org.objectweb.proactive.extra.component.mape.sla.SLAService;
 
 /**
  * A textual monitor console to get information of components, and interact with the Monitoring and Management features.

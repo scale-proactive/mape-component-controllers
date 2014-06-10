@@ -2,7 +2,6 @@ package examples.md5cracker.metrics;
 
 import java.util.List;
 
-
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.Metric;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.MetricValue;
 

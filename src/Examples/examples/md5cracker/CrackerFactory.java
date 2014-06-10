@@ -19,7 +19,7 @@ import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
 import examples.md5cracker.cracker.Cracker;
-import examples.md5cracker.cracker.CrackerManagerAttributes;
+import examples.md5cracker.cracker.CrackerAttributes;
 import examples.md5cracker.cracker.CrackerManagerImpl;
 import examples.md5cracker.cracker.ResultRepositoryImpl;
 import examples.md5cracker.cracker.SolverMulticast;
@@ -37,6 +37,9 @@ import examples.md5cracker.cracker.solver.WorkerMulticast;
 
 public class CrackerFactory {
 
+	public static final String TASK_REPOSITORY_NAME = "TaskRepository";
+	public static final String RESULT_REPOSITORY_NAME = "ResultRepository";
+	
 	static String SC = PAGCMTypeFactory.SINGLETON_CARDINALITY;
 	static String MC = PAGCMTypeFactory.MULTICAST_CARDINALITY;
 	static boolean MND = PAGCMTypeFactory.MANDATORY;
@@ -51,6 +54,7 @@ public class CrackerFactory {
 		}
 	}
 
+	// CRACKER
 	public static Component createCracker(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
 		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
 				(PAGCMInterfaceType) tf.createGCMItfType(Cracker.ITF_NAME, Cracker.class.getName(), SRV, MND, SC),
@@ -70,14 +74,16 @@ public class CrackerFactory {
 		Utils.getPAMembraneController(comp).startMembrane();
 		Remmos.addMonitoring(comp);
 		Remmos.addAnalysis(comp);
-		Remmos.addExecution(comp);
+		Remmos.addPlannerController(comp);
+		Remmos.addExecutorController(comp);
 		return comp;
 	}
 
+	// CrackerManager
 	public static Component createCrackerManager(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
 		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
 			(PAGCMInterfaceType) tf.createGCMItfType(Cracker.ITF_NAME, Cracker.class.getName(), SRV, MND, SC),
-			(PAGCMInterfaceType) tf.createGCMItfType(Constants.ATTRIBUTE_CONTROLLER, CrackerManagerAttributes.class.getName(), SRV, MND, SC),
+			(PAGCMInterfaceType) tf.createGCMItfType(Constants.ATTRIBUTE_CONTROLLER, CrackerAttributes.class.getName(), SRV, MND, SC),
 			(PAGCMInterfaceType) tf.createGCMItfType(SolverMulticast.ITF_NAME, SolverMulticast.class.getName(), CLI, MND, MC),
 		};
 		checkRemmos(tf, cf);
@@ -104,7 +110,7 @@ public class CrackerFactory {
 
 		return cf.newFcInstance(
 				tf.createFcType(fTypes),
-				new ControllerDescription("TaskRepository", Constants.PRIMITIVE),
+				new ControllerDescription(TASK_REPOSITORY_NAME, Constants.PRIMITIVE),
 				new ContentDescription(TaskRepositoryImpl.class.getName(), null, new ComponentRunActive() {
 					@Override
 					public void runComponentActivity(Body body) {
@@ -121,7 +127,7 @@ public class CrackerFactory {
 
 		return cf.newFcInstance(
 				tf.createFcType(fTypes),
-				new ControllerDescription("ResultRepository", Constants.PRIMITIVE),
+				new ControllerDescription(RESULT_REPOSITORY_NAME, Constants.PRIMITIVE),
 				new ContentDescription(ResultRepositoryImpl.class.getName(), null, new ComponentRunActive() {
 					@Override
 					public void runComponentActivity(Body body) {
@@ -131,6 +137,7 @@ public class CrackerFactory {
 				node);
 	}
 
+	// SOLVER
 	public static Component createSolver(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
 		PAGCMInterfaceType[] fTypes  = new PAGCMInterfaceType[] {
 				(PAGCMInterfaceType) tf.createGCMItfType(Solver.ITF_NAME, Solver.class.getName(), SRV, MND, SC),
@@ -152,7 +159,7 @@ public class CrackerFactory {
 
 		Utils.getPAMembraneController(comp).startMembrane();
 		Remmos.addMonitoring(comp);
-		Remmos.addExecution(comp);
+		//Remmos.addExecutorController(comp);
 		return comp;
 	}
 

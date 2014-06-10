@@ -2,7 +2,6 @@ package examples.md5cracker.cracker;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 
 import examples.md5cracker.cracker.solver.MD5Hash;
 import examples.md5cracker.cracker.solver.ResultRepository;

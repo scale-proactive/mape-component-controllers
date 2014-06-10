@@ -36,6 +36,7 @@
  */
 package org.objectweb.proactive.extra.component.mape.remmos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,6 +46,8 @@ import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.Type;
 import org.objectweb.fractal.api.control.BindingController;
+import org.objectweb.fractal.api.control.IllegalBindingException;
+import org.objectweb.fractal.api.control.IllegalLifeCycleException;
 import org.objectweb.fractal.api.control.NameController;
 import org.objectweb.fractal.api.factory.InstantiationException;
 import org.objectweb.fractal.api.type.ComponentType;
@@ -66,20 +69,22 @@ import org.objectweb.proactive.core.component.control.PAMulticastController;
 import org.objectweb.proactive.core.component.control.PAMulticastControllerImpl;
 import org.objectweb.proactive.core.component.control.PASuperController;
 import org.objectweb.proactive.core.component.control.PASuperControllerImpl;
+import org.objectweb.proactive.core.component.exceptions.NoSuchComponentException;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.representative.PAComponentRepresentative;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
+import org.objectweb.proactive.core.node.NodeException;
 import org.objectweb.proactive.core.node.NodeFactory;
-import org.objectweb.proactive.core.runtime.ProActiveRuntimeImpl;
 import org.objectweb.proactive.core.util.log.Loggers;
 import org.objectweb.proactive.core.util.log.ProActiveLogger;
-import org.objectweb.proactive.extra.component.mape.analysis.AnalysisController;
-import org.objectweb.proactive.extra.component.mape.analysis.AnalysisControllerImpl;
-import org.objectweb.proactive.extra.component.mape.reconfiguration.ExecutionController;
-import org.objectweb.proactive.extra.component.mape.reconfiguration.ExecutionControllerImpl;
+import org.objectweb.proactive.extra.component.mape.analysis.AlarmListener;
+import org.objectweb.proactive.extra.component.mape.analysis.AnalyzerController;
+import org.objectweb.proactive.extra.component.mape.analysis.AnalyzerControllerImpl;
+import org.objectweb.proactive.extra.component.mape.execution.ExecutorController;
+import org.objectweb.proactive.extra.component.mape.execution.ExecutorControllerImpl;
 import org.objectweb.proactive.extra.component.mape.monitoring.EventControl;
 import org.objectweb.proactive.extra.component.mape.monitoring.EventListener;
 import org.objectweb.proactive.extra.component.mape.monitoring.MetricEventListener;
@@ -91,6 +96,8 @@ import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController
 import org.objectweb.proactive.extra.component.mape.monitoring.event.RemmosEventListener;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordStore;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordStoreImpl;
+import org.objectweb.proactive.extra.component.mape.planning.PlannerController;
+import org.objectweb.proactive.extra.component.mape.planning.PlannerControllerImpl;
 
 
 /**
@@ -111,6 +118,7 @@ public class Remmos {
 	private static final String METRICS_STORE_COMP = "metrics-store-NF";
 	
 	private static final String ANALYSIS_CONTROLLER_COMP = "analysis-controller-NF";
+	private static final String PLANNER_CONTROLLER_COMP = "PlannerController";
 	private static final String EXECUTION_CONTROLLER_COMP = "execution-controller-NF";
 	
 	// SLA Management-related Components
@@ -120,10 +128,10 @@ public class Remmos {
 	// Reconfiguration-related Components
 	// public static final String RECONFIGURATION_SERVICE_COMP = "reconfiguration-component-NF";
 
-	private static final String CONFIG_FILE_PATH = "/org/objectweb/proactive/core/component/componentcontroller/"
-			+ "config/default-component-controller-config-basic.xml";
+	private static final String COMPONENT_CONTROLLER_CONFIG = 
+		"/org/objectweb/proactive/core/component/componentcontroller/config/default-component-controller-config.xml";
 
-	private static final String INTERNAL_MON_ITF = "internal-server-" + Constants.MONITOR_CONTROLLER;
+	private static final String INTERNAL_MON_ITF = "internal-server-" + MonitorController.MONITOR_CONTROLLER;
 
 	private static PAGCMTypeFactory patf;
 	private static PAGenericFactory pagf;
@@ -232,17 +240,10 @@ public class Remmos {
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.MULTICAST_CONTROLLER, PAMulticastController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			
 			// server Monitoring interface
-			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.MONITOR_CONTROLLER, MonitorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
-			
-			// SLA management interface
-			// typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.SLA_CONTROLLER, SLAService.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));		
-			// Analysis interface
-			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.ANALYSIS_CONTROLLER, AnalysisController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
-
-			// reconfiguration interface
-			//typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.RECONFIGURATION_CONTROLLER, PAReconfigurationController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
-			// Execution interface
-			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.EXECUTION_CONTROLLER, ExecutionController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(MonitorController.MONITOR_CONTROLLER, MonitorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(AnalyzerController.ANALYSIS_CONTROLLER, AnalyzerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(PlannerController.PLANNER_CONTROLLER, PlannerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ExecutorController.EXECUTOR_CONTROLLER, ExecutorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 
 			String itfName;
 		
@@ -251,7 +252,7 @@ public class Remmos {
 			// Support client-singleton, and client-multicast interfaces
 			for(PAGCMInterfaceType itfType : fItfType) {
 				if (!itfType.isFcClientItf()) continue;
-				itfName = itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER;
+				itfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
 				if ((itfType.isGCMSingletonItf() && !itfType.isGCMCollectiveItf()) || itfType.isGCMGathercastItf()) {
 					// add a client-singleton interface
 					typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(itfName, MonitorController.class.getName(), TypeFactory.CLIENT, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
@@ -268,12 +269,12 @@ public class Remmos {
 				for(PAGCMInterfaceType itfType : fItfType) {
 					// only server-singleton supported ... others ignored
 					if(!itfType.isFcClientItf() && itfType.isGCMSingletonItf() && !itfType.isGCMCollectiveItf()) {
-						itfName = itfType.getFcItfName() + "-internal-"+Constants.MONITOR_CONTROLLER;
+						itfName = itfType.getFcItfName() + "-internal-"+MonitorController.MONITOR_CONTROLLER;
 						typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(itfName, MonitorController.class.getName(), TypeFactory.CLIENT, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY, PAGCMTypeFactory.INTERNAL));
 					}
 				}
 				// one server internal Monitoring interface in each composite
-				itfName = "internal-server-" + Constants.MONITOR_CONTROLLER;
+				itfName = "internal-server-" + MonitorController.MONITOR_CONTROLLER;
 				typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(itfName, MonitorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY, PAGCMTypeFactory.INTERNAL));
 			}
 
@@ -345,48 +346,18 @@ public class Remmos {
 	 * @throws Exception 
 	 */
 	public static void addMonitoring(Component component) throws Exception {
-
 		checkFactories();
-
-		logger.debug("Currently on runtime: "+ ProActiveRuntimeImpl.getProActiveRuntime().getURL() );
-		PAComponent pac = (PAComponent) component;
-		PAComponentRepresentative pacr = (PAComponentRepresentative) component;
-		logger.debug("Adding monitoring components for component ["+ pac.getComponentParameters().getName()+"], with ID ["+ pac.getID() +"]");
-		String bodyUrl = ((UniversalBodyProxy) pacr.getProxy()).getBody().getNodeURL();
-		//logger.debug("   Which is in node ["+ bodyUrl + "]");
-		Node parentNode = NodeFactory.getNode(bodyUrl);
-		//ProActiveRuntime part = parentNode.getProActiveRuntime();
-		//logger.debug("   and in runtime ["+ part.getURL() + "]");
-
-		// creates the components used for monitoring
-		logger.debug("Creating NF monitoring components");
-		Component eventListener = createBasicEventListener(patf, pagf, EventListener.class.getName(), parentNode);
-		Component recordStore = createBasicRecordStore(patf, pagf, RecordStoreImpl.class.getName(), parentNode);
-		Component monitorService = createMonitorService(patf, pagf, MonitorControllerImpl.class.getName(), component, parentNode);
-		Component metricsStore = createMetricsStore(patf, pagf, MetricStoreImpl.class.getName(), component, parentNode);
-	
-		// Get essential controllers
 		PAMembraneController membrane = Utils.getPAMembraneController(component);
 		PAGCMLifeCycleController lifeCycle = Utils.getPAGCMLifeCycleController(component);
-		PABindingController bindingController = Utils.getPABindingController(component);
-	
-		String membraneState = membrane.getMembraneState();
-		if (membraneState.equals(PAMembraneController.MEMBRANE_STOPPED)) {
-			// I need the membrane started in order to consult the state of LifeCycleController
-			membrane.startMembrane();
-		}
-
-		String componentState = lifeCycle.getFcState();
-		if (componentState.equals(PAGCMLifeCycleController.STARTED)) {
-			lifeCycle.stopFc();
-		}
-
-		if (membrane.getMembraneState().equals(PAMembraneController.MEMBRANE_STARTED)) {
-			membrane.stopMembrane();
-		}
+		States oldStates = stopMembraneAndLifeCycle(membrane, lifeCycle);
 
 		// add components to the membrane
-		logger.debug("Inserting components in the membrane");
+		Node node = getDeploymentNode(component);
+		Component eventListener = createBasicEventListener(patf, pagf, EventListener.class.getName(), node);
+		Component recordStore = createBasicRecordStore(patf, pagf, RecordStoreImpl.class.getName(), node);
+		Component monitorService = createMonitorService(patf, pagf, MonitorControllerImpl.class.getName(), component, node);
+		Component metricsStore = createMetricsStore(patf, pagf, MetricStoreImpl.class.getName(), component, node);
+	
 		membrane.nfAddFcSubComponent(eventListener);
 		membrane.nfAddFcSubComponent(recordStore);
 		membrane.nfAddFcSubComponent(monitorService);
@@ -401,248 +372,136 @@ public class Remmos {
 		membrane.nfBindFc(METRICS_STORE_COMP+"."+RecordStore.ITF_NAME, RECORD_STORE_COMP+"."+RecordStore.ITF_NAME);
 		
 		// binding between the NF Monitoring Interface of the host component, and the Monitor Component
-		membrane.nfBindFc(Constants.MONITOR_CONTROLLER, MONITOR_SERVICE_COMP+"."+MonitorController.ITF_NAME);		
+		membrane.nfBindFc(MonitorController.MONITOR_CONTROLLER, MONITOR_SERVICE_COMP+"."+MonitorController.ITF_NAME);		
 
-		
 		boolean isComposite = ((PAComponent) component).getComponentParameters().getHierarchicalType().equals(Constants.COMPOSITE);
 
 		if (isComposite) {
 			// and the binding from the internal server monitor interface, back to the NF Monitor Component
-			String clientItfName = "internal-server-" + Constants.MONITOR_CONTROLLER;
+			String clientItfName = "internal-server-" + MonitorController.MONITOR_CONTROLLER;
 			String serverItfName = MonitorController.ITF_NAME;
 			membrane.nfBindFc(clientItfName, MONITOR_SERVICE_COMP + "." + serverItfName);
 		}
 
-		// restore membrane and component lifecycle after having made changes
-		if(membraneState.equals(PAMembraneController.MEMBRANE_STARTED)) {
-			membrane.startMembrane();
-		}
-		if(componentState.equals(PAGCMLifeCycleController.STARTED)) {
-			lifeCycle.startFc();
-		}
+		startMembraneAndLifeCycle(oldStates, membrane, lifeCycle);
 	}
 
-
-	/**
-	 * Builds the SLA monitoring components and put them in the membrane.
-	 * The Monitoring components must have been added before, otherwise this method will fail.
-	 * 
-	 * After the execution of this method, the component (composite or primitive) will have all the SLA Monitor-related components
-	 * created and bound to the the Monitor Service components.
-	 * 
-	 * @param component
-	 * @throws Exception
-	 */
-	/*
-	public static void addSLAMonitoring(Component component) throws Exception {
-		// bootstrapping component and factories
-		Component boot = Fractal.getBootstrapComponent();
-		PAGCMTypeFactory patf = null;
-		PAGenericFactory pagf = null;
-		patf = (PAGCMTypeFactory) Fractal.getTypeFactory(boot);
-		pagf = (PAGenericFactory) Fractal.getGenericFactory(boot);
-
-		PAComponent pac = (PAComponent) component;
-		PAComponentRepresentative pacr = (PAComponentRepresentative) component;
-		logger.debug("Adding SLA Monitoring components for component ["+ pac.getComponentParameters().getName()+"], with ID ["+ pac.getID() +"]");
-		UniversalBodyProxy ubp = (UniversalBodyProxy) pacr.getProxy();
-		UniversalBody ub = ubp.getBody();
-		String bodyUrl = ub.getNodeURL();
-		//logger.debug("   Which is in node ["+ bodyUrl + "]");
-		Node parentNode = NodeFactory.getNode(bodyUrl);
-		//ProActiveRuntime part = parentNode.getProActiveRuntime();
-		//logger.debug("   and in runtime ["+ part.getURL() + "]");
-		
-		// creates the components used for monitoring
-		Component slaService = createBasicSLAService(patf, pagf, SLAServiceImpl.class.getName(), parentNode);
-		Component sloStore = createBasicSLOStore(patf, pagf, SLOStoreImpl.class.getName(), parentNode);
-		
-		// performs the NF assembly
-		PAMembraneController membrane = Utils.getPAMembraneController(component);
-		PAGCMLifeCycleController lifeCycle = Utils.getPAGCMLifeCycleController(component);
-		// stop the membrane and component lifecycle before making changes
-		String membraneOldState = membrane.getMembraneState();
-		String componentOldState = lifeCycle.getFcState();
-		lifeCycle.stopFc();
-		membrane.stopMembrane();
-		
-		
-		// add components to the membrane
-		membrane.nfAddFcSubComponent(slaService);
-		membrane.nfAddFcSubComponent(sloStore);
-		// bindings between NF components
-		membrane.nfBindFc(SLA_SERVICE_COMP+"."+SLO_STORE_ITF, SLO_STORE_COMP+"."+SLO_STORE_ITF);
-		membrane.nfBindFc(SLO_STORE_COMP+"."+MONITOR_SERVICE_ITF, MONITOR_SERVICE_COMP+"."+MONITOR_SERVICE_ITF);
-		// binding between the NF SLA Interface of the host component, and the SLA Component
-		membrane.nfBindFc(Constants.SLA_CONTROLLER, SLA_SERVICE_COMP+"."+SLA_SERVICE_ITF);
-		
-		// restore membrane and component lifecycle after having made changes
-		if(membraneOldState.equals(PAMembraneController.MEMBRANE_STARTED)) {
-			membrane.startMembrane();
-		}
-		if(componentOldState.equals(PAGCMLifeCycleController.STARTED)) {
-			lifeCycle.startFc();
-		}
-		
-		logger.debug("   Done for component ["+pac.getComponentParameters().getName()+"] !");
-	}
-	*/
 	public static void addAnalysis(Component component) throws Exception {
-		
 		checkFactories();
-
-		UniversalBodyProxy ubProxy = (UniversalBodyProxy) ((PAComponentRepresentative) component).getProxy();
-		Node parentNode = NodeFactory.getNode(ubProxy.getBody().getNodeURL());
-		
-		Component analysis = createAnalysisController(patf, pagf, AnalysisControllerImpl.class.getName(), parentNode);
-		
 		PAMembraneController membrane = Utils.getPAMembraneController(component);
 		PAGCMLifeCycleController lifeCycle = Utils.getPAGCMLifeCycleController(component);
-		
-		String membraneState = membrane.getMembraneState();
-		if (membraneState.equals(PAMembraneController.MEMBRANE_STOPPED)) {
-			// I need the membrane started in order to consult the state of LifeCycleController
-			membrane.startMembrane();
-		}
+		States oldStates = stopMembraneAndLifeCycle(membrane, lifeCycle);
 
-		String componentState = lifeCycle.getFcState();
-		if (componentState.equals(PAGCMLifeCycleController.STARTED)) {
-			lifeCycle.stopFc();
-		}
-
-		if (membrane.getMembraneState().equals(PAMembraneController.MEMBRANE_STARTED)) {
-			membrane.stopMembrane();
-		}
-	
 		// Adding analysis controller
-		membrane.nfAddFcSubComponent(analysis);
-		membrane.nfBindFc(Constants.ANALYSIS_CONTROLLER, ANALYSIS_CONTROLLER_COMP+"."+AnalysisController.ITF_NAME);
+		Component analyzer = createAnalyzerController(patf, pagf, getDeploymentNode(component));
+		membrane.nfAddFcSubComponent(analyzer);
 		
-		// Assumes MonitorController already added.
-		membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + MonitorController.ITF_NAME, MONITOR_SERVICE_COMP + "." +  MonitorController.ITF_NAME);
-		membrane.nfBindFc(METRICS_STORE_COMP+"."+MetricEventListener.ITF_NAME, ANALYSIS_CONTROLLER_COMP+"."+MetricEventListener.ITF_NAME);
+		// Bind with membrane
+		membrane.nfBindFc(AnalyzerController.ANALYSIS_CONTROLLER,
+				ANALYSIS_CONTROLLER_COMP + "." + AnalyzerController.ITF_NAME);
 
-		// Bind with execution controller if it exist. NOTE: This ugly method is needed since the
+		// Assumes MonitorController already added.
+		membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + MonitorController.ITF_NAME,
+				MONITOR_SERVICE_COMP + "." +  MonitorController.ITF_NAME);
+		membrane.nfBindFc(METRICS_STORE_COMP+"."+MetricEventListener.ITF_NAME,
+				ANALYSIS_CONTROLLER_COMP+"."+MetricEventListener.ITF_NAME);
+
+
+		// Bind with PlannerController if it exist. NOTE: This ugly method is needed since the
 		//  "NoSuchComponentException" is thrown only on the remote thread.
 		for (Component comp : membrane.nfGetFcSubComponents()) {
-			if (GCM.getNameController(comp).getFcName().equals(EXECUTION_CONTROLLER_COMP)) {
-				membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + ExecutionController.ITF_NAME,
-						EXECUTION_CONTROLLER_COMP + "." + ExecutionController.ITF_NAME);
+			if (GCM.getNameController(comp).getFcName().equals(PLANNER_CONTROLLER_COMP)) {
+				membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME,
+						PLANNER_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME);
 				
 				break;
 			}
 		}
 
-		if(membraneState.equals(PAMembraneController.MEMBRANE_STARTED)) membrane.startMembrane();
-		if(componentState.equals(PAGCMLifeCycleController.STARTED)) lifeCycle.startFc();
+		startMembraneAndLifeCycle(oldStates, membrane, lifeCycle);
 
 	}
 
 	/**
-	 * Add the Reconfiguration component and put it in the membrane.
-	 * TODO: add the binding from the SLA component, if it exists.
-	 * 
-	 * After the execution of this method, the component (composite or primitive) will have a Reconfiguration component embedding a PAGCMScript engine
-	 * 
+	 * Adds PlannerController to the component membrane
 	 * @param component
 	 * @throws Exception
 	 */
-	/*
-	public static void addReconfiguration(Component component) throws Exception {
-
-		// bootstrapping component and factories
-		Component boot = Fractal.getBootstrapComponent();
-		PAGCMTypeFactory patf = null;
-		PAGenericFactory pagf = null;
-		patf = (PAGCMTypeFactory) Fractal.getTypeFactory(boot);
-		pagf = (PAGenericFactory) Fractal.getGenericFactory(boot);
-		
-		logger.debug("Currently on runtime: "+ ProActiveRuntimeImpl.getProActiveRuntime().getURL() );
-		PAComponent pac = (PAComponent) component;
-		PAComponentRepresentative pacr = (PAComponentRepresentative) component;
-		logger.debug("Adding reconfiguration component for component ["+ pac.getComponentParameters().getName()+"], with ID ["+ pac.getID() +"]");
-		UniversalBodyProxy ubp = (UniversalBodyProxy) pacr.getProxy();
-		UniversalBody ub = ubp.getBody();
-		String bodyUrl = ub.getNodeURL();
-		//logger.debug("   Which is in node ["+ bodyUrl + "]");
-		Node parentNode = NodeFactory.getNode(bodyUrl);
-		ProActiveRuntime part = parentNode.getProActiveRuntime();
-		//logger.debug("   and in runtime ["+ part.getURL() + "]");
-		
-		// creates the components used for reconfiguration
-		Component reconfiguration = createReconfigurationComponent(patf, pagf, ReconfigurationImpl.class.getName(), parentNode);
-
-		// performs the NF assembly
-		PAMembraneController membrane = Utils.getPAMembraneController(component);
-		PAGCMLifeCycleController lifeCycle = Utils.getPAGCMLifeCycleController(component);
-		// stop the membrane and component lifecycle before making changes
-		String membraneOldState = membrane.getMembraneState();
-		String componentOldState = lifeCycle.getFcState();
-		lifeCycle.stopFc();
-		membrane.stopMembrane();
-		
-		
-		// add components to the membrane
-		membrane.nfAddFcSubComponent(reconfiguration);
-		// binding between the NF Reconfiguration interface of the host component, and the Reconfiguration Component
-		membrane.nfBindFc(Constants.RECONFIGURATION_CONTROLLER, RECONFIGURATION_SERVICE_COMP+"."+ACTIONS_ITF);
-		
-		// restore membrane and component lifecycle after having made changes
-		if(membraneOldState.equals(PAMembraneController.MEMBRANE_STARTED)) {
-			membrane.startMembrane();
-		}
-		if(componentOldState.equals(PAGCMLifeCycleController.STARTED)) {
-			lifeCycle.startFc();
-		}
-		
-		logger.debug("   Done for component ["+pac.getComponentParameters().getName()+"] !");
-	}
-	*/
-	public static void addExecution(Component component) throws Exception {
-		
+	public static void addPlannerController(Component component) throws Exception {		
 		checkFactories();
-
-		UniversalBodyProxy ubProxy = (UniversalBodyProxy) ((PAComponentRepresentative) component).getProxy();
-		Node parentNode = NodeFactory.getNode(ubProxy.getBody().getNodeURL());
-		
-		Component execution = createExecutionController(patf, pagf, ExecutionControllerImpl.class.getName(), parentNode);
-
 		PAMembraneController membrane = Utils.getPAMembraneController(component);
 		PAGCMLifeCycleController lifeCycle = Utils.getPAGCMLifeCycleController(component);
-		
-		String membraneState = membrane.getMembraneState();
-		if (membraneState.equals(PAMembraneController.MEMBRANE_STOPPED)) {
-			// I need the membrane started in order to consult the state of LifeCycleController
-			membrane.startMembrane();
+		States oldStates = stopMembraneAndLifeCycle(membrane, lifeCycle);
+
+		// Add PlannerController
+		Component plannerController = createPlannerController(patf, pagf, getDeploymentNode(component));
+		membrane.nfAddFcSubComponent(plannerController);
+
+		// Bind with membrane
+		membrane.nfBindFc(PlannerController.PLANNER_CONTROLLER,
+				PLANNER_CONTROLLER_COMP + "." + PlannerController.ITF_NAME);
+
+		// Bind with monitor.
+		membrane.nfBindFc(PLANNER_CONTROLLER_COMP + "." + MonitorController.ITF_NAME,
+				MONITOR_SERVICE_COMP + "." + MonitorController.ITF_NAME);
+
+		// Bind with ExecutionController and AnalyzerController only if they exist.
+		// NOTE: This ugly method is needed since the "NoSuchComponentException" is thrown only on the remote thread.
+		int i = 0;
+		boolean analyzer = true, executor = true;
+		Component[] compControllers = membrane.nfGetFcSubComponents();
+		while ( (analyzer || executor) && i < compControllers.length ) {
+	
+			if (analyzer && GCM.getNameController(compControllers[i]).getFcName().equals(ANALYSIS_CONTROLLER_COMP)) {
+				membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME,
+						PLANNER_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME);
+				analyzer = false;
+			}
+
+			if (executor && GCM.getNameController(compControllers[i]).getFcName().equals(EXECUTION_CONTROLLER_COMP)) {
+				membrane.nfBindFc(PLANNER_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME,
+						EXECUTION_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
+				executor = false;
+			}
+
+			i += 1;
 		}
 
-		String componentState = lifeCycle.getFcState();
-		if (componentState.equals(PAGCMLifeCycleController.STARTED)) {
-			lifeCycle.stopFc();
-		}
+		startMembraneAndLifeCycle(oldStates, membrane, lifeCycle);
+	}
 
-		if (membrane.getMembraneState().equals(PAMembraneController.MEMBRANE_STARTED)) {
-			membrane.stopMembrane();
-		}
+	/**
+	 * Adds ExecutorController to the component membrane
+	 * @param component
+	 * @throws Exception
+	 */
+	public static void addExecutorController(Component component) throws Exception {		
+		checkFactories();
+		PAMembraneController membrane = Utils.getPAMembraneController(component);
+		PAGCMLifeCycleController lifeCycle = Utils.getPAGCMLifeCycleController(component);
+		States oldStates = stopMembraneAndLifeCycle(membrane, lifeCycle);
 
-		// Adding execution controller
-		membrane.nfAddFcSubComponent(execution);
-		membrane.nfBindFc(Constants.EXECUTION_CONTROLLER, EXECUTION_CONTROLLER_COMP+"."+ExecutionController.ITF_NAME);
+		// Add ExecutorController
+		Component executorController = createExecutorController(patf, pagf, getDeploymentNode(component));
+		membrane.nfAddFcSubComponent(executorController);
+	
+		// Bind with membrane
+		membrane.nfBindFc(ExecutorController.EXECUTOR_CONTROLLER,
+				EXECUTION_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
 
-		// Bind with analysis controller if it exist. NOTE: This ugly method is needed since the
-		//  "NoSuchComponentException" is thrown only on the remote thread.
+		// Bind with PlannerController if it exist. NOTE: This ugly method is needed since the
+		// "NoSuchComponentException" is thrown only on the remote thread.
 		for (Component comp : membrane.nfGetFcSubComponents()) {
-			if (GCM.getNameController(comp).getFcName().equals(ANALYSIS_CONTROLLER_COMP)) {
-				membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + ExecutionController.ITF_NAME,
-						EXECUTION_CONTROLLER_COMP + "." + ExecutionController.ITF_NAME);
-				
+	
+			if (GCM.getNameController(comp).getFcName().equals(PLANNER_CONTROLLER_COMP)) {
+
+				membrane.nfBindFc(PLANNER_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME,
+						EXECUTION_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
 				break;
 			}
 		}
-
-		if(membraneState.equals(PAMembraneController.MEMBRANE_STARTED)) membrane.startMembrane();
-		if(componentState.equals(PAGCMLifeCycleController.STARTED)) lifeCycle.startFc();
-
+		
+		startMembraneAndLifeCycle(oldStates, membrane, lifeCycle);
 	}
 
 	/**
@@ -659,7 +518,7 @@ public class Remmos {
 					patf.createGCMItfType(RemmosEventListener.ITF_NAME, RemmosEventListener.class.getName(), TypeFactory.CLIENT, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY)
 			};
 			return pagf.newNfFcInstance(patf.createFcType(eventListenerItfType),
-					new ControllerDescription(EVENT_LISTENER_COMP, Constants.PRIMITIVE, CONFIG_FILE_PATH),
+					new ControllerDescription(EVENT_LISTENER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG),
 					new ContentDescription(eventListenerClass), node);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -680,7 +539,7 @@ public class Remmos {
 					patf.createGCMItfType(RecordStore.ITF_NAME, RecordStore.class.getName(), TypeFactory.SERVER, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY)
 			};
 			return pagf.newNfFcInstance(patf.createFcType(recordStoreItfType), 
-					new ControllerDescription(RECORD_STORE_COMP, Constants.PRIMITIVE, CONFIG_FILE_PATH), 
+					new ControllerDescription(RECORD_STORE_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
 					new ContentDescription(recordStoreClass), node);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -736,7 +595,7 @@ public class Remmos {
 			}
 		
 			return pagf.newNfFcInstance(patf.createFcType(itfTypeList.toArray(new InterfaceType[itfTypeList.size()])), 
-					new ControllerDescription(METRICS_STORE_COMP, Constants.PRIMITIVE, CONFIG_FILE_PATH), 
+					new ControllerDescription(METRICS_STORE_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
 					new ContentDescription(metricsStoreClass), node);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -791,7 +650,7 @@ public class Remmos {
 			}
 
 			return pagf.newNfFcInstance(patf.createFcType(itfTypeList.toArray(new InterfaceType[itfTypeList.size()])),
-					new ControllerDescription(MONITOR_SERVICE_COMP, Constants.PRIMITIVE, CONFIG_FILE_PATH),
+					new ControllerDescription(MONITOR_SERVICE_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG),
 					new ContentDescription(monitorServiceClass), node);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -799,89 +658,59 @@ public class Remmos {
 		}
 	}
 	
-	/*
-	 * TODO: replace analysis controller with sla
-	 * 
-	private static Component createBasicSLAService(PAGCMTypeFactory patf, PAGenericFactory pagf, String slaServiceClass, Node node) {
 
-		Component slaService = null;
-		InterfaceType[] slaServiceItfType = null;
-		ComponentType slaServiceType = null;
-		
-		try {
-			slaServiceItfType = new InterfaceType[] {
-					patf.createGCMItfType(SLO_STORE_ITF, SLOStore.class.getName(), TypeFactory.CLIENT, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
-					patf.createGCMItfType(SLA_SERVICE_ITF, SLAService.class.getName(), TypeFactory.SERVER, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY)
-			};
-			slaServiceType = patf.createFcType(slaServiceItfType);
-			slaService = pagf.newNfFcInstance(slaServiceType, 
-					new ControllerDescription(SLA_SERVICE_COMP, Constants.PRIMITIVE, "/org/objectweb/proactive/core/component/componentcontroller/config/default-component-controller-config-basic.xml"), 
-					new ContentDescription(slaServiceClass),
-					node
-			);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		}
-		
-		return slaService;
-	}
 	
-	private static Component createBasicSLOStore(PAGCMTypeFactory patf, PAGenericFactory pagf, String sloStoreClass, Node node) {
-		
-		Component sloStore = null;
-		InterfaceType[] sloStoreItfType = null;
-		ComponentType sloStoreType = null;
-		
-		try {
-			sloStoreItfType = new InterfaceType[] {
-					patf.createGCMItfType(SLO_STORE_ITF, SLOStore.class.getName(), TypeFactory.SERVER, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
-					patf.createGCMItfType(METRICS_NOTIF_ITF, MetricsListener.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY),
-					patf.createGCMItfType(MONITOR_SERVICE_ITF, MonitorController.class.getName(), TypeFactory.CLIENT, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
-					patf.createGCMItfType(SLA_ALARM_ITF, SLANotifier.class.getName(), TypeFactory.CLIENT, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY)
-			};
-			sloStoreType = patf.createFcType(sloStoreItfType);
-			sloStore = pagf.newNfFcInstance(sloStoreType, 
-					new ControllerDescription(SLO_STORE_COMP, Constants.PRIMITIVE, "/org/objectweb/proactive/core/component/componentcontroller/config/default-component-controller-config-basic.xml"), 
-					new ContentDescription(sloStoreClass),
-					node
-			);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		}
-		
-		return sloStore;
-	}
-	*/
-	
-	private static Component createExecutionController(PAGCMTypeFactory patf, PAGenericFactory pagf, String clazz, Node node) {
+	private static Component createAnalyzerController(PAGCMTypeFactory patf, PAGenericFactory pagf, Node node) {
 		try {
 			InterfaceType[] itfTypes = new InterfaceType[] {
-					patf.createGCMItfType(ExecutionController.ITF_NAME, ExecutionController.class.getName(), TypeFactory.SERVER, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(AnalyzerController.ITF_NAME, AnalyzerController.class.getName(), PAGCMTypeFactory.SERVER, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(MetricEventListener.ITF_NAME, MetricEventListener.class.getName(), PAGCMTypeFactory.SERVER, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(MonitorController.ITF_NAME,	MonitorController.class.getName(), PAGCMTypeFactory.CLIENT, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(AlarmListener.ITF_NAME, AlarmListener.class.getName(), PAGCMTypeFactory.CLIENT, PAGCMTypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY),
 			};
+
 			return pagf.newNfFcInstance(patf.createFcType(itfTypes), 
-					new ControllerDescription(EXECUTION_CONTROLLER_COMP, Constants.PRIMITIVE, CONFIG_FILE_PATH), 
-					new ContentDescription(clazz), node);
+					new ControllerDescription(ANALYSIS_CONTROLLER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
+					new ContentDescription(AnalyzerControllerImpl.class.getName()), node);
+
 		} catch (InstantiationException e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
-	private static Component createAnalysisController(PAGCMTypeFactory patf, PAGenericFactory pagf, String clazz, Node node) {
+	private static Component createPlannerController(PAGCMTypeFactory patf, PAGenericFactory pagf, Node node) {
 		try {
 			InterfaceType[] itfTypes = new InterfaceType[] {
-					patf.createGCMItfType(AnalysisController.ITF_NAME, AnalysisController.class.getName(), TypeFactory.SERVER, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
-					patf.createGCMItfType(MetricEventListener.ITF_NAME, MetricEventListener.class.getName(), TypeFactory.SERVER, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
-					patf.createGCMItfType(MonitorController.ITF_NAME,	MonitorController.class.getName(), TypeFactory.CLIENT, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
-					patf.createGCMItfType(ExecutionController.ITF_NAME, ExecutionController.class.getName(), TypeFactory.CLIENT, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(PlannerController.ITF_NAME, PlannerController.class.getName(), PAGCMTypeFactory.SERVER, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(AlarmListener.ITF_NAME, AlarmListener.class.getName(), PAGCMTypeFactory.SERVER, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(MonitorController.ITF_NAME,	MonitorController.class.getName(), PAGCMTypeFactory.CLIENT, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+					patf.createGCMItfType(ExecutorController.ITF_NAME, ExecutorController.class.getName(), PAGCMTypeFactory.CLIENT, PAGCMTypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY),
 			};
+
 			return pagf.newNfFcInstance(patf.createFcType(itfTypes), 
-					new ControllerDescription(ANALYSIS_CONTROLLER_COMP, Constants.PRIMITIVE, CONFIG_FILE_PATH), 
-					new ContentDescription(clazz), node);
+					new ControllerDescription(PLANNER_CONTROLLER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
+					new ContentDescription(PlannerControllerImpl.class.getName()), node);
+
 		} catch (InstantiationException e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
+	}
+
+	private static Component createExecutorController(PAGCMTypeFactory patf, PAGenericFactory pagf, Node node) {
+		try {
+			InterfaceType[] itfTypes = new InterfaceType[] {
+					patf.createGCMItfType(ExecutorController.ITF_NAME, ExecutorController.class.getName(), PAGCMTypeFactory.SERVER, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
+			};
+			return pagf.newNfFcInstance(patf.createFcType(itfTypes), 
+					new ControllerDescription(EXECUTION_CONTROLLER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
+					new ContentDescription(ExecutorControllerImpl.class.getName()), node);
+
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	
@@ -937,7 +766,7 @@ public class Remmos {
 
 			if(isComposite && isSingleton && !itfType.isFcClientItf()) {
 				
-				if ( isAlreadyBound(itfType.getFcItfName() + "-internal-" + Constants.MONITOR_CONTROLLER, membrane) ) {
+				if ( isAlreadyBound(itfType.getFcItfName() + "-internal-" + MonitorController.MONITOR_CONTROLLER, membrane) ) {
 					continue; // break loops
 				}
 		
@@ -948,7 +777,7 @@ public class Remmos {
 				}
 	
 				String clientItfName = itfType.getFcItfName() + "-internal-" + MonitorController.ITF_NAME;
-				String serverItfName = itfType.getFcItfName() + "-internal-" + Constants.MONITOR_CONTROLLER;
+				String serverItfName = itfType.getFcItfName() + "-internal-" + MonitorController.MONITOR_CONTROLLER;
 				try {
 					membrane.stopMembrane();
 					membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
@@ -967,7 +796,7 @@ public class Remmos {
 			
 			if (isSingleton || itfType.isGCMGathercastItf()) {
 				
-				if (isAlreadyBound(itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER, membrane)) {
+				if (isAlreadyBound(itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER, membrane)) {
 					continue; // break loops
 				}
 				
@@ -984,13 +813,13 @@ public class Remmos {
 				}
 				
 				String clientItfName = itfType.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
-				String serverItfName = itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER;
+				String serverItfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
 				
 				try {
 					membrane.stopMembrane();
 					membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
 					membrane.nfBindFc(MONITOR_SERVICE_COMP + "." + clientItfName, serverItfName);
-					membrane.nfBindFc(itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER, externalMonitor);
+					membrane.nfBindFc(itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER, externalMonitor);
 					membrane.startMembrane();
 				} catch(Exception e) {
 					e.printStackTrace();
@@ -1005,31 +834,24 @@ public class Remmos {
 				try {
 					PAMulticastController pamc = Utils.getPAMulticastController(pacomponent);
 					
-					// Get destination components
-					Object[] destinationItfs = pamc.lookupGCMMulticast(itfType.getFcItfName());
-					Component[] destinations = new Component[destinationItfs.length];
-					for(int i=0; i<destinationItfs.length; i++) {
-						destinations[i] = ((PAInterface) destinationItfs[i]).getFcItfOwner();
+					// Remove old NF destinations
+					String nfItfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
+					try {
+						Object[] nfItfs = pamc.lookupGCMMulticast(nfItfName);
+						for (Object nfItf : nfItfs) {
+							pamc.unbindGCMMulticast(nfItfName, nfItf);
+						}
+					} catch (IllegalBindingException | IllegalLifeCycleException e) {
+						e.printStackTrace();
 					}
-					
-					// Get already NF bound destination components
-					destinationItfs = pamc.lookupGCMMulticast(itfType.getFcItfName()+"-external-"+Constants.MONITOR_CONTROLLER);
-					Component[] currentNFBoundDestinations = new Component[destinationItfs.length];
-					for (int i = 0; i < destinationItfs.length; i++) {
-						currentNFBoundDestinations[i] = ((PAInterface) destinationItfs[i]).getFcItfOwner();
+
+					// Get destination components
+					ArrayList<Component> destinations = new ArrayList<Component>();
+					for (Object destItf : pamc.lookupGCMMulticast(itfType.getFcItfName())) {
+						destinations.add(((PAInterface) destItf).getFcItfOwner());
 					}
 
 					for(Component destComp : destinations) {
-						
-						// discard already NF bound
-						boolean alreadyBound = false;
-						for (Component boundDestination : currentNFBoundDestinations) {
-							if (destComp.equals(boundDestination)) {
-								alreadyBound = true;
-								break;
-							}
-						}
-						if (alreadyBound) continue;
 					
 						//  ignore not PAComponentRepresentative (WSComponent for example)
 						if (!(destComp instanceof PAComponentRepresentative)) continue;
@@ -1043,13 +865,13 @@ public class Remmos {
 						}
 			
 						String clientItfName = itfType.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
-						String serverItfName = itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER;
+						String serverItfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
 						
 						try {
 							membrane.stopMembrane();
 							membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
 							membrane.nfBindFc(MONITOR_SERVICE_COMP + "." + clientItfName, serverItfName);
-							membrane.nfBindFc(itfType.getFcItfName() + "-external-" + Constants.MONITOR_CONTROLLER, externalMonitor);
+							membrane.nfBindFc(itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER, externalMonitor);
 							membrane.startMembrane();
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -1067,8 +889,72 @@ public class Remmos {
 		}
 	}
 
+	// COMPONENT CONTROLLERS GETTERS
+
+	public static MonitorController getMonitorController(Component component) throws NoSuchInterfaceException {
+		return (MonitorController) component.getFcInterface(MonitorController.MONITOR_CONTROLLER);
+	}
+	
+	public static AnalyzerController getAnalyzerController(Component component) throws NoSuchInterfaceException {
+		return (AnalyzerController) component.getFcInterface(AnalyzerController.ANALYSIS_CONTROLLER);
+	}
+
+	public static PlannerController getPlannerController(Component component) throws NoSuchInterfaceException {
+		return (PlannerController) component.getFcInterface(PlannerController.PLANNER_CONTROLLER);
+	}
+
+	public static ExecutorController getExecutorController(Component component) throws NoSuchInterfaceException {
+		return (ExecutorController) component.getFcInterface(ExecutorController.EXECUTOR_CONTROLLER);
+	}
 
 	// UTILS
+
+	/** Returns the node in which this component was deployed */
+	private static Node getDeploymentNode(Component component) throws NodeException {
+		UniversalBodyProxy ubProxy = (UniversalBodyProxy) ((PAComponentRepresentative) component).getProxy();
+		return NodeFactory.getNode(ubProxy.getBody().getNodeURL());
+	}
+
+	private static class States implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private String membrane, lifeCycle;
+		States(String membraneState, String lifeCycleState) {
+			membrane = membraneState;
+			lifeCycle = lifeCycleState;
+		}
+		String getMembraneState() { return membrane; }
+		String getLifeCycleState() { return lifeCycle; }
+	}
+
+	/** Stops the Membran and LifeCycle Controllers */
+	private static States stopMembraneAndLifeCycle(PAMembraneController membrane, PAGCMLifeCycleController lifeCycle)
+			throws IllegalLifeCycleException, NoSuchInterfaceException {
+		// check that membrane is started (needed to check lifeCycle state)
+		String membraneState = membrane.getMembraneState();
+		if (membraneState.equals(PAMembraneController.MEMBRANE_STOPPED)) {
+			membrane.startMembrane(); // 
+		}
+		// stop lifeCycle
+		String lifeCycleState = lifeCycle.getFcState();
+		if (lifeCycleState.equals(PAGCMLifeCycleController.STARTED)) {
+			lifeCycle.stopFc();
+		}
+		// stop membrane
+		if (membrane.getMembraneState().equals(PAMembraneController.MEMBRANE_STARTED)) {
+			membrane.stopMembrane();
+		}
+		return new States(membraneState, lifeCycleState);
+	}
+
+	private static void startMembraneAndLifeCycle(States oldStates, PAMembraneController membrane,
+			PAGCMLifeCycleController lifeCycle) throws IllegalLifeCycleException {
+		if(oldStates.getMembraneState().equals(PAMembraneController.MEMBRANE_STARTED)) {
+			membrane.startMembrane();
+		}
+		if(oldStates.getLifeCycleState().equals(PAGCMLifeCycleController.STARTED)) {
+			lifeCycle.startFc();
+		}
+	}
 
 	private static boolean isAlreadyBound(String interfaceName, PAMembraneController membrane) {
 		try {
@@ -1103,15 +989,4 @@ public class Remmos {
 		} 
 	}
 
-	public static MonitorController getMonitorController(Component component) throws NoSuchInterfaceException {
-		return (MonitorController) component.getFcInterface(Constants.MONITOR_CONTROLLER);
-	}
-	
-	public static AnalysisController getAnalysisController(Component component) throws NoSuchInterfaceException {
-		return (AnalysisController) component.getFcInterface(Constants.ANALYSIS_CONTROLLER);
-	}
-	
-	public static ExecutionController getExecutionController(Component component) throws NoSuchInterfaceException {
-		return (ExecutionController) component.getFcInterface(Constants.EXECUTION_CONTROLLER);
-	}
 }

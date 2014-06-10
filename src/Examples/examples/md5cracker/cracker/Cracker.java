@@ -5,6 +5,6 @@ public interface Cracker {
 
 	public static final String ITF_NAME = "cracker-itf";
 	
-	void start(String alphabet, int maxLength);
+	void start();
 
 }
