@@ -8,4 +8,5 @@ public interface ObjectWrapper extends Serializable {
 	public Object getObject() throws WrongValueException;
 	public Object getObjectOrNull();
 
+	public boolean isValid();
 }

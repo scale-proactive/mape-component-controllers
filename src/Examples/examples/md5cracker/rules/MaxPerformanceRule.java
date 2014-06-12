@@ -5,7 +5,7 @@ import org.objectweb.proactive.extra.component.mape.analysis.Rule;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.WrongMetricValueException;
 
-import examples.md5cracker.metrics.GlobalSPMMetric;
+import examples.md5cracker.metrics.CrackerMetric;
 
 
 public class MaxPerformanceRule extends Rule {
@@ -15,19 +15,19 @@ public class MaxPerformanceRule extends Rule {
 
 	private double maxSPM;
 
-
 	public MaxPerformanceRule(double maxSPM) {
 		this.maxSPM = maxSPM;
-		this.subscribeToMetric(GlobalSPMMetric.DEFAULT_NAME);
+		this.subscribeToMetric(CrackerMetric.DEFAULT_NAME);
 	}
 
 	@Override
 	public Alarm check(MonitorController monitor) {
 		try {
-
+			
 			// WARN: Do not recalculate the metric value. Since this rule is subscribed to the metric,
 			// a recalculation would call this method again, falling in a infinite loop.
-			if (maxSPM < (Double) monitor.getMetricValue(GlobalSPMMetric.DEFAULT_NAME).getValue()) {
+			double value = (double) monitor.getMetricValue(CrackerMetric.DEFAULT_NAME).getValue();
+			if (maxSPM < value) {
 				return Alarm.VIOLATION;
 			}
 

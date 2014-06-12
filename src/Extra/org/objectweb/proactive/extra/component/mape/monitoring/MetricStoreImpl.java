@@ -191,9 +191,9 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		else if (remoteMon instanceof MonitorControllerMulticast) {
 			return new ValidMetricValue(((MonitorControllerMulticast) remoteMon).calculateMetric(name, getNextItfPath(itfPath)), true);
 		}
-		
-		(new NoSuchInterfaceException(nextItfName)).printStackTrace();
-		return new WrongMetricValue("Monitor cant reach interface \"" + nextItfName + "\".");
+	
+		return new WrongMetricValue("Monitor cant reach interface \"" + nextItfName + "\".",
+				new NoSuchInterfaceException(nextItfName));
 	}
 
 	@Override
@@ -212,8 +212,8 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 			return new ValidMetricValue(((MonitorControllerMulticast) remoteMon).getMetricValue(name, getNextItfPath(itfPath)), true);
 		}
 	
-		(new NoSuchInterfaceException(nextItfName)).printStackTrace();
-		return new WrongMetricValue("Monitor cant reach interface \"" + nextItfName + "\".");
+		return new WrongMetricValue("Monitor cant reach interface \"" + nextItfName + "\".",
+				new NoSuchInterfaceException(nextItfName));
 	}
 
 	@Override

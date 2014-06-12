@@ -35,23 +35,22 @@ public abstract class Action implements Serializable {
 	 * 
 	 * @param component The client component
 	 * @param itfName The name the interface
-	 * @return A bound component, or null if it fails
+	 * @return A bound component, or null if no server component is bound to this interface
+	 * @throws NoSuchInterfaceException 
 	 */
-	public Component getBindComponent(Component component, String itfName) {
-		try {
-			PAInterface itf = (PAInterface) Utils.getPABindingController(component).lookupFc(itfName);
+	public Component getBindComponent(Component component, String itfName) throws NoSuchInterfaceException {
 
+		PAInterface itf = (PAInterface) Utils.getPABindingController(component).lookupFc(itfName);
+		if (itf != null) {
 			if (((PAGCMInterfaceType) itf.getFcItfType()).isGCMMulticastItf()) {
-				// TODO: this is not ok, fin other way to deal with multicast interfaces.
-				return getMulticastBindComponenents(component, itfName)[0];
+			// TODO: this is not ok, fin other way to deal with multicast interfaces.
+			return getMulticastBindComponenents(component, itfName)[0];
 			} else {
 				return itf.getFcItfOwner();
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
 		}
+		
+		return null;
 	}
 
 	/**

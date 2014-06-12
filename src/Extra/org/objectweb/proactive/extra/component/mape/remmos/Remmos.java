@@ -889,6 +889,26 @@ public class Remmos {
 		}
 	}
 
+	public static void unbind(Object clientItf) throws IllegalLifeCycleException, NoSuchInterfaceException, IllegalBindingException, NoSuchComponentException {
+		if (clientItf instanceof PAInterface) {
+			PAInterface itf = (PAInterface) clientItf;
+			Component owner = itf.getFcItfOwner();
+			
+			PAGCMLifeCycleController lcc = Utils.getPAGCMLifeCycleController(owner);
+			PAMembraneController mc = Utils.getPAMembraneController(owner);
+			States oldStates = Remmos.stopMembraneAndLifeCycle(mc, lcc);
+			
+			String clientItfName = itf.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
+			String serverItfName = itf.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
+			mc.nfUnbindFc(MONITOR_SERVICE_COMP + "." + clientItfName);
+			mc.nfUnbindFc(METRICS_STORE_COMP + "." + clientItfName);
+			
+			//mc.nfUnbindFc(serverItfName);
+			
+			Remmos.startMembraneAndLifeCycle(oldStates, mc, lcc);
+		}
+	}
+
 	// COMPONENT CONTROLLERS GETTERS
 
 	public static MonitorController getMonitorController(Component component) throws NoSuchInterfaceException {
@@ -983,7 +1003,8 @@ public class Remmos {
 	
 	private static Component getItfOwnerComponentOrNull(String interfaceName, BindingController bindingController) {
 		try {
-			return ((PAInterface) bindingController.lookupFc(interfaceName)).getFcItfOwner();
+			Object serverItf = bindingController.lookupFc(interfaceName);
+			return serverItf == null ? null : ((PAInterface) serverItf).getFcItfOwner();
 		} catch(NoSuchInterfaceException nsie) {
 			return null;
 		} 

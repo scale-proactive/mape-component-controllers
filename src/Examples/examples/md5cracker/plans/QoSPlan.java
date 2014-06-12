@@ -41,131 +41,107 @@ public class QoSPlan extends Plan {
 		
 	}
 
-	private void maxPerformanceHandler(Alarm alarm, MonitorController monitor, ExecutorController executor) {
+	/**
+	 *  Try do decrease the system performance
+	 * @param alarm
+	 * @param monitor
+	 * @param executor
+	 * @return 
+	 */
+	private synchronized void maxPerformanceHandler(Alarm alarm, MonitorController monitor, ExecutorController executor) {
 		
 		if ( alarm != Alarm.VIOLATION ) return;
 		
 		// Check if enough time has passed since the last system change
-		synchronized (this) {
-			if (System.currentTimeMillis() - lastTime < delay) {
-				return; // is not the moment yet, try later.
-			}
-			lastTime = Long.MAX_VALUE; // this ensures that nobody else will met the delay condition.
+		if (System.currentTimeMillis() - lastTime < delay) {
+			return; // is not the moment yet, try later.
 		}
-		System.out.println("[PLANNER_CONTROLLER] Planning action for performance decrease... ");
 
-		// Try to delete a worker
-		boolean value = false;
 		try {
 			System.out.println("[PLANNER_CONTROLLER] trying to remove worker...");
 			ObjectWrapper result = executor.execute("remove-worker($this);");
-			value = (boolean) result.getObject();
+			if (result.isValid() && (boolean) result.getObject()) {
+				System.out.println("[PLANNER_CONTROLLER] worker removed.");
+				lastTime = System.currentTimeMillis();
+				return;
+			}
 		} catch (WrongValueException e2) {
 			e2.printStackTrace();
 		}
 
-		if (value) {
-			System.out.println("[PLANNER_CONTROLLER] worker removed.");
-			lastTime = System.currentTimeMillis();
-			return;
-		} else {
-			System.out.println("[PLANNER_CONTROLLER] can't remove worker...");
-		}
 
-		
-		double numOfSolvers = 0;
 		try {
+			System.out.println("[PLANNER_CONTROLLER] trying to remove solver...");
 			ObjectWrapper result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
-			numOfSolvers = (double) result.getObject();
+			if (result.isValid() && 1 < (double) result.getObject()) {
+				try {
+					result = executor.executeAction(RemoveSolverAction.DEFAULT_NAME);
+					if (result.isValid() && (boolean) result.getObject()) {
+						System.out.println("[PLANNER_CONTROLLER] solver removed.");
+					}
+				} catch (WrongValueException e) {
+					e.printStackTrace();
+				}
+			}
 		} catch (WrongValueException e1) {
 			e1.printStackTrace();
 		}
 
-		if (numOfSolvers > 1) {
-
-			value = false;
-
-			try {
-				System.out.println("[PLANNER_CONTROLLER] trying to remove solver...");
-				ObjectWrapper result = executor.executeAction(RemoveSolverAction.DEFAULT_NAME);
-				value = (boolean) result.getObject();
-			} catch (WrongValueException e) {
-				e.printStackTrace();
-			}
-
-			if (value) {
-				System.out.println("[PLANNER_CONTROLLER] solver removed.");
-			} else {
-				System.out.println("[PLANNER_CONTROLLER] solver remotion failed...");
-			}
-		} else {
-			System.out.println("[PLANNER_CONTROLLER] nothing to do...");
-		}
-		
+		System.out.println("[PLANNER_CONTROLLER] nothing to do...");
 		lastTime = System.currentTimeMillis();
 	}
 
 
-	private void minPerformanceHandler(Alarm alarm, MonitorController monitor, ExecutorController executor) {
+	/**
+	 * Try increase the system performance
+	 * @param alarm
+	 * @param monitor
+	 * @param executor
+	 */
+	private synchronized void minPerformanceHandler(Alarm alarm, MonitorController monitor, ExecutorController executor) {
 
 		if ( alarm != Alarm.VIOLATION ) return;
 		
-		// Check if enough time has passed since the last system change
-		synchronized (this) {
-			if (System.currentTimeMillis() - lastTime < delay) {
-				return; // is not the moment yet, try later.
-			}
-			lastTime = Long.MAX_VALUE; // this ensures that nobody else will met the delay condition.
-		}
-		System.out.println("[PLANNER_CONTROLLER] Planning action for increase the performance... ");
-
-		// Try to improve a solver
-		System.out.println("[PLANNER_CONTROLLER] trying to add a worker...");
-		ObjectWrapper result = executor.execute("improve-solvers($this, " + maxWorkers + ");");
-		boolean value;
-		try {
-			value = (boolean) result.getObject();
-		} catch (WrongValueException e2) {
-			e2.printStackTrace();
-			value = false;
-		}
-
-		if (value) {
-			System.out.println("[PLANNER_CONTROLLER] new worker added.");
-			lastTime = System.currentTimeMillis();
+		if (System.currentTimeMillis() - lastTime < delay) {
 			return;
 		}
-		
-		// Try to add a new solver
-		System.out.println("[PLANNER_CONTROLLER] trying to add new solver...");
-		result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
-		double numOfSolvers;
+
+		System.out.println("[PLANNER_CONTROLLER] trying to add a worker...");
 		try {
-			numOfSolvers = (double) result.getObject();
+			ObjectWrapper result = executor.execute("improve-solvers($this, " + maxWorkers + ");");
+			if (result.isValid() && (boolean) result.getObject()) {
+				System.out.println("[PLANNER_CONTROLLER] new worker added.");
+				lastTime = System.currentTimeMillis();
+				return;
+			}
+		} catch (WrongValueException e2) {
+			e2.printStackTrace();
+		}
+
+		try {
+			ObjectWrapper result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
+			if (result.isValid() && maxSolvers > (double) result.getObject()) {
+				System.out.println("[PLANNER_CONTROLLER] trying to add new solver...");
+				try {
+					result = executor.executeAction(AddSolverAction.DEFAULT_NAME);
+					if (result.isValid() && (boolean) result.getObject()) {
+						System.out.println("[PLANNER_CONTROLLER] new solver added.");
+						lastTime = System.currentTimeMillis();
+						return;
+					}
+				} catch (WrongValueException e1) {
+					e1.printStackTrace();
+				}
+			}
 		} catch (WrongValueException e1) {
 			e1.printStackTrace();
-			numOfSolvers = maxSolvers;
 		}
 
-		if (maxSolvers > numOfSolvers) {
-			System.out.println("[PLANNER_CONTROLLER] adding new solver...");
-			result = executor.executeAction(AddSolverAction.DEFAULT_NAME);
-			try {
-				value = (boolean) result.getObject();
-			} catch (WrongValueException e) {
-				e.printStackTrace();
-				value = false;
-			}
-
-			if (value) {
-				System.out.println("[PLANNER_CONTROLLER] new solver added.");
-			} else {
-				System.out.println("[PLANNER_CONTROLLER] new solver addedition failed...");
-			}
-		} else {
-			System.out.println("[PLANNER_CONTROLLER] nothing to do...");
-		}
+		// Try to add a new solver
 		
+
+		System.out.println("[PLANNER_CONTROLLER] nothing to do...");
 		lastTime = System.currentTimeMillis();
 	}
+
 }

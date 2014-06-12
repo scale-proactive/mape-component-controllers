@@ -18,18 +18,13 @@ import org.objectweb.proactive.core.node.Node;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
+import examples.md5cracker.cracker.CCST;
 import examples.md5cracker.cracker.Cracker;
 import examples.md5cracker.cracker.CrackerAttributes;
+import examples.md5cracker.cracker.CrackerCompositeServingPolicy;
 import examples.md5cracker.cracker.CrackerManagerImpl;
-import examples.md5cracker.cracker.ResultRepositoryImpl;
-import examples.md5cracker.cracker.SolverMulticast;
-import examples.md5cracker.cracker.TaskRepositoryImpl;
-import examples.md5cracker.cracker.solver.ResultRepository;
-import examples.md5cracker.cracker.solver.Solver;
 import examples.md5cracker.cracker.solver.SolverAttributes;
-import examples.md5cracker.cracker.solver.SolverManager;
 import examples.md5cracker.cracker.solver.SolverManagerImpl;
-import examples.md5cracker.cracker.solver.TaskRepository;
 import examples.md5cracker.cracker.solver.Worker;
 import examples.md5cracker.cracker.solver.WorkerImpl;
 import examples.md5cracker.cracker.solver.WorkerMulticast;
@@ -43,6 +38,7 @@ public class CrackerFactory {
 	static String SC = PAGCMTypeFactory.SINGLETON_CARDINALITY;
 	static String MC = PAGCMTypeFactory.MULTICAST_CARDINALITY;
 	static boolean MND = PAGCMTypeFactory.MANDATORY;
+	static boolean OPT = PAGCMTypeFactory.OPTIONAL;
 	static boolean CLI = PAGCMTypeFactory.CLIENT;
 	static boolean SRV = PAGCMTypeFactory.SERVER;
 
@@ -57,16 +53,16 @@ public class CrackerFactory {
 	// CRACKER
 	public static Component createCracker(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
 		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType(Cracker.ITF_NAME, Cracker.class.getName(), SRV, MND, SC),
+				(PAGCMInterfaceType) tf.createGCMItfType(CCST.CRACKER_ITF, Cracker.class.getName(), SRV, MND, SC),
 			};
 		checkRemmos(tf, cf);
 		Component comp = remmos.newFcInstance(
 				remmos.createFcType(fTypes, Constants.COMPOSITE),
-				new ControllerDescription("Cracker", Constants.COMPOSITE),
+				new ControllerDescription(CCST.CRACKER_COMP, Constants.COMPOSITE),
 				new ContentDescription(Composite.class.getName(), null, new ComponentRunActive() {
 					@Override
 					public void runComponentActivity(Body body) {
-						(new ComponentMultiActiveService(body)).multiActiveServing();
+						(new ComponentMultiActiveService(body)).policyServing(new CrackerCompositeServingPolicy(), 3);
 					}
 				}, null),
 				node);
@@ -82,18 +78,20 @@ public class CrackerFactory {
 	// CrackerManager
 	public static Component createCrackerManager(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
 		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
-			(PAGCMInterfaceType) tf.createGCMItfType(Cracker.ITF_NAME, Cracker.class.getName(), SRV, MND, SC),
+			(PAGCMInterfaceType) tf.createGCMItfType(CCST.CRACKER_MANAGER_ITF, Cracker.class.getName(), SRV, MND, SC),
 			(PAGCMInterfaceType) tf.createGCMItfType(Constants.ATTRIBUTE_CONTROLLER, CrackerAttributes.class.getName(), SRV, MND, SC),
-			(PAGCMInterfaceType) tf.createGCMItfType(SolverMulticast.ITF_NAME, SolverMulticast.class.getName(), CLI, MND, MC),
+			(PAGCMInterfaceType) tf.createGCMItfType(CCST.SOLVER_C1, Cracker.class.getName(), CLI, OPT, SC),
+			(PAGCMInterfaceType) tf.createGCMItfType(CCST.SOLVER_C2, Cracker.class.getName(), CLI, OPT, SC),
+			(PAGCMInterfaceType) tf.createGCMItfType(CCST.SOLVER_C3, Cracker.class.getName(), CLI, OPT, SC),
 		};
 		checkRemmos(tf, cf);
 		Component comp = remmos.newFcInstance(
 				remmos.createFcType(fTypes, Constants.PRIMITIVE),
-				new ControllerDescription("CrackerManager", Constants.PRIMITIVE),
+				new ControllerDescription(CCST.CRACKER_MANAGER_COMP, Constants.PRIMITIVE),
 				new ContentDescription(CrackerManagerImpl.class.getName(), null, new ComponentRunActive() {
 					@Override
 					public void runComponentActivity(Body body) {
-						(new ComponentMultiActiveService(body)).multiActiveServing();
+						(new ComponentMultiActiveService(body)).policyServing(new CrackerCompositeServingPolicy(), 3);
 					}
 				}, null),
 				node);
@@ -103,52 +101,18 @@ public class CrackerFactory {
 		return comp;
 	}
 
-	public static Component createTaskRepo(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
-		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType(TaskRepository.ITF_NAME, TaskRepository.class.getName(), SRV, MND, SC),
-			};
-
-		return cf.newFcInstance(
-				tf.createFcType(fTypes),
-				new ControllerDescription(TASK_REPOSITORY_NAME, Constants.PRIMITIVE),
-				new ContentDescription(TaskRepositoryImpl.class.getName(), null, new ComponentRunActive() {
-					@Override
-					public void runComponentActivity(Body body) {
-						(new ComponentMultiActiveService(body)).multiActiveServing();
-					}
-				}, null),
-				node);
-	}
-	
-	public static Component createResultRepo(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
-		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType(ResultRepository.ITF_NAME, ResultRepository.class.getName(), SRV, MND, SC),
-		};
-
-		return cf.newFcInstance(
-				tf.createFcType(fTypes),
-				new ControllerDescription(RESULT_REPOSITORY_NAME, Constants.PRIMITIVE),
-				new ContentDescription(ResultRepositoryImpl.class.getName(), null, new ComponentRunActive() {
-					@Override
-					public void runComponentActivity(Body body) {
-						(new ComponentMultiActiveService(body)).multiActiveServing();
-					}
-				}, null),
-				node);
-	}
 
 	// SOLVER
 	public static Component createSolver(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
+
 		PAGCMInterfaceType[] fTypes  = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType(Solver.ITF_NAME, Solver.class.getName(), SRV, MND, SC),
-				(PAGCMInterfaceType) tf.createGCMItfType(TaskRepository.ITF_NAME, TaskRepository.class.getName(), CLI, MND, SC),
-				(PAGCMInterfaceType) tf.createGCMItfType(ResultRepository.ITF_NAME, ResultRepository.class.getName(), CLI, MND, SC),
+				(PAGCMInterfaceType) tf.createGCMItfType(CCST.SOLVER, Cracker.class.getName(), SRV, MND, SC),
 			};	
 
 		checkRemmos(tf, cf);
 		Component comp = remmos.newFcInstance(
 				remmos.createFcType(fTypes,  Constants.COMPOSITE),
-				new ControllerDescription("Solver", Constants.COMPOSITE),
+				new ControllerDescription(CCST.SOLVER_COMP, Constants.COMPOSITE),
 				new ContentDescription(Composite.class.getName(), null, new ComponentRunActive() {
 					@Override
 					public void runComponentActivity(Body body) {
@@ -159,24 +123,19 @@ public class CrackerFactory {
 
 		Utils.getPAMembraneController(comp).startMembrane();
 		Remmos.addMonitoring(comp);
-		//Remmos.addExecutorController(comp);
 		return comp;
 	}
 
 	public static Component createSolverManager(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
 		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType(Solver.ITF_NAME, Solver.class.getName(), SRV, MND, SC),
+				(PAGCMInterfaceType) tf.createGCMItfType(CCST.SOLVER_MANAGER, Cracker.class.getName(), SRV, MND, SC),
 				(PAGCMInterfaceType) tf.createGCMItfType(Constants.ATTRIBUTE_CONTROLLER, SolverAttributes.class.getName(), SRV, MND, SC),
-				(PAGCMInterfaceType) tf.createGCMItfType(SolverManager.SERVER_ITF_NAME, SolverManager.class.getName(), SRV, MND, SC),
-				(PAGCMInterfaceType) tf.createGCMItfType(SolverManager.CLIENT_ITF_NAME, SolverManager.class.getName(), CLI, MND, SC),
-				(PAGCMInterfaceType) tf.createGCMItfType(TaskRepository.ITF_NAME, TaskRepository.class.getName(), CLI, MND, SC),
-				(PAGCMInterfaceType) tf.createGCMItfType(ResultRepository.ITF_NAME, ResultRepository.class.getName(), CLI, MND, SC),
-				(PAGCMInterfaceType) tf.createGCMItfType(WorkerMulticast.ITF_NAME, WorkerMulticast.class.getName(), CLI, MND, MC),
+				(PAGCMInterfaceType) tf.createGCMItfType(CCST.WORKER_MULTICAST, WorkerMulticast.class.getName(), CLI, MND, MC),
 			};
 
 		return cf.newFcInstance(
 				tf.createFcType(fTypes),
-				new ControllerDescription("SolverManager", Constants.PRIMITIVE),
+				new ControllerDescription(CCST.SOLVER_MANAGER_COMP, Constants.PRIMITIVE),
 				new ContentDescription(SolverManagerImpl.class.getName(), null, new ComponentRunActive() {
 					@Override
 					public void runComponentActivity(Body body) {
@@ -188,12 +147,12 @@ public class CrackerFactory {
 
 	public static Component createWorker(Node node, PAGCMTypeFactory tf, PAGenericFactory cf) throws Exception {
 		PAGCMInterfaceType[] fTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType(Worker.ITF_NAME, Worker.class.getName(), SRV, MND, SC),
+				(PAGCMInterfaceType) tf.createGCMItfType(CCST.WORKER, Worker.class.getName(), SRV, MND, SC),
 			};
 
 		return cf.newFcInstance(
 				tf.createFcType(fTypes),
-				new ControllerDescription("Worker", Constants.PRIMITIVE),
+				new ControllerDescription(CCST.WORKER_COMP, Constants.PRIMITIVE),
 				new ContentDescription(WorkerImpl.class.getName(), null, new ComponentRunActive() {
 					@Override
 					public void runComponentActivity(Body body) {
@@ -204,42 +163,45 @@ public class CrackerFactory {
 	}
 
 	public static void bindSolver(Component solver, Component solverManager, Component[] workers) throws Exception {
+	
 		PAContentController solverCC = Utils.getPAContentController(solver);
 		solverCC.addFcSubComponent(solverManager);
 
+		// solver --> solverManager
 		PABindingController solverBC = Utils.getPABindingController(solver);
-		solverBC.bindFc(Solver.ITF_NAME, solverManager.getFcInterface(Solver.ITF_NAME));
+		solverBC.bindFc(CCST.SOLVER, solverManager.getFcInterface(CCST.SOLVER_MANAGER));
 		
+		// solverManager --> workers
 		PABindingController solverManagerBC = Utils.getPABindingController(solverManager);
-		solverManagerBC.bindFc(SolverManager.CLIENT_ITF_NAME, solverManager.getFcInterface(SolverManager.SERVER_ITF_NAME));
-		solverManagerBC.bindFc(TaskRepository.ITF_NAME, solver.getFcInterface(TaskRepository.ITF_NAME));
-		solverManagerBC.bindFc(ResultRepository.ITF_NAME, solver.getFcInterface(ResultRepository.ITF_NAME));
-	
 		for (Component worker : workers) {
 			solverCC.addFcSubComponent(worker);
-			solverManagerBC.bindFc(WorkerMulticast.ITF_NAME, worker.getFcInterface(Worker.ITF_NAME));
+			solverManagerBC.bindFc(CCST.WORKER_MULTICAST,
+					worker.getFcInterface(CCST.WORKER));
 		}
 	}
 
-	public static void bindCracker(Component cracker, Component crackerManager, Component taskRepo, Component resultRepo,
-			Component[] solvers) throws Exception {
+	public static void bindCracker(Component cracker, Component crackerManager, Component[] solvers) throws Exception {
 		
 		PAContentController crackerCC = Utils.getPAContentController(cracker);
 		crackerCC.addFcSubComponent(crackerManager);
-		crackerCC.addFcSubComponent(taskRepo);
-		crackerCC.addFcSubComponent(resultRepo);
 
-		Utils.getPABindingController(cracker).bindFc(Cracker.ITF_NAME, crackerManager.getFcInterface(Cracker.ITF_NAME));
+		Utils.getPABindingController(cracker).bindFc(CCST.CRACKER_ITF, crackerManager.getFcInterface(CCST.CRACKER_MANAGER_ITF));
 		
 		PABindingController crackerManagerBC = Utils.getPABindingController(crackerManager);
-		for (Component solver : solvers) {
-			crackerCC.addFcSubComponent(solver);
-			crackerManagerBC.bindFc(SolverMulticast.ITF_NAME, solver.getFcInterface(Solver.ITF_NAME));
-			
-			PABindingController solverBC = Utils.getPABindingController(solver);
-			solverBC.bindFc(TaskRepository.ITF_NAME, taskRepo.getFcInterface(TaskRepository.ITF_NAME));
-			solverBC.bindFc(ResultRepository.ITF_NAME, resultRepo.getFcInterface(ResultRepository.ITF_NAME));
+		
+		if (solvers.length >= 1) {
+			crackerCC.addFcSubComponent(solvers[0]);
+			crackerManagerBC.bindFc(CCST.SOLVER_C1, solvers[0].getFcInterface(CCST.SOLVER));
+		}
+		
+		if (solvers.length >= 2) {
+			crackerCC.addFcSubComponent(solvers[1]);
+			crackerManagerBC.bindFc(CCST.SOLVER_C2, solvers[1].getFcInterface(CCST.SOLVER));
+		}
+		
+		if (solvers.length >= 3) {
+			crackerCC.addFcSubComponent(solvers[2]);
+			crackerManagerBC.bindFc(CCST.SOLVER_C3, solvers[2].getFcInterface(CCST.SOLVER));
 		}
 	}
-	
 }

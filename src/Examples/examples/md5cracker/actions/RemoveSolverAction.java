@@ -3,27 +3,16 @@ package examples.md5cracker.actions;
 import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
-import org.objectweb.fractal.api.control.BindingController;
-import org.objectweb.fractal.api.control.IllegalBindingException;
-import org.objectweb.fractal.api.control.IllegalContentException;
-import org.objectweb.fractal.api.control.IllegalLifeCycleException;
 import org.objectweb.proactive.core.component.Utils;
+import org.objectweb.proactive.core.component.control.PAContentController;
 import org.objectweb.proactive.core.component.control.PAMulticastController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.extra.component.mape.execution.Action;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 
-import examples.md5cracker.cracker.Cracker;
-import examples.md5cracker.cracker.CrackerAttributes;
-import examples.md5cracker.cracker.SolverMulticast;
-import examples.md5cracker.cracker.solver.ResultRepository;
-import examples.md5cracker.cracker.solver.Solver;
+import examples.md5cracker.cracker.CCST;
 import examples.md5cracker.cracker.solver.SolverAttributes;
-import examples.md5cracker.cracker.solver.SolverManager;
-import examples.md5cracker.cracker.solver.TaskRepository;
-import examples.md5cracker.cracker.solver.Worker;
-import examples.md5cracker.cracker.solver.WorkerMulticast;
 
 
 public class RemoveSolverAction extends Action {
@@ -32,83 +21,105 @@ public class RemoveSolverAction extends Action {
 	public static final String DEFAULT_NAME = "remove-solver-action";
 	
 	@Override
-	public Object execute(Component component, PAGCMTypeFactory typeFactory, PAGenericFactory genericFactory) {
+	public Object execute(Component cracker, PAGCMTypeFactory typeFactory, PAGenericFactory genericFactory) {
+
+	
+		Component crackerManager;
 		try {
-			
-			// Get the appropriate solver reference
-			Component solver = null;
-			Component solverManager = null;
-			double id = -1;
-			for (Component comp : this.getSubComponent(component, "Solver")) {
-				Component compManager = this.getBindComponent(comp, Solver.ITF_NAME);
-				double solverId = ((SolverAttributes) GCM.getAttributeController(compManager)).getId();
-				if (solverId > id) {
-					id = solverId;
-					solver = comp;
-					solverManager = compManager;
+			crackerManager = this.getBindComponent(cracker, CCST.CRACKER_ITF);
+		} catch (NoSuchInterfaceException e) {
+			e.printStackTrace();
+			return false;
+		}
+	
+
+		Component solver;
+		Component solverManager;
+		try {
+			solver = this.getBindComponent(crackerManager, CCST.SOLVER_C3);
+			if (solver != null) {
+				solverManager = this.getBindComponent(solver, CCST.SOLVER);
+				if (solverManager != null) {
+					if ( 1 >= ((SolverAttributes) GCM.getAttributeController(solverManager)).getNumberOfWorkers() ) {
+						return removeSolver(3, CCST.SOLVER_C3, solver, solverManager, cracker);
+					}
 				}
 			}
-			
-			if (solver == null) {
-				return false;
-			}
-			
-			// Unbind this solver from crackerManager
+		} catch (NoSuchInterfaceException e) {
+			e.printStackTrace();
+		}
 
-			
-			Component crackerManager = this.getBindComponent(component, Cracker.ITF_NAME);
-			Utils.getPAGCMLifeCycleController(crackerManager).stopFc();
-			Utils.getPAMulticastController(crackerManager).unbindGCMMulticast(SolverMulticast.ITF_NAME,
-					solver.getFcInterface(Solver.ITF_NAME));
-			Utils.getPAGCMLifeCycleController(crackerManager).startFc();
-			Remmos.enableMonitoring(crackerManager);
-
-			Utils.getPAGCMLifeCycleController(solverManager).stopFc();
-			
-			Component[] workers = this.getSubComponent(solver, "Worker");
-			for (Component worker : workers) {
-				Utils.getPAGCMLifeCycleController(worker).stopFc();
+		try {
+			solver = this.getBindComponent(crackerManager, CCST.SOLVER_C2);
+			if (solver != null) {
+				solverManager = this.getBindComponent(solver, CCST.SOLVER);
+				if (solverManager != null) {
+					if ( 1 >= ((SolverAttributes) GCM.getAttributeController(solverManager)).getNumberOfWorkers() ) {
+						return removeSolver(2, CCST.SOLVER_C2, solver, solverManager, cracker);
+					}
+				}
 			}
-		
-			Utils.getPAGCMLifeCycleController(solver).stopFc();
-			BindingController bindingController = Utils.getPABindingController(solver);
-			bindingController.unbindFc(TaskRepository.ITF_NAME);
-			bindingController.unbindFc(ResultRepository.ITF_NAME);
-			bindingController.unbindFc(Solver.ITF_NAME);
-			
-			bindingController = Utils.getPABindingController(solverManager);
-			bindingController.unbindFc(SolverManager.CLIENT_ITF_NAME);
-			bindingController.unbindFc(TaskRepository.ITF_NAME);
-			bindingController.unbindFc(ResultRepository.ITF_NAME);
-			
-			PAMulticastController multicastController = Utils.getPAMulticastController(solverManager);
-			for (Component worker : workers) {
-				multicastController.unbindGCMMulticast(WorkerMulticast.ITF_NAME,
-						worker.getFcInterface(Worker.ITF_NAME));
-				
-				//Utils.getPAGCMLifeCycleController(worker).terminateGCMComponent();
-			}
-			
-			//Utils.getPAGCMLifeCycleController(solverManager).terminateGCMComponent();
-			//Utils.getPAGCMLifeCycleController(solver).terminateGCMComponent();
-			
-			try {
-				Utils.getPAGCMLifeCycleController(component).stopFc();
-				Utils.getPAContentController(component).removeFcSubComponent(solver);
-				Utils.getPAGCMLifeCycleController(component).startFc();
-			} catch (IllegalContentException e) {
-				e.printStackTrace();
-			}
-			
-			
-			CrackerAttributes crackerAttributes = (CrackerAttributes) GCM.getAttributeController(crackerManager);
-			crackerAttributes.setNumberOfSolvers(crackerAttributes.getNumberOfSolvers() - 1);
-			return true;
-			
-		} catch (NoSuchInterfaceException | IllegalLifeCycleException | IllegalBindingException e) {
+		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
 		}
 		
+		try {
+			solver = this.getBindComponent(crackerManager, CCST.SOLVER_C1);
+			if (solver != null) {
+				solverManager = this.getBindComponent(solver, CCST.SOLVER);
+				if (solverManager != null) {
+					if ( 1 >= ((SolverAttributes) GCM.getAttributeController(solverManager)).getNumberOfWorkers() ) {
+						return removeSolver(1, CCST.SOLVER_C1, solver, solverManager, cracker);
+					}
+				}
+			}
+		} catch (NoSuchInterfaceException e) {
+			e.printStackTrace();
+		}
+	
+		return false;
+	}
+
+	private Object removeSolver(int i, String clientItfName, Component solver, Component solverManager, Component cracker) {
+		
+		try {
+			Component crackerManager = this.getBindComponent(cracker, CCST.CRACKER_ITF);
+			
+			// Remove from cracker
+			Utils.getPAGCMLifeCycleController(cracker).stopFc();
+			
+			Remmos.unbind(crackerManager.getFcInterface(clientItfName));
+			Utils.getPABindingController(crackerManager).unbindFc(clientItfName);
+			Utils.getPAContentController(cracker).removeFcSubComponent(solver);
+
+			Remmos.enableMonitoring(crackerManager);
+			Utils.getPAGCMLifeCycleController(cracker).startFc();
+
+			// delete components
+			Utils.getPABindingController(solver).unbindFc(CCST.SOLVER);
+			
+			
+			PAMulticastController mc = Utils.getPAMulticastController(solverManager);
+			for (Object workerItf : mc.lookupGCMMulticast(CCST.WORKER_MULTICAST)) {
+				mc.unbindGCMMulticast(CCST.WORKER_MULTICAST, workerItf);
+			}
+			
+			PAContentController cc = Utils.getPAContentController(solver);
+			for (Component subComp : cc.getFcSubComponents()) {
+				cc.removeFcSubComponent(subComp);
+				//Utils.getPAGCMLifeCycleController(subComp).terminateGCMComponent();
+			}
+			
+			//Utils.getPAGCMLifeCycleController(solver).terminateGCMComponent();
+			
+
+	
+			return true;
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 

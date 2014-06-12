@@ -19,4 +19,7 @@ public class ValidObjectWrapper implements ObjectWrapper {
 		return object;
 	}
 
+	public boolean isValid() {
+		return true;
+	}
 }

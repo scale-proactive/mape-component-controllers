@@ -1,20 +1,17 @@
 
 action add-worker(solver, vn) {
+
 	worker = gcm-new("examples.md5cracker.cracker.solver.Worker", $vn);
 	set-name($worker, "Worker");
-	
-	stop($solver);
-	add($solver, $worker);
-	start($solver);
 
 	solverManager = $solver/child::SolverManager;
-	stop($solverManager);
-	bind($solverManager/interface::worker-multicast-itf, $worker/interface::worker-itf);
-	start($solverManager);
 
-	start($worker);
+	stop($solver);
+	add($solver, $worker);
+	bind($solverManager/interface::worker-multicast, $worker/interface::worker);
 	wAttribute = $solverManager/attribute::numberOfWorkers;
 	set-value($wAttribute, value($wAttribute) + 1);
+	start($solver);
 	
 	return true();
 }
@@ -39,12 +36,20 @@ action add-worker-on-vn3(solver) {
 	return add-worker($solver, $gcma/gcmvn::VN3);
 }
 
+--
+-- Try to improve solvers, return true if success, fail otherwise
+--
 action improve-solvers(cracker, max) {
 
 	for solver : $cracker/child::*[name(.) == "Solver"] {
-		numOfWorkers = value($solver/child::"SolverManager"/attribute::numberOfWorkers);
+
+		solverManager = $solver/child::SolverManager;
+		numOfWorkers = value($solverManager/attribute::numberOfWorkers);
+		
 		if ( $numOfWorkers < $max ) {
-			id = value($solver/child::"SolverManager"/attribute::id);
+	
+			id = value($solverManager/attribute::id);
+
 			if ($id == 1) {
 				return add-worker-on-vn1($solver);
 			}
@@ -54,7 +59,8 @@ action improve-solvers(cracker, max) {
 			if ($id == 3) {
 				return add-worker-on-vn1($solver);
 			}
-			return add-worker-on-vn0($solver);
+		
+			fail();
 		}
 	}
 
@@ -90,21 +96,20 @@ action remove-worker(cracker) {
 		return false(); 
 	}
 
+	-- Grab one worker (i don't know a better way now)...
+	--
 	worker = false();
 	for w : $solver/child::"Worker" {
 		worker = $w;
 	}
 
-	stop($solver);
-
 	-- unbind and remove
-	unbind-unit($solverManager/interface::worker-multicast-itf, $worker/interface::worker-itf);	
+	stop($solver);
+	unbind-unit($solverManager/interface::worker-multicast, $worker/interface::worker);	
 	remove($solver, $worker);
-
-	-- start
 	set-value($solverManager/attribute::numberOfWorkers, $numOfWorkers - 1);
 	start($solver);
 
-	-- kill($worker);
+	--kill($worker);
 	return true();
 }

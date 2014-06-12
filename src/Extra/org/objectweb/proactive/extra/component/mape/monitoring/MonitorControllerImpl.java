@@ -710,26 +710,21 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 			IllegalBindingException, IllegalLifeCycleException {
 		if (cItf.equals(EventControl.ITF_NAME)) {
 			eventControl = null;
-		}
-		if (cItf.equals(RecordStore.ITF_NAME)) {
+		} else if (cItf.equals(RecordStore.ITF_NAME)) {
 			recordStore = null;
-		}
-		if (cItf.equals(MetricStore.ITF_NAME)) {
+		} else if (cItf.equals(MetricStore.ITF_NAME)) {
 			metricsStore = null;
-		}
-		if (cItf.endsWith("-external-" + MonitorController.ITF_NAME)) {
+		} else if (cItf.endsWith("-external-" + MonitorController.ITF_NAME)) {
 			if (externalMonitors.containsKey(cItf)) {
 				externalMonitors.put(cItf, null);
-			}
-			if (externalMonitorsMulticast.containsKey(cItf)) {
+			} else if (externalMonitorsMulticast.containsKey(cItf)) {
 				externalMonitorsMulticast.put(cItf, null);
 			}
-		}
-		if (cItf.endsWith("-internal-" + MonitorController.ITF_NAME)) {
+		} else if (cItf.endsWith("-internal-" + MonitorController.ITF_NAME)) {
 			internalMonitors.put(cItf, null);
+		} else {
+			throw new NoSuchInterfaceException("Interface " + cItf + " non existent");
 		}
-		throw new NoSuchInterfaceException("Interface " + cItf
-				+ " non existent");
 	}
 
 }

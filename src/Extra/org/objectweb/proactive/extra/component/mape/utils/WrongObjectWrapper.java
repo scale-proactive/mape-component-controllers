@@ -27,4 +27,8 @@ public class WrongObjectWrapper implements ObjectWrapper {
 		return null;
 	}
 
+	public boolean isValid() {
+		return false;
+	}
+
 }

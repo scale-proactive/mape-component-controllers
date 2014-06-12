@@ -3,7 +3,7 @@
 
 <definition name="examples.md5cracker.cracker.solver.Worker">
 
-	<interface name="worker-itf" role="server" signature="examples.md5cracker.cracker.solver.Worker"/>
+	<interface name="worker" role="server" signature="examples.md5cracker.cracker.solver.Worker"/>
 
 	<content class="examples.md5cracker.cracker.solver.WorkerImpl"/>
 

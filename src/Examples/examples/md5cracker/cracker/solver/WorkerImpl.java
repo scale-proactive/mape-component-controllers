@@ -4,26 +4,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.objectweb.fractal.api.control.IllegalLifeCycleException;
-import org.objectweb.fractal.api.control.LifeCycleController;
-
 public class WorkerImpl implements Worker {
 
 	public static final String COMP_NAME = "worker-comp";
 
-    private int maxLength = 3;
 	private String alphabet = "0Aa1BbCc2DdEe3FfGg4HhIi5JjKk6LlMm7NnOo8PpQq9RrSsTtUuVvWwXxYyZz";
     private int base = alphabet.length();
 
 	@Override
 	public Wrapper<String> solve(Instruction inst) {
+
+		int maxLength = inst.maxLength;
 		long init = inst.from;
 		long end = inst.until;
-		MD5Hash md5hash = inst.hash;
+		byte[] hash = inst.hash;
 
+		//System.out.println("==========[[ WORKER ]] on: " + "[ " + Thread.currentThread().getId() + " ] from " + init + " to: " + end);
+	
 		// ALGORITHM BASED ON http://code.google.com/p/javamd5cracker/ solution
-		
-		byte[] hash = md5hash.getHash();
 		String word = "";
 		boolean found = false;
         try {

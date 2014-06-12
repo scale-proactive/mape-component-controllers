@@ -1,5 +1,8 @@
 package examples.md5cracker;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
@@ -14,15 +17,17 @@ import org.objectweb.proactive.extra.component.mape.analysis.AnalyzerController;
 import org.objectweb.proactive.extra.component.mape.execution.Action;
 import org.objectweb.proactive.extra.component.mape.execution.ExecutorController;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
+import org.objectweb.proactive.extra.component.mape.monitoring.metrics.library.AvgRespTimePerItfIncomingMetric;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 
 import examples.md5cracker.actions.AddSolverAction;
 import examples.md5cracker.actions.RemoveSolverAction;
+import examples.md5cracker.cracker.CCST;
 import examples.md5cracker.cracker.Cracker;
 import examples.md5cracker.cracker.CrackerAttributes;
 import examples.md5cracker.cracker.solver.SolverAttributes;
-import examples.md5cracker.metrics.GlobalSPMMetric;
-import examples.md5cracker.metrics.LocalSPMMetric;
+import examples.md5cracker.metrics.CrackerMetric;
+import examples.md5cracker.metrics.SolverMetric;
 import examples.md5cracker.plans.QoSPlan;
 import examples.md5cracker.rules.MaxPerformanceRule;
 import examples.md5cracker.rules.MinPerformanceRule;
@@ -32,8 +37,10 @@ public class Main {
 
 	static String DESCRIPTOR_PATH = "file:///user/mibanez/home/Taller/memoria-tests/src/test2/md5cracker/GCMApp.xml";
 
+	private int maxWordLength = 3;
+
 	private static boolean MANAGED = true;
-	private static int N_OF_SOLVERS = 1;
+	private static int N_OF_SOLVERS = 2;
 	private static int MAX_SOLVERS = 3;
 
 	private static int N_OF_WORKERS = 1;
@@ -48,7 +55,7 @@ public class Main {
 	Node N0;
 	Node[] nodes;
 
-	public Main() throws InstantiationException, NoSuchInterfaceException {
+	public Main() throws InstantiationException, NoSuchInterfaceException, NoSuchAlgorithmException {
 		Component boot = Utils.getBootstrapComponent();
 		tf = Utils.getPAGCMTypeFactory(boot);
 		cf = Utils.getPAGenericFactory(boot);
@@ -86,9 +93,6 @@ public class Main {
 		// COMPONENTS CREATION
 	    Component cracker = CrackerFactory.createCracker(N0, tf, cf);
 	    Component crackerManager = CrackerFactory.createCrackerManager(N0, tf, cf);
-	    Component taskRepo = CrackerFactory.createTaskRepo(N0, tf, cf);
-	    Component resultRepo = CrackerFactory.createResultRepo(N0, tf, cf);
-	    
 	    Component[] solvers = createSolvers(nodes);
 		Component[] solverManagers = createSolverManagers(nodes);
 		Component[][] workers = createWorkers(nodes);
@@ -96,29 +100,20 @@ public class Main {
 		for (int i = 0; i < N_OF_SOLVERS; i++) {
 			CrackerFactory.bindSolver(solvers[i], solverManagers[i], workers[i]);
 		}
-		CrackerFactory.bindCracker(cracker, crackerManager, taskRepo, resultRepo, solvers);
-
-		Utils.getPAGCMLifeCycleController(taskRepo).startFc();
-		Utils.getPAGCMLifeCycleController(resultRepo).startFc();
-		for (int i = 0; i < N_OF_SOLVERS; i++) {
-			Utils.getPAGCMLifeCycleController(solvers[i]).startFc();
-			Utils.getPAGCMLifeCycleController(solverManagers[i]).startFc();
-			for (int j = 0; j < N_OF_WORKERS; j++) {
-				Utils.getPAGCMLifeCycleController(workers[i][j]).startFc();
-			}
-		}
-		Utils.getPAGCMLifeCycleController(crackerManager).startFc();
+		CrackerFactory.bindCracker(cracker, crackerManager, solvers);
+	
 		Utils.getPAGCMLifeCycleController(cracker).startFc();
 
 		
 		// CONFIGURE ATTRIBUTES
-		((CrackerAttributes) GCM.getAttributeController(crackerManager)).setNumberOfSolvers(N_OF_SOLVERS);
+		//((CrackerAttributes) GCM.getAttributeController(crackerManager)).setNumberOfSolvers(N_OF_SOLVERS);
 		for (int i = 0; i < N_OF_SOLVERS; i++) {
 			SolverAttributes solverAttributes = (SolverAttributes) GCM.getAttributeController(solverManagers[i]);
 			solverAttributes.setNumberOfWorkers(N_OF_WORKERS);
 			solverAttributes.setId(i + 1); // [!] ---- represent the number of the virtual node, "VNi", for value i.
 		}
 		
+
 		// CONFIGURE CONTORLLERS
 		Remmos.enableMonitoring(cracker); // [!] too much important, maybe merge with MonitoController.startMontioring?
 		MonitorController crackerMonitor = (MonitorController) cracker.getFcInterface(Constants.MONITOR_CONTROLLER);
@@ -126,13 +121,14 @@ public class Main {
 		Thread.sleep(2000);
 
 		// Metrics
-		crackerMonitor.addMetric(GlobalSPMMetric.DEFAULT_NAME, new GlobalSPMMetric());
+		crackerMonitor.addMetric(CrackerMetric.DEFAULT_NAME, new CrackerMetric());
 		for (int i = 0; i < N_OF_SOLVERS; i++) {
-			Remmos.getMonitorController(solvers[i]).addMetric(LocalSPMMetric.DEFAULT_NAME, new LocalSPMMetric());
+			Remmos.getMonitorController(solvers[i]).addMetric(SolverMetric.DEFAULT_NAME, new SolverMetric());
 		}
 
 		// Rules
-		Remmos.getAnalyzerController(cracker).addRule(MinPerformanceRule.DEFAULT_NAME, new MinPerformanceRule(PERFORMANCE));
+	//	Remmos.getAnalyzerController(cracker).addRule(MinPerformanceRule.DEFAULT_NAME, new MinPerformanceRule(PERFORMANCE));
+		Remmos.getAnalyzerController(cracker).addRule(MaxPerformanceRule.DEFAULT_NAME, new MaxPerformanceRule(0));
 	
 		// Plans
 		Remmos.getPlannerController(cracker).setPlan(new QoSPlan(MAX_WORKERS, MAX_SOLVERS, DELAY));
@@ -145,26 +141,20 @@ public class Main {
 	
 		// RUN
 		printIntro();		
-		Cracker brutus = (Cracker) cracker.getFcInterface(Cracker.ITF_NAME);
-		brutus.start();		
-		Thread.sleep(2000);
+		(new Thread(new Client(cracker, maxWordLength, "client1"))).start();
+		(new Thread(new Client(cracker, maxWordLength, "client2"))).start();
+		(new Thread(new Client(cracker, maxWordLength, "client3"))).start();
+
+		//System.out.println("----> " + 
+		//Remmos.getExecutorController(cracker).execute("remove-worker($this);") );
 		
+
 		// MAPE RUN 
 		
 		long startTime = System.currentTimeMillis();
-
-		int c = 0;
 		while (true) {
-			
-			c++;
-			if (c == 120) {
-				AnalyzerController analyzer = Remmos.getAnalyzerController(cracker);
-				analyzer.removeRule(MinPerformanceRule.DEFAULT_NAME);
-				analyzer.addRule(MaxPerformanceRule.DEFAULT_NAME, new MaxPerformanceRule(0));
-			}
-			
 			String headMsg = "" + ((System.currentTimeMillis() - startTime)/60000.0);
-			headMsg += "\t" + ((Double) crackerMonitor.calculateMetric(GlobalSPMMetric.DEFAULT_NAME).getValue()).doubleValue();
+			headMsg += "\t" + ((Double) crackerMonitor.calculateMetric(CrackerMetric.DEFAULT_NAME).getValue()).doubleValue();
 			System.out.println(headMsg);
 			Thread.sleep(5000);
 		}
@@ -196,6 +186,8 @@ public class Main {
 		}
 		return result;
 	}
+
+
 
 	private void printIntro() {
 		System.out.println("[MD5Cracker]");
