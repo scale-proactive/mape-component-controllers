@@ -17,7 +17,7 @@ public abstract class Action implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public Component[] getSubComponent(Component component, String subComponentName) throws NoSuchInterfaceException {
+	public static Component[] getSubComponent(Component component, String subComponentName) throws NoSuchInterfaceException {
 		List<Component> list = new ArrayList<Component>();
 		for (Component subComp : Utils.getPAContentController(component).getFcSubComponents()) {
 			String subCompName = ((PAComponent) subComp).getComponentParameters().getControllerDescription().getName();
@@ -38,7 +38,7 @@ public abstract class Action implements Serializable {
 	 * @return A bound component, or null if no server component is bound to this interface
 	 * @throws NoSuchInterfaceException 
 	 */
-	public Component getBindComponent(Component component, String itfName) throws NoSuchInterfaceException {
+	public static Component getBindComponent(Component component, String itfName) throws NoSuchInterfaceException {
 
 		PAInterface itf = (PAInterface) Utils.getPABindingController(component).lookupFc(itfName);
 		if (itf != null) {
@@ -61,7 +61,7 @@ public abstract class Action implements Serializable {
 	 * @param multicastItfName The name of the multicast interface
 	 * @return Array of bound components, or null if it fails
 	 */
-	public Component[] getMulticastBindComponenents(Component component, String multicastItfName) {
+	public static Component[] getMulticastBindComponenents(Component component, String multicastItfName) {
 		try {
 			Object[] destinationItfs = Utils.getPAMulticastController(component).lookupGCMMulticast(multicastItfName);
 			Component[] destinationComps = new Component[destinationItfs.length];
