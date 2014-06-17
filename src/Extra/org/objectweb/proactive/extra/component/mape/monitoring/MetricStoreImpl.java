@@ -88,7 +88,8 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 	@Override
 	public MetricValue calculate(String name) {
 		if(metrics.containsKey(name)) {
-			MetricValue mv = new ValidMetricValue(metrics.get(name).calculate(), false);
+			Object result = metrics.get(name).calculate();
+			MetricValue mv = new ValidMetricValue(result, false);
 			if (metricEventListener != null) {
 				metricEventListener.notifyMetricUpdate(name);
 			}

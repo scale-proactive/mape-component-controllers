@@ -25,7 +25,7 @@ public class CrackerMetric extends Metric<Double> {
 	public Double calculate() {
 			total = 0;
 			MetricValue mv;
-			
+
 			try {
 				mv = this.metricStore.calculate(SolverMetric.DEFAULT_NAME, "/" + CCST.CRACKER_ITF + "/" + CCST.SOLVER_C1);
 				if (mv.isValid()) {

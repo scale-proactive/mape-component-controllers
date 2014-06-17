@@ -4,7 +4,7 @@ import org.objectweb.proactive.extra.component.mape.monitoring.metrics.MetricVal
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.WrongMetricValueException;
 
 
-public class ValidMetricValue implements MetricValue {
+public class ValidMetricValue extends MetricValue {
 
 	private static final long serialVersionUID = 1L;
 	

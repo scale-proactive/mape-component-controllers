@@ -5,11 +5,13 @@ import java.io.Serializable;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.WrongMetricValueException;
 
 
-public interface MetricValue extends Serializable {
+public abstract class MetricValue implements Serializable {
 
-	public Object getValue() throws WrongMetricValueException;
+	private static final long serialVersionUID = 1L;
 
-	public boolean isValid();
-	public boolean isMulticast();
+	abstract public Object getValue() throws WrongMetricValueException;
+
+	abstract public boolean isValid();
+	abstract public boolean isMulticast();
 
 }

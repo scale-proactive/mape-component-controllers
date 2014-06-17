@@ -17,22 +17,22 @@ action add-worker(solver, vn) {
 }
 
 action add-worker-on-vn0(solver) {
-	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMApp.xml");
 	return add-worker($solver, $gcma/gcmvn::VN0);
 }
 
 action add-worker-on-vn1(solver) {
-	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMApp.xml");
 	return add-worker($solver, $gcma/gcmvn::VN1);
 }
 
 action add-worker-on-vn2(solver) {
-	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMApp.xml");
 	return add-worker($solver, $gcma/gcmvn::VN2);
 }
 
 action add-worker-on-vn3(solver) {
-	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMApp.xml");
 	return add-worker($solver, $gcma/gcmvn::VN3);
 }
 
@@ -54,10 +54,10 @@ action improve-solvers(cracker, max) {
 				return add-worker-on-vn1($solver);
 			}
 			if ($id == 2) {
-				return add-worker-on-vn1($solver);
+				return add-worker-on-vn2($solver);
 			}
 			if ($id == 3) {
-				return add-worker-on-vn1($solver);
+				return add-worker-on-vn3($solver);
 			}
 		
 			fail();

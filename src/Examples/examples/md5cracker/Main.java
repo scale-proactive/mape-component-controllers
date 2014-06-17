@@ -1,6 +1,9 @@
 package examples.md5cracker;
 
-import java.security.MessageDigest;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 
 import org.etsi.uri.gcm.util.GCM;
@@ -8,23 +11,22 @@ import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.factory.InstantiationException;
 import org.objectweb.proactive.Active;
+import org.objectweb.proactive.core.ProActiveException;
 import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
+import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
 import org.objectweb.proactive.extra.component.mape.analysis.AnalyzerController;
-import org.objectweb.proactive.extra.component.mape.execution.Action;
 import org.objectweb.proactive.extra.component.mape.execution.ExecutorController;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.monitoring.metrics.library.AvgRespTimePerItfIncomingMetric;
 import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
+import org.objectweb.proactive.gcmdeployment.GCMApplication;
+import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 
 import examples.md5cracker.actions.AddSolverAction;
 import examples.md5cracker.actions.RemoveSolverAction;
-import examples.md5cracker.cracker.CCST;
-import examples.md5cracker.cracker.Cracker;
-import examples.md5cracker.cracker.CrackerAttributes;
 import examples.md5cracker.cracker.solver.SolverAttributes;
 import examples.md5cracker.metrics.CrackerMetric;
 import examples.md5cracker.metrics.SolverMetric;
@@ -35,19 +37,22 @@ import examples.md5cracker.rules.MinPerformanceRule;
 
 public class Main {
 
-	static String DESCRIPTOR_PATH = "file:///user/mibanez/home/Taller/memoria-tests/src/test2/md5cracker/GCMApp.xml";
-
-	private int maxWordLength = 3;
+	static String DESCRIPTOR_PATH = "file:///user/mibanez/home/Taller/mape-component-controllers/src/Examples/examples/md5cracker/GCMApp.xml";
+	static String GCMSCRIPT = "file:///user/mibanez/home/Taller/mape-component-controllers/src/Examples/examples/md5cracker/actions/QoS.fscript";
+	private int maxWordLength = 4;
 
 	private static boolean MANAGED = true;
-	private static int N_OF_SOLVERS = 2;
+	private static int N_OF_SOLVERS = 1;
 	private static int MAX_SOLVERS = 3;
 
 	private static int N_OF_WORKERS = 1;
 	private static int MAX_WORKERS = 3;
 
-	private static long DELAY = 50000;
-	private static long PERFORMANCE = 100000;
+	private static long DELAY = 120000;
+	private static long CHANGE_RULE_TIME = 24;
+	private static long MIN_PERFORMANCE = 250;
+	private static long MAX_PERFORMANCE = 100;
+	
 	PAGCMTypeFactory tf;
 	PAGenericFactory cf;
 	Active active;
@@ -55,16 +60,14 @@ public class Main {
 	Node N0;
 	Node[] nodes;
 
-	public Main() throws InstantiationException, NoSuchInterfaceException, NoSuchAlgorithmException {
+	public Main() throws InstantiationException, NoSuchInterfaceException, NoSuchAlgorithmException, MalformedURLException, URISyntaxException, ProActiveException {
 		Component boot = Utils.getBootstrapComponent();
 		tf = Utils.getPAGCMTypeFactory(boot);
 		cf = Utils.getPAGenericFactory(boot);
 
-		/*
 		File appDescriptor = new File((new URL(DESCRIPTOR_PATH)).toURI().getPath());
 		
-		GCMApplication gcmad;
-		gcmad = PAGCMDeployment.loadApplicationDescriptor(appDescriptor);
+		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(appDescriptor);
 		gcmad.startDeployment();
 		gcmad.waitReady();
 		
@@ -77,14 +80,16 @@ public class Main {
 	    for (int i = 0; i < MAX_SOLVERS; i++) {
 			vnodes[i].waitReady();
 	    }  
-	    */
-		//Node N0 = VN0.getANode();
-		N0 = null;
+
+	    Node N0 = null;
+		N0 = VN0.getANode();
+		
 		
 		nodes = new Node[MAX_SOLVERS];
 	    for (int i = 0; i < MAX_SOLVERS; i++) {
-	    	//nodes[i] = vnodes[i].getANode();
 	    	nodes[i] = null;
+	    	nodes[i] = vnodes[i].getANode();
+	    	
 	    }
 	}
 
@@ -127,15 +132,15 @@ public class Main {
 		}
 
 		// Rules
-	//	Remmos.getAnalyzerController(cracker).addRule(MinPerformanceRule.DEFAULT_NAME, new MinPerformanceRule(PERFORMANCE));
-		Remmos.getAnalyzerController(cracker).addRule(MaxPerformanceRule.DEFAULT_NAME, new MaxPerformanceRule(0));
+		AnalyzerController analyzer = Remmos.getAnalyzerController(cracker);
+		analyzer.addRule(MinPerformanceRule.DEFAULT_NAME, new MinPerformanceRule(MIN_PERFORMANCE));
 	
 		// Plans
 		Remmos.getPlannerController(cracker).setPlan(new QoSPlan(MAX_WORKERS, MAX_SOLVERS, DELAY));
 
 		// Actions
 		ExecutorController crackerExecutor = Remmos.getExecutorController(cracker);
-		crackerExecutor.load(Main.class.getResource("actions/QoS.fscript").getPath());
+		crackerExecutor.load((new URL(GCMSCRIPT)).toURI().getPath());
 		crackerExecutor.addAction(AddSolverAction.DEFAULT_NAME, new AddSolverAction(nodes));
 		crackerExecutor.addAction(RemoveSolverAction.DEFAULT_NAME, new RemoveSolverAction());
 	
@@ -153,10 +158,16 @@ public class Main {
 		
 		long startTime = System.currentTimeMillis();
 		while (true) {
-			String headMsg = "" + ((System.currentTimeMillis() - startTime)/60000.0);
-			headMsg += "\t" + ((Double) crackerMonitor.calculateMetric(CrackerMetric.DEFAULT_NAME).getValue()).doubleValue();
-			System.out.println(headMsg);
-			Thread.sleep(5000);
+			
+			String msg = "" + ((Double) crackerMonitor.calculateMetric(CrackerMetric.DEFAULT_NAME).getValue()).doubleValue();
+			double time = (System.currentTimeMillis() - startTime)/60000.0;
+			System.out.println(time + "\t" + msg);
+			Thread.sleep(4000);
+			
+			if (time > 24) {
+				analyzer.removeRule(MinPerformanceRule.DEFAULT_NAME);
+				analyzer.addRule(MaxPerformanceRule.DEFAULT_NAME, new MaxPerformanceRule(MAX_PERFORMANCE));
+			}
 		}
 	}
 
@@ -192,18 +203,20 @@ public class Main {
 	private void printIntro() {
 		System.out.println("[MD5Cracker]");
 		System.out.println("* * * * * * * * * * * MD5Cracker * * * * * * * * * * * * * *");
-		System.out.println("MANAGED = " + MANAGED);
-		System.out.println("N_OF_SOLVERS = " + N_OF_SOLVERS);
-		System.out.println("N_OF_WORKERS = " + N_OF_WORKERS);
+		System.out.println("DELAY = " + DELAY);
+		System.out.println("CHANGE_RULE_TIME = " + CHANGE_RULE_TIME);
+		System.out.println("MIN_PERFORMANCE = " + MIN_PERFORMANCE);
+		System.out.println("MAX_PERFORMANCE = " + MAX_PERFORMANCE);
 		System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
 	}
 
 	public static void main(String[] args) throws Exception {
 		
     	if(args.length != 0) {
-    		MANAGED = Boolean.parseBoolean(args[0]);
-    		N_OF_SOLVERS = Integer.parseInt(args[1]);
-    		N_OF_WORKERS = Integer.parseInt(args[2]);
+    		DELAY = Long.parseLong(args[0]);
+    		CHANGE_RULE_TIME = Long.parseLong(args[1]);
+    		MIN_PERFORMANCE = Integer.parseInt(args[2]);
+    		MAX_PERFORMANCE = Integer.parseInt(args[3]);
     	}
 
     	(new Main()).run();

@@ -17,7 +17,7 @@ public class SolverManagerImpl implements Cracker, SolverAttributes, BindingCont
 	
 	private WorkerMulticast workers;
 
-	private int alphabetBase = 62;
+	private int alphabetBase = "abcdefghijklmnopqrstuvwxyz".length();
 
 	private double numberOfWorkers = 1, idNumber = 0;
 

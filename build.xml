@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<property name="base.dir"	value="${basedir}" />
+	<property name="src.dir"	value="${base.dir}/src" />
+	<property name="build.dir"	value="${base.dir}/build" />
+	<property name="compile.dir"	value="${build.dir}/classes" />
+	<property name="source.level"	value="1.7"/>
+	
+	<path id="lib.path">		
+		<fileset dir="${build.dir}" includes="**/*.jar"/>
+		<fileset dir="${base.dir}/../programming-multiactivities/dist/lib" includes="**/*.jar"/>
+		<fileset dir="${base.dir}/../gcmscript/dist/lib" includes="**/*.jar"/>
+	</path>
+
+	<target name="all"  depends="clean, test.jar, test-src.jar" description="Compile"/>
+	
+	<target name="compile.test" description="Compile">
+		<mkdir  dir="${build.dir}"/>
+		<delete dir="${compile.dir}"/>
+		<mkdir  dir="${compile.dir}"/>
+		<javac  srcdir="${src.dir}" destdir="${compile.dir}" classpathref="lib.path" source="${source.level}" debug="true"/>
+	</target>
+
+	<target name="test.jar" depends="compile.test" description="Creates the JAR">
+		<delete dir="${build.dir}/test.jar"/>
+        	<jar destfile="${build.dir}/test.jar" basedir="${compile.dir}"> </jar>
+	</target>
+	
+	<target name="test-src.jar" depends="compile.test" description="src">
+		<delete dir="${build.dir}/test-src.jar"/>
+        	<jar destfile="${build.dir}/test-src.jar" basedir="${src.dir}/Examples">
+        </jar>
+	</target>
+
+	<target name="clean" description="Clean build directory">
+		<delete dir="${build.dir}" />	
+	</target>
+		
+</project>

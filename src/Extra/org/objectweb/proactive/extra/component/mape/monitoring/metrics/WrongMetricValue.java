@@ -4,7 +4,7 @@ import org.objectweb.proactive.extra.component.mape.monitoring.metrics.MetricVal
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.WrongMetricValueException;
 
 
-public class WrongMetricValue implements MetricValue {
+public class WrongMetricValue extends MetricValue {
 
 	private static final long serialVersionUID = 1L;
 	private Throwable e;
@@ -23,7 +23,6 @@ public class WrongMetricValue implements MetricValue {
 		e = exception;
 	}
 
-	@Override
 	public Object getValue() throws WrongMetricValueException {
 		if (e != null && msg != null) {
 			throw new WrongMetricValueException(msg, e);
@@ -37,12 +36,10 @@ public class WrongMetricValue implements MetricValue {
 		throw new WrongMetricValueException("Unknown");
 	}
 
-	@Override
 	public boolean isValid() {
 		return false;
 	}
 
-	@Override
 	public boolean isMulticast() {
 		return false;
 	}

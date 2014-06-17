@@ -1,6 +1,6 @@
 package org.objectweb.proactive.extra.component.mape.utils;
 
-public class WrongObjectWrapper implements ObjectWrapper {
+public class WrongObjectWrapper extends ObjectWrapper {
 
 	private static final long serialVersionUID = 1L;
 	private WrongValueException exception;
@@ -17,14 +17,8 @@ public class WrongObjectWrapper implements ObjectWrapper {
 		exception = new WrongValueException(msg, cause);
 	}
 
-	@Override
 	public Object getObject() throws WrongValueException {
 		throw exception;
-	}
-
-	@Override
-	public Object getObjectOrNull() {
-		return null;
 	}
 
 	public boolean isValid() {

@@ -42,10 +42,13 @@ public class OptimalPointsMetric extends Metric<String> {
 				return warning();
 			}
 
-			double x = 1 / (v1 + v2 + v3);
+			double t = (v1 + v2 + v3);
+			double x1 = t/v1, x2 = t/v2, x3 = t/v3;
 			
-			double p1 = x * v1;
-			double p2 = x * (v1 + v2);
+			t  = 1 / (x1 + x2 + x3);
+			
+			double p1 = t * x1;
+			double p2 = t * (x1 + x2);
 			
 			points = p1 + "u" + p2;
 			return points;

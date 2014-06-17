@@ -19,7 +19,7 @@ public class Client implements Serializable, Runnable {
 	private String myName;
 
 	private MessageDigest md5;
-	private String alphabet = "0Aa1BbCc2DdEe3FfGg4HhIi5JjKk6LlMm7NnOo8PpQq9RrSsTtUuVvWwXxYyZz";
+	private String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
 
 	public Client(Component crackerComponent, int maxLength, String clientName) throws NoSuchAlgorithmException {

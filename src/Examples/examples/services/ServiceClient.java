@@ -68,7 +68,7 @@ public class ServiceClient implements Runnable, Serializable {
 			for (int j = 0; j < 10; j++) t += times[j];
 			t = t/10;
 			
-			//System.out.printf("%.3f\t%d\n", (System.currentTimeMillis() - initTime)/60000.0, t);
+			System.out.printf("%.3f\t%d\n", (System.currentTimeMillis() - initTime)/60000.0, t);
 		}
 	}
 

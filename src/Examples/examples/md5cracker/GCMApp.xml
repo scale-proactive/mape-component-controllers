@@ -9,7 +9,10 @@
 	    <proactive base="home" relpath="Taller">
 	        <configuration>
 	            <applicationClasspath>
+	            	<pathElement base="proactive" relpath="mape-component-controllers/src/Examples"/>
+	            	<pathElement base="proactive" relpath="mape-component-controllers/build/test-src.jar"/>
 	           		<pathElement base="proactive" relpath="mape-component-controllers/build/test.jar"/>
+	           		<pathElement base="proactive" relpath="gcmscript/dist/lib/ProActive-GCMScript.jar"/>
 	                <pathElement base="proactive" relpath="programming-multiactivities/dist/lib/ProActive.jar"/>
 	            </applicationClasspath>
 	        </configuration>

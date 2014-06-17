@@ -24,9 +24,10 @@ public abstract class TestService implements Runnable {
 		if (appDescriptor != null) {
 			File file = new File((new URL(appDescriptor)).toURI().getPath());
 			
-			gcma = PAGCMDeployment.loadApplicationDescriptor(file);
-			gcma.startDeployment();
-			gcma.waitReady();
+			GCMApplication gcmad;
+			gcmad = PAGCMDeployment.loadApplicationDescriptor(file);
+			gcmad.startDeployment();
+			gcmad.waitReady();
 		}
 	}
 

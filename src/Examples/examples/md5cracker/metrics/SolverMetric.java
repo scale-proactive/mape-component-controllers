@@ -19,7 +19,7 @@ public class SolverMetric extends Metric<Double> {
 
 	private long lastOldest = -1;
 
-	private double spm;
+	private double spm = 0;
 	private final int BUFF_SIZE = 10;
 	
 	private SolverRequestCondition condition;

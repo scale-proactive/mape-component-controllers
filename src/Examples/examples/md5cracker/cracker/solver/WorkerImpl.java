@@ -8,7 +8,7 @@ public class WorkerImpl implements Worker {
 
 	public static final String COMP_NAME = "worker-comp";
 
-	private String alphabet = "0Aa1BbCc2DdEe3FfGg4HhIi5JjKk6LlMm7NnOo8PpQq9RrSsTtUuVvWwXxYyZz";
+	private String alphabet = "abcdefghijklmnopqrstuvwxyz";
     private int base = alphabet.length();
 
 	@Override
@@ -27,7 +27,7 @@ public class WorkerImpl implements Worker {
         try {
 	        MessageDigest md5 = MessageDigest.getInstance("MD5");
 	        for(long i = init; i <= end; i++) {
-				String option = convertToBase62(i);
+				String option = convertToBase(i);
 	            do {
 	            	byte[] proposal = md5.digest(option.getBytes());
 					if (Arrays.equals(proposal, hash) && compare(hash, option, md5)) {
@@ -44,7 +44,7 @@ public class WorkerImpl implements Worker {
         return new Wrapper<String>(found, word);
 	}
 
-	private String convertToBase62(long decimal) {
+	private String convertToBase(long decimal) {
 		String value = decimal == 0 ? "0" : "";  
 		int mod = 0;  
 		while( decimal != 0 ) {  

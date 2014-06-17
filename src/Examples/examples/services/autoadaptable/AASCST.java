@@ -26,6 +26,7 @@ public interface AASCST {
 	public static final String RESPONSE_TIME_METRIC = "response-time-metric";
 	public static final String VARIATION_RULE = "variation-rule";
 	public static final String ADD_SLAVE_ACTION = "add-slave-action";
+	public static final String REMOVE_SLAVE_ACTION = "remove-slave-action";
 
 
 }

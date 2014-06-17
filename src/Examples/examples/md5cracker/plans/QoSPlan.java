@@ -22,11 +22,15 @@ public class QoSPlan extends Plan {
 	private int maxWorkers, maxSolvers;
 	private long lastTime, delay;
 
+	private boolean minPerforanceEnable;
+	
 	public QoSPlan(int maxNumOfWorkers, int maxNumOfSolvers, long delay) {
 		maxWorkers = maxNumOfWorkers;
 		maxSolvers = maxNumOfSolvers;
 		this.lastTime = System.currentTimeMillis();
 		this.delay = delay;
+		
+		minPerforanceEnable = true;
 	}
 
 
@@ -100,7 +104,7 @@ public class QoSPlan extends Plan {
 	 */
 	private synchronized void minPerformanceHandler(Alarm alarm, MonitorController monitor, ExecutorController executor) {
 
-		if ( alarm != Alarm.VIOLATION ) return;
+		if ( alarm != Alarm.VIOLATION || !minPerforanceEnable) return;
 		
 		if (System.currentTimeMillis() - lastTime < delay) {
 			return;
@@ -141,6 +145,7 @@ public class QoSPlan extends Plan {
 		
 
 		System.out.println("[PLANNER_CONTROLLER] nothing to do...");
+		minPerforanceEnable = false;
 		lastTime = System.currentTimeMillis();
 	}
 

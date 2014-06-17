@@ -3,6 +3,7 @@ package examples.services.autoadaptable.actions;
 import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Utils;
+import org.objectweb.proactive.core.component.control.PAContentController;
 import org.objectweb.proactive.core.component.control.PAGCMLifeCycleController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.identity.PAComponent;
@@ -14,20 +15,19 @@ import examples.services.autoadaptable.AASCST;
 import examples.services.autoadaptable.AASFactory;
 import examples.services.autoadaptable.components.MasterAttributes;
 
-public class AddSlaveAction extends Action {
+public class RemoveSlaveAction extends Action {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Node node;
 
 	
-	public AddSlaveAction(Node node) {
+	public RemoveSlaveAction(Node node) {
 		this.node = node;
 	}
-
+	
 	@Override
 	public Object execute(Component solver, PAGCMTypeFactory typeFactory, PAGenericFactory genericFactory) {
-		
 		// NOTE: assumed to be executed on Solver composite component
 		
 		try {
@@ -38,14 +38,19 @@ public class AddSlaveAction extends Action {
 			PAGCMLifeCycleController lc = Utils.getPAGCMLifeCycleController(solver);
 			lc.stopFc();
 			
-			System.out.println("add slave to solver");
-			Utils.getPAContentController(solver).addFcSubComponent(slave);
-			System.out.println("bind slave to master");
-			Utils.getPABindingController(master).bindFc(AASCST.SLAVE_MULTICAST, slave.getFcInterface(AASCST.SLAVE));
+			PAContentController cc = Utils.getPAContentController(solver);
+			for (Component subComp : cc.getFcSubComponents()) {
+				if (((PAComponent) subComp).getComponentParameters().getName().equals(AASCST.SLAVE_COMP_NAME)) {
+					Utils.getPAMulticastController(master).unbindGCMMulticast(AASCST.SLAVE_MULTICAST,
+							subComp.getFcInterface(AASCST.SLAVE));
+					cc.removeFcSubComponent(subComp);
+					break;
+				}
+			}
 			System.out.println("setting the attributes");
 			MasterAttributes masterAttr = (MasterAttributes) GCM.getAttributeController(master);
 			
-			long slavesNumber = (long) (masterAttr.getSlavesNumber() + 1);
+			long slavesNumber = (long) (masterAttr.getSlavesNumber() + -1);
 			masterAttr.setSlavesNumber(slavesNumber);
 			lc.startFc();
 
@@ -58,4 +63,5 @@ public class AddSlaveAction extends Action {
 		return false;
 	}
 
+	
 }
