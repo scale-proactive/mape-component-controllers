@@ -382,7 +382,7 @@ public class MonitorConsole {
 				}
 			}
 			// Get the request path followed by an outgoing request from the current component
-			else if(command.equals(COM_PATH)) {
+			/*else if(command.equals(COM_PATH)) {
 				if(args != null) {
 					String name = args.split("[ ]+", 2)[0];
 					long id = Long.parseLong(name);
@@ -393,7 +393,7 @@ public class MonitorConsole {
 				else {
 					System.out.println("Usage: "+ COM_PATH +" <reqID>. Use command '"+ COM_OUT_REQ_LIST +"' to see a list of IDs.");
 				}
-			}
+			}*/
 			// Add metrics from the metric library
 			else if(command.equals(COM_ADD_METRIC)) {
 				if(args != null) {

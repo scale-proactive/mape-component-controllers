@@ -82,7 +82,7 @@ public class AvgRespTimeIncomingMetric extends Metric<Double> {
 				sum += (double)(irr.getReplyTime() - irr.getArrivalTime());
 			}
 		}
-		value = sum/nRecords;
+		value = nRecords > 0 ? sum/nRecords: 0;
 		return value;
 	}
 

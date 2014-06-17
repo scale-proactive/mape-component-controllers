@@ -51,27 +51,25 @@ import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordTyp
  */
 public abstract class AbstractRecord implements Serializable {
 
-	/** Type of the record */
-	protected RecordType recordType;
+	private static final long serialVersionUID = 1L;
 	
 	/** ID of the new request */
 	protected ComponentRequestID requestID;
 	
-	public AbstractRecord() {
-		
-	}
+	/**
+	 * Empty builder
+	 */
+	public AbstractRecord() { }
+
 	
-	public AbstractRecord(RecordType rt, ComponentRequestID requestID) {
-		this.recordType = rt;
+	public AbstractRecord(ComponentRequestID requestID) {
 		this.requestID = requestID;
-	}
-	
-	public RecordType getRecordType() {
-		return recordType;
 	}
 	
 	public ComponentRequestID getRequestID() {
 		return requestID;
 	}
 	
+	public abstract RecordType getRecordType();
+
 }

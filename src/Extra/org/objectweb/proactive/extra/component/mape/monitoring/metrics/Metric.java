@@ -41,8 +41,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.objectweb.proactive.extra.component.mape.monitoring.MetricStore;
+import org.objectweb.proactive.extra.component.mape.monitoring.RecordStore;
 import org.objectweb.proactive.extra.component.mape.monitoring.event.RemmosEventType;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordStore;
 
 /**
  * Parent class for all metrics, which produce a value of type T.

@@ -49,32 +49,21 @@ import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.fractal.api.control.IllegalBindingException;
 import org.objectweb.fractal.api.control.IllegalLifeCycleException;
-import org.objectweb.proactive.core.ProActiveRuntimeException;
-import org.objectweb.proactive.core.UniqueID;
 import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.PAInterface;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
-import org.objectweb.proactive.core.component.control.MethodStatistics;
 import org.objectweb.proactive.core.component.control.PAMulticastController;
 import org.objectweb.proactive.core.component.representative.PAComponentRepresentative;
-import org.objectweb.proactive.core.component.type.PAGCMInterfaceTypeImpl;
 import org.objectweb.proactive.core.runtime.ProActiveRuntimeImpl;
 import org.objectweb.proactive.core.util.log.Loggers;
 import org.objectweb.proactive.core.util.log.ProActiveLogger;
-import org.objectweb.proactive.extra.component.mape.monitoring.EventControl;
-import org.objectweb.proactive.extra.component.mape.monitoring.MetricStore;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorControllerMulticast;
-import org.objectweb.proactive.extra.component.mape.monitoring.PathItem;
-import org.objectweb.proactive.extra.component.mape.monitoring.RequestPath;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.Metric;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.MetricValue;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.ComponentRequestID;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.Condition;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.IncomingRequestRecord;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.OutgoingRequestRecord;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordStore;
 
 /**
  * Monitor Controller component for the Monitoring Framework
@@ -130,7 +119,6 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 
 		// start the other components of the framework
 		this.eventControl.start();
-		this.recordStore.init();
 
 		for (MonitorController in : internalMonitors.values()) {
 			in.startGCMMonitoring();
@@ -172,7 +160,7 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	public Map<String, Object> getAllGCMStatistics() {
 		return null;
 	}
-	
+	/*
 	public List<ComponentRequestID> getListOfIncomingRequestIDs() {
 		return recordStore.getListOfRequestIDs();
 	}
@@ -180,10 +168,11 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	public List<ComponentRequestID> getListOfOutgoingRequestIDs() {
 		return recordStore.getListOfCallIDs();
 	}
-
+	 */
 	/**
 	 * Builds the Request path starting from request with ID id.
 	 */
+	/*
 	public RequestPath getPathForID(ComponentRequestID id) {
 		RequestPath result = null;
 		OutgoingRequestRecord cr;
@@ -246,11 +235,12 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 		rpLogger.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		return result;
 
-	}
+	}*/
 
 	/**
 	 * Builds the Request path starting from request with ID id.
 	 */
+	/*
 	public RequestPath getPathForID(ComponentRequestID incomingID,
 			ComponentRequestID rootID, Set<String> visited) {
 
@@ -458,6 +448,8 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 		return result;
 	}
 
+	*/
+
 	/**
 	 * Look on each internal/external monitor interface to find the Monitor for
 	 * the indicate name. Warning!!... It may still block if I try with the
@@ -471,6 +463,7 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	 * @param destName
 	 * @return
 	 */
+	/*
 	private MonitorController findMonitorControl(String destName) {
 		MonitorController child = null;
 		String name;
@@ -548,7 +541,7 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 			}
 		}
 		return child;
-	}
+	}*/
 
 	// TODO
 	public RequestPath getPathStatisticsForId(ComponentRequestID id) {
@@ -560,20 +553,16 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	}
 
 	@Override
-	public Map<ComponentRequestID, IncomingRequestRecord> getIncomingRequestLog() {
-		return recordStore.getIncomingRequestRecords();
-	}
-
-	@Override
-	public Map<ComponentRequestID, OutgoingRequestRecord> getOutgoingRequestLog() {
-		return recordStore.getOutgoingRequestRecords();
-	}
-
-	@Override
 	public String getMonitoredComponentName() {
 		return hostComponentName;
 	}
 
+	// CONFIG
+	
+	public void setRecordStoreCapacity(int maxCapacity) {
+		recordStore.setMaxSize(maxCapacity);
+	}
+	
 	// METRICS 
 
 	@Override

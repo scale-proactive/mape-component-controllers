@@ -80,8 +80,8 @@ public interface MonitorControllerMulticast {
      * Get the list of all requests that have been entered/sent by this component
      * 
      */
-    List<List<ComponentRequestID>> getListOfIncomingRequestIDs();
-    List<List<ComponentRequestID>> getListOfOutgoingRequestIDs();
+    //List<List<ComponentRequestID>> getListOfIncomingRequestIDs();
+    //List<List<ComponentRequestID>> getListOfOutgoingRequestIDs();
     
     /** 
      * Get the path followed by an specific request
@@ -89,8 +89,8 @@ public interface MonitorControllerMulticast {
      * @param id
      * @return
      */
-    List<RequestPath> getPathForID(ComponentRequestID id);
-    List<RequestPath> getPathForID(ComponentRequestID id, ComponentRequestID rootID, Set<String> visited);
+    //List<RequestPath> getPathForID(ComponentRequestID id);
+    //List<RequestPath> getPathForID(ComponentRequestID id, ComponentRequestID rootID, Set<String> visited);
     
     /**
      * Same from above, but with statistical information attached
@@ -98,19 +98,19 @@ public interface MonitorControllerMulticast {
      * @param id
      * @return
      */
-    List<RequestPath> getPathStatisticsForId(ComponentRequestID id);
+    //List<RequestPath> getPathStatisticsForId(ComponentRequestID id);
     
     /**
      * Get the list of entries in the Incoming Request Log
      * @return
      */
-    List<Map<ComponentRequestID, IncomingRequestRecord>> getIncomingRequestLog();
+    //List<Map<ComponentRequestID, IncomingRequestRecord>> getIncomingRequestLog();
     
     /**
      * Get the list of entries in the Outgoing Request Log
      * @return
      */
-    List<Map<ComponentRequestID, OutgoingRequestRecord>> getOutgoingRequestLog();
+    //List<Map<ComponentRequestID, OutgoingRequestRecord>> getOutgoingRequestLog();
     
     List<List<String>> getNotificationsReceived(); 
     

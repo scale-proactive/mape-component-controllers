@@ -51,6 +51,8 @@ import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordTyp
  */
 public class IncomingRequestRecord extends AbstractRecord implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private String callerComponent;
 	private String calledComponent;
 	private String interfaceName;
@@ -64,11 +66,10 @@ public class IncomingRequestRecord extends AbstractRecord implements Serializabl
 	
 	private boolean finished;
 	
-	public IncomingRequestRecord() {
-	}
+	public IncomingRequestRecord() { }
 	
 	public IncomingRequestRecord(ComponentRequestID requestID, String callerComponent, String calledComponent, String interfaceName, String methodName, long arrivalTime, ComponentRequestID rootID) {
-		super(RecordType.IncomingRequestRecord, requestID);
+		super(requestID);
 		this.callerComponent = callerComponent;
 		this.calledComponent = calledComponent;
 		this.interfaceName = interfaceName;
@@ -130,6 +131,11 @@ public class IncomingRequestRecord extends AbstractRecord implements Serializabl
 	
 	public ComponentRequestID getRootID() {
 		return rootID;
+	}
+
+	@Override
+	public RecordType getRecordType() {
+		return RecordType.IncomingRequest;
 	}
 	
 }

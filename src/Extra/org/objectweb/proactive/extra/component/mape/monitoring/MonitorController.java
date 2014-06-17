@@ -70,8 +70,8 @@ public interface MonitorController {
      * Get the list of all requests that have been entered this component
      * 
      */
-    List<ComponentRequestID> getListOfIncomingRequestIDs();
-    List<ComponentRequestID> getListOfOutgoingRequestIDs();
+    //List<ComponentRequestID> getListOfIncomingRequestIDs();
+    //List<ComponentRequestID> getListOfOutgoingRequestIDs();
     
     /** 
      * Get the path followed by an specific request
@@ -79,8 +79,8 @@ public interface MonitorController {
      * @param id
      * @return
      */
-    RequestPath getPathForID(ComponentRequestID id);
-    RequestPath getPathForID(ComponentRequestID id, ComponentRequestID rootID, Set<String> visited);
+    //RequestPath getPathForID(ComponentRequestID id);
+    //RequestPath getPathForID(ComponentRequestID id, ComponentRequestID rootID, Set<String> visited);
     
     /**
      * Same from above, but with statistical information attached
@@ -88,24 +88,16 @@ public interface MonitorController {
      * @param id
      * @return
      */
-    RequestPath getPathStatisticsForId(ComponentRequestID id);
-    
-    /**
-     * Get the list of entries in the Incoming Request Log
-     * @return
-     */
-    Map<ComponentRequestID, IncomingRequestRecord> getIncomingRequestLog();
-    
-    /**
-     * Get the list of entries in the Outgoing Request Log
-     * @return
-     */
-    Map<ComponentRequestID, OutgoingRequestRecord> getOutgoingRequestLog();
+    //RequestPath getPathStatisticsForId(ComponentRequestID id);
     
     List<String> getNotificationsReceived(); 
     
     String getMonitoredComponentName();
 
+    // ---------------------------------------------------------------------------
+    
+    public void setRecordStoreCapacity(int maxCapacity);
+    
     // ---------------------------------------------------------------------------
     
     /**

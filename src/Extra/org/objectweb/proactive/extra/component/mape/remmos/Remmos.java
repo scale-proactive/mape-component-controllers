@@ -93,9 +93,9 @@ import org.objectweb.proactive.extra.component.mape.monitoring.MetricStoreImpl;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorControllerImpl;
 import org.objectweb.proactive.extra.component.mape.monitoring.MonitorControllerMulticast;
+import org.objectweb.proactive.extra.component.mape.monitoring.RecordStore;
+import org.objectweb.proactive.extra.component.mape.monitoring.RecordStoreImpl;
 import org.objectweb.proactive.extra.component.mape.monitoring.event.RemmosEventListener;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordStore;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordStoreImpl;
 import org.objectweb.proactive.extra.component.mape.planning.PlannerController;
 import org.objectweb.proactive.extra.component.mape.planning.PlannerControllerImpl;
 

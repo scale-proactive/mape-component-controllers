@@ -37,6 +37,6 @@
 package org.objectweb.proactive.extra.component.mape.monitoring.records;
 
 public enum RecordType {
-	OutgoingRequestRecord,
-	IncomingRequestRecord
+	OutgoingRequest,
+	IncomingRequest
 }

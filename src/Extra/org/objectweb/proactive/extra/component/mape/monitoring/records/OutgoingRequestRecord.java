@@ -40,10 +40,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.objectweb.proactive.extra.component.mape.monitoring.records.AbstractRecord;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.ComponentRequestID;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordType;
-
 
 /**
  * Stores the data and timestamps related to an outgoing request (a call to another component).
@@ -53,6 +49,8 @@ import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordTyp
  */
 public class OutgoingRequestRecord extends AbstractRecord implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	/** ID of the parent request */
 	private ComponentRequestID parentID;
 	
@@ -79,7 +77,7 @@ public class OutgoingRequestRecord extends AbstractRecord implements Serializabl
 
 	public OutgoingRequestRecord(ComponentRequestID requestID, ComponentRequestID parentID, String calledComponent, String interfaceName, String methodName,
 			long sentTime, boolean voidRequest, ComponentRequestID rootID) {
-		super(RecordType.OutgoingRequestRecord, requestID);
+		super(requestID);
 		this.parentID = parentID;
 		this.calledComponent = calledComponent;
 		this.interfaceName = interfaceName;
@@ -156,6 +154,11 @@ public class OutgoingRequestRecord extends AbstractRecord implements Serializabl
 	
 	public ComponentRequestID getRootID() {
 		return rootID;
+	}
+
+	@Override
+	public RecordType getRecordType() {
+		return RecordType.OutgoingRequest;
 	}
 
 }
