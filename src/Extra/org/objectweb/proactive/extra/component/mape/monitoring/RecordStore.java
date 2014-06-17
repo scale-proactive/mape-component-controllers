@@ -34,19 +34,15 @@
  * ################################################################
  * $$PROACTIVE_INITIAL_DEV$$
  */
-package org.objectweb.proactive.extra.component.mape.monitoring.records;
+package org.objectweb.proactive.extra.component.mape.monitoring;
 
 import java.util.List;
-import java.util.Map;
 
-import org.objectweb.proactive.extra.component.mape.monitoring.records.AbstractRecord;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.ComponentRequestID;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.Condition;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.IncomingRequestRecord;
 import org.objectweb.proactive.extra.component.mape.monitoring.records.OutgoingRequestRecord;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordType;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.Transformation;
-import org.objectweb.proactive.core.util.wrapper.BooleanWrapper;
+import org.objectweb.proactive.extra.component.mape.utils.Wrapper;
 
 /**
  * Interface for storing monitoring records in the Log Store
@@ -60,43 +56,29 @@ public interface RecordStore {
 
 	public final static String ITF_NAME = "record-store-nf";
 
-	// init the logs store
-	void init();
-	
-	// inserts new record in the store
-	void insert(AbstractRecord record);
-	
-	// fetches an existing record in the store
-	AbstractRecord fetch(Object key, RecordType rt);
-	IncomingRequestRecord fetchIncomingRequestRecord(Object key);
-	OutgoingRequestRecord fetchOutgoingRequestRecord(Object key);
-	
-	// queries the existence of a record in the store
-	BooleanWrapper exists(Object key, RecordType rt);
+	public void setMaxSize(int maxSize);
 
-	// updates an existing record
-	void update(Object key, AbstractRecord record);
-	
-	// test: obtain logs
-	Map<ComponentRequestID, IncomingRequestRecord> getIncomingRequestRecords();
-	Map<ComponentRequestID, OutgoingRequestRecord> getOutgoingRequestRecords();
-	
-	// obtain subset of entries
-	Map<ComponentRequestID, OutgoingRequestRecord> getOutgoingRequestRecordsFromParent(ComponentRequestID id);
-	Map<ComponentRequestID, IncomingRequestRecord> getIncomingRequestRecordsFromRoot(ComponentRequestID rootID);
-	
+	public void update(IncomingRequestRecord record);
+	public void update(OutgoingRequestRecord record);
+
+	public Wrapper<IncomingRequestRecord> getIncomingRequestRecord(ComponentRequestID id);
+	public Wrapper<OutgoingRequestRecord> getOutgoingRequestRecord(ComponentRequestID id);
+
 	// clean the logs
-	void reset();
-	
-	
-	public List<ComponentRequestID> getListOfRequestIDs();
-	public List<ComponentRequestID> getListOfCallIDs();
+	public void reset();
 	
 	// select an specific set of records
+	
+	public List<IncomingRequestRecord> getIncomingRequestRecords();
+	public List<IncomingRequestRecord> getIncomingRequestRecords(int amount);
+	public List<IncomingRequestRecord> getIncomingRequestRecords(int amount, Condition<IncomingRequestRecord> condition);
 	public List<IncomingRequestRecord> getIncomingRequestRecords(Condition<IncomingRequestRecord> condition);
+
+	public List<OutgoingRequestRecord> getOutgoingRequestRecords();
+	public List<OutgoingRequestRecord> getOutgoingRequestRecords(int amount);
+	public List<OutgoingRequestRecord> getOutgoingRequestRecords(int amount, Condition<OutgoingRequestRecord> condition);
 	public List<OutgoingRequestRecord> getOutgoingRequestRecords(Condition<OutgoingRequestRecord> condition);
 	
-	public List<?> getIncomingRequestRecords(Condition<IncomingRequestRecord> condition, Transformation<IncomingRequestRecord,?> transformation);
-	public List<?> getOutgoingRequestRecords(Condition<OutgoingRequestRecord> condition, Transformation<OutgoingRequestRecord,?> transformation);
-	
+
+
 }

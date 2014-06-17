@@ -114,12 +114,13 @@ public class RemmosUtils {
 		Map<ComponentRequestID, IncomingRequestRecord> requestLog = null;
 		Map<ComponentRequestID, OutgoingRequestRecord> callLog = null;
 		
+		/*
 		try {
 			requestLog = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getIncomingRequestLog();
 			callLog = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getOutgoingRequestLog();
 		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		System.out.println("===================== Component ["+ hostComponentName +"] =====================");
 		System.out.println("===================== Incoming Log ===============================");
@@ -220,11 +221,12 @@ public class RemmosUtils {
 			e.printStackTrace();
 		}
 		List<ComponentRequestID> requests = null;
+		/*
 		try {
-			requests = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getListOfIncomingRequestIDs();
+			//requests = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getListOfIncomingRequestIDs();
 		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
-		}
+		}*/
 		System.out.println("===================== Component ["+ hostComponentName +"] =====================");
 		System.out.println("===================== Requests Received ============================");
 		for(ComponentRequestID r: requests) {
@@ -243,11 +245,13 @@ public class RemmosUtils {
 			e.printStackTrace();
 		}
 		List<ComponentRequestID> calls = null;
+		/*
 		try {
-			calls = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getListOfOutgoingRequestIDs();
+			//calls = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getListOfOutgoingRequestIDs();
 		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
 		}
+		*/
 		System.out.println("===================== Component ["+ hostComponentName +"] =====================");
 		System.out.println("===================== Calls Sent =================================");
 		for(ComponentRequestID r: calls) {

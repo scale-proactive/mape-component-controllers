@@ -56,7 +56,6 @@ import org.objectweb.proactive.extra.component.mape.monitoring.metrics.Metric;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.MetricValue;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.ValidMetricValue;
 import org.objectweb.proactive.extra.component.mape.monitoring.metrics.WrongMetricValue;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.RecordStore;
 
 
 public class MetricStoreImpl extends AbstractPAComponentController implements MetricStore, RemmosEventListener, BindingController {
