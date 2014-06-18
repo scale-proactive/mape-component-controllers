@@ -1,4 +1,4 @@
-package test;
+package tests.components;
 
 
 public interface Master {

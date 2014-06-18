@@ -1,4 +1,4 @@
-package test;
+package tests.components;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
@@ -12,7 +12,8 @@ import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveServi
 @DefineGroups({ @Group(name = "G1", selfCompatible = true) })
 public class MasterImpl implements Master, BindingController, RunActive {
 
-	Slave slave;
+	private static final long serialVersionUID = 1L;
+	private Slave slave;
 
 	@Override
 	@MemberOf("G1")

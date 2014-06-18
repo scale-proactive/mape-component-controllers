@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC "-//objectweb.org//DTD Fractal ADL 2.0//EN" "classpath://org/objectweb/proactive/core/component/adl/xml/proactive.dtd">
+
+<definition name="tests.components.Composite">
+
+	<interface name="test-itf" role="server" signature="tests.components.Master"/>
+	<interface name="multicast-itf" role="client" cardinality="multicast"
+		signature="org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast"/>
+
+	<component name="Master">
+		<interface signature="tests.components.Master" role="server" name="master"/>
+		<interface signature="tests.components.Slave" role="client" name="slave"/>
+		<content class="tests.components.MasterImpl"/>
+		<controller desc="primitive"/>
+	</component>
+
+	<component name="Slave">
+		<interface signature="tests.components.Slave" role="server" name="slave"/>
+		<content class="tests.components.SlaveImpl"/>
+		<controller desc="primitive"/>
+	</component>
+
+	<binding client="this.test-itf" server="Master.master"/>
+	<binding client="Master.slave" server="Slave.slave"/>
+
+	<controller desc="composite"/>
+
+</definition>
