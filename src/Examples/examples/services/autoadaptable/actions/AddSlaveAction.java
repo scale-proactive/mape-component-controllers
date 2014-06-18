@@ -8,7 +8,7 @@ import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
-import org.objectweb.proactive.extra.component.mape.execution.Action;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.Action;
 
 import examples.services.autoadaptable.AASCST;
 import examples.services.autoadaptable.AASFactory;

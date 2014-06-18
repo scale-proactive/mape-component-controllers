@@ -8,8 +8,8 @@ import org.objectweb.proactive.core.component.control.PAContentController;
 import org.objectweb.proactive.core.component.control.PAMulticastController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extra.component.mape.execution.Action;
-import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.Action;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
 import examples.md5cracker.cracker.CCST;
 import examples.md5cracker.cracker.solver.SolverAttributes;

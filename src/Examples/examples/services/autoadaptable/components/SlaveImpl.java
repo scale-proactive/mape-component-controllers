@@ -4,9 +4,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.objectweb.proactive.extra.component.mape.utils.ObjectWrapper;
-import org.objectweb.proactive.extra.component.mape.utils.ValidObjectWrapper;
-import org.objectweb.proactive.extra.component.mape.utils.WrongObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongObjectWrapper;
 
 import examples.services.autoadaptable.AASCST;
 

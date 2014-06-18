@@ -1,8 +1,8 @@
 package examples.services.autoadaptable.metrics;
 
-import org.objectweb.proactive.extra.component.mape.monitoring.metrics.Metric;
-import org.objectweb.proactive.extra.component.mape.monitoring.metrics.MetricValue;
-import org.objectweb.proactive.extra.component.mape.monitoring.metrics.WrongMetricValueException;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.WrongMetricValueException;
 
 import examples.services.autoadaptable.AASCST;
 

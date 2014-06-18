@@ -4,6 +4,8 @@
 <definition name="test.Composite">
 
 	<interface signature="test.Master" role="server" name="test"/>
+	<interface signature="org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast"
+		role="client" name="multicast-itf" cardinality="multicast"/>
 
 	<component name="Master">
 		<interface signature="test.Master" role="server" name="master"/>

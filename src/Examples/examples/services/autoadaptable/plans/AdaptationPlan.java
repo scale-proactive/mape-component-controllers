@@ -1,10 +1,10 @@
 package examples.services.autoadaptable.plans;
 
-import org.objectweb.proactive.extra.component.mape.analysis.Alarm;
-import org.objectweb.proactive.extra.component.mape.execution.ExecutorController;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.monitoring.metrics.WrongMetricValueException;
-import org.objectweb.proactive.extra.component.mape.planning.Plan;
+import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Alarm;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.WrongMetricValueException;
+import org.objectweb.proactive.extensions.autonomic.controllers.planning.Plan;
 
 import examples.services.autoadaptable.AASCST;
 

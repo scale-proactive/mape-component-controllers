@@ -4,9 +4,9 @@ import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.node.Node;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
-import org.objectweb.proactive.extra.component.mape.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
 import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 
 import examples.services.ServiceClient;

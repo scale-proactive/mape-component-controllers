@@ -16,7 +16,7 @@ import org.objectweb.proactive.core.component.type.Composite;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
-import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
 import examples.services.Service;

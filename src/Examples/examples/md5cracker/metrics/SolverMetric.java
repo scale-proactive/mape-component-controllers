@@ -3,9 +3,9 @@ package examples.md5cracker.metrics;
 import java.io.Serializable;
 import java.util.List;
 
-import org.objectweb.proactive.extra.component.mape.monitoring.metrics.Metric;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.Condition;
-import org.objectweb.proactive.extra.component.mape.monitoring.records.IncomingRequestRecord;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.Condition;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
 
 import examples.md5cracker.cracker.CCST;
 

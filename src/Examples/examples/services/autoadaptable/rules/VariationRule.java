@@ -1,8 +1,8 @@
 package examples.services.autoadaptable.rules;
 
-import org.objectweb.proactive.extra.component.mape.analysis.Alarm;
-import org.objectweb.proactive.extra.component.mape.analysis.Rule;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Alarm;
+import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Rule;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 
 import examples.services.autoadaptable.AASCST;
 

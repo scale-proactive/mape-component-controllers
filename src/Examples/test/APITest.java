@@ -14,8 +14,8 @@ import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.Composite;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extra.component.mape.execution.Action;
-import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.Action;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
 public class APITest {

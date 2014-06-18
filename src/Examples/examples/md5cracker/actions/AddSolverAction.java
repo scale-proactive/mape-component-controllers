@@ -13,9 +13,9 @@ import org.objectweb.proactive.core.component.control.PAGCMLifeCycleController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
-import org.objectweb.proactive.extra.component.mape.execution.Action;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.Action;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
 import examples.md5cracker.CrackerFactory;
 import examples.md5cracker.cracker.CCST;

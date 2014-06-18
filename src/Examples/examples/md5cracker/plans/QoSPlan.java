@@ -1,11 +1,11 @@
 package examples.md5cracker.plans;
 
-import org.objectweb.proactive.extra.component.mape.analysis.Alarm;
-import org.objectweb.proactive.extra.component.mape.execution.ExecutorController;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.planning.Plan;
-import org.objectweb.proactive.extra.component.mape.utils.ObjectWrapper;
-import org.objectweb.proactive.extra.component.mape.utils.WrongValueException;
+import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Alarm;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.planning.Plan;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongValueException;
 
 import examples.md5cracker.actions.AddSolverAction;
 import examples.md5cracker.actions.RemoveSolverAction;

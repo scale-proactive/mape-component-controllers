@@ -17,11 +17,11 @@ import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
+import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerController;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
-import org.objectweb.proactive.extra.component.mape.analysis.AnalyzerController;
-import org.objectweb.proactive.extra.component.mape.execution.ExecutorController;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
 import org.objectweb.proactive.gcmdeployment.GCMApplication;
 import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 

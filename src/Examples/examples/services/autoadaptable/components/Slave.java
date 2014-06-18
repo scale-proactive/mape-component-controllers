@@ -1,7 +1,7 @@
 package examples.services.autoadaptable.components;
 
 
-import org.objectweb.proactive.extra.component.mape.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
 
 public interface Slave {
 

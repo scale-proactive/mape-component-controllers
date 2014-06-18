@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
-import org.objectweb.proactive.extra.component.mape.utils.ObjectWrapper;
-import org.objectweb.proactive.extra.component.mape.utils.WrongObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongObjectWrapper;
 
 import examples.services.Service;
 import examples.services.autoadaptable.AASCST;
