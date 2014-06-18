@@ -3,6 +3,17 @@
 
 <definition name="org.objectweb.proactive.extensions.autonomic.adl.AFactory" extends="org.objectweb.proactive.core.component.adl.PAFactory">
 
+	<interface name="factory" role="server" signature="org.objectweb.proactive.extensions.autonomic.adl.AFactory"/>
+
+	<!-- Factory component -->
+	<component name="factory" definition="org.objectweb.fractal.adl.FactoryType">
+		<interface name="factory" role="server" signature="org.objectweb.proactive.extensions.autonomic.adl.AFactory"/>
+		<interface role="client" name="loader" signature="org.objectweb.fractal.adl.Loader"/>
+		<interface role="client" name="compiler" signature="org.objectweb.fractal.adl.Compiler"/>
+		<interface role="client" name="scheduler" signature="org.objectweb.fractal.task.core.Scheduler"/>
+		<content class="org.objectweb.proactive.extensions.autonomic.adl.ABasicFactory"/>
+	</component>
+
 	<!-- Loader component -->
 	<component name="loader" definition="org.objectweb.proactive.extensions.autonomic.adl.ALoader"/>
 

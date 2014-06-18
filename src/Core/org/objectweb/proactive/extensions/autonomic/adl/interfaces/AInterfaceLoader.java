@@ -51,18 +51,45 @@ public class AInterfaceLoader extends PAInterfaceLoader{
             if (ctrl != null) {
             	if (functional && node instanceof InterfaceContainer) {
             		addNFAutonomicInterfaces(ctrl, (InterfaceContainer) node);
+            		checkAutonomicControllers(ctrl, (InterfaceContainer) node);
             	}
                 checkNode(ctrl, false);
+                
             }
         }
 
     }
 	
+	private void checkAutonomicControllers(Controller ctrl, InterfaceContainer fItfContainer) {
+		if (ctrl instanceof ComponentContainer) {
+			ComponentContainer cc = (ComponentContainer) ctrl;
+			for (final Component comp : cc.getComponents()) {
+				if (comp.getName().equals("Slave")) {
+					if (comp instanceof InterfaceContainer) {
+						InterfaceContainer slaveItfContainer = (InterfaceContainer) comp;
+						for (Interface fItf : fItfContainer.getInterfaces()) {
+							Interface newFItf = gson.fromJson(gson.toJson(fItf), fItf.getClass());
+							Map<String, String> attr = newFItf.astGetAttributes();
+							attr.put("role", PATypeInterface.CLIENT_ROLE);
+							attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
+							newFItf.astSetAttributes(attr);
+				
+							slaveItfContainer.addInterface(newFItf);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/**
-	 * Add the generated NF interfaces to the controller container, if it exists
+	 * Add the NF interfaces required to turn this component autonomic. This NF are generated in base of
+	 * the F interfaces, and requires that the component definition ADL explicitly indicates the controller
+	 * description tag (composite or primitive).
+	 * 
 	 * @param ctrl
-	 * @param fItfContainer
-	 * @throws ADLException 
+	 * @param itfContainer
+	 * @throws ADLException
 	 */
 	protected void addNFAutonomicInterfaces(Controller ctrl, InterfaceContainer itfContainer) throws ADLException {
 
@@ -77,46 +104,18 @@ public class AInterfaceLoader extends PAInterfaceLoader{
 		// I need at least one interface as a reference.
 		if (functionalItfs.length > 0) {
 
-			// Generate a copy of this generated-class interface object
-			Interface nfItf = gson.fromJson(gson.toJson(functionalItfs[0]), functionalItfs[0].getClass());
+			addControllerInterfaces(functionalItfs[0], nfItfContainer);
 			
-			Map<String, String> attr = nfItf.astGetAttributes();
-			attr.put("name", ACConstants.MONITOR_CONTROLLER);
-			attr.put("role", PATypeInterface.SERVER_ROLE);
-			attr.put("cardinality", PATypeInterface.SINGLETON_CARDINALITY);
-			attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
-			attr.put("signature", MonitorController.class.getName());
-			nfItf.astSetAttributes(attr);
-			nfItfContainer.addInterface(nfItf);
-			
-			nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
-			attr = nfItf.astGetAttributes();
-			attr.put("name", ACConstants.ANALYZER_CONTROLLER);
-			attr.put("signature", AnalyzerController.class.getName());
-			nfItf.astSetAttributes(attr);
-			nfItfContainer.addInterface(nfItf);
-			
-			nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
-			attr = nfItf.astGetAttributes();
-			attr.put("name", ACConstants.PLANNER_CONTROLLER);
-			attr.put("signature", PlannerController.class.getName());
-			nfItf.astSetAttributes(attr);
-			nfItfContainer.addInterface(nfItf);
-			
-			nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
-			attr = nfItf.astGetAttributes();
-			attr.put("name", ACConstants.EXECUTOR_CONTROLLER);
-			attr.put("signature", ExecutorController.class.getName());
-			nfItf.astSetAttributes(attr);
-			nfItfContainer.addInterface(nfItf);
-
 			// Add internal server nf autonomic interface on composite components.
 			if (hierarchy.equals("composite")) {
 
-				nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
-				attr = nfItf.astGetAttributes();
+				Interface nfItf = gson.fromJson(gson.toJson(functionalItfs[0]), functionalItfs[0].getClass());
+
+				Map<String, String> attr = nfItf.astGetAttributes();
 				attr.put("name", ACConstants.INTERNAL_SERVER_NFITF);
 				attr.put("role", PATypeInterface.INTERNAL_SERVER_ROLE);
+				attr.put("cardinality", PATypeInterface.SINGLETON_CARDINALITY);
+				attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
 				attr.put("signature", MonitorController.class.getName());
 				nfItf.astSetAttributes(attr);
 	
@@ -170,4 +169,43 @@ public class AInterfaceLoader extends PAInterfaceLoader{
 		}
 	}
 
+	private void addControllerInterfaces(Interface reference, InterfaceContainer destination) {
+		
+		// Generate a copy of this generated-class interface object
+		Interface nfItf = gson.fromJson(gson.toJson(reference), reference.getClass());
+		
+		// Monitor
+		Map<String, String> attr = nfItf.astGetAttributes();
+		attr.put("name", ACConstants.MONITOR_CONTROLLER);
+		attr.put("role", PATypeInterface.SERVER_ROLE);
+		attr.put("cardinality", PATypeInterface.SINGLETON_CARDINALITY);
+		attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
+		attr.put("signature", MonitorController.class.getName());
+		nfItf.astSetAttributes(attr);
+		destination.addInterface(nfItf);
+		
+		// Analyzer
+		nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
+		attr = nfItf.astGetAttributes();
+		attr.put("name", ACConstants.ANALYZER_CONTROLLER);
+		attr.put("signature", AnalyzerController.class.getName());
+		nfItf.astSetAttributes(attr);
+		destination.addInterface(nfItf);
+		
+		// Planner
+		nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
+		attr = nfItf.astGetAttributes();
+		attr.put("name", ACConstants.PLANNER_CONTROLLER);
+		attr.put("signature", PlannerController.class.getName());
+		nfItf.astSetAttributes(attr);
+		destination.addInterface(nfItf);
+		
+		// Executor
+		nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
+		attr = nfItf.astGetAttributes();
+		attr.put("name", ACConstants.EXECUTOR_CONTROLLER);
+		attr.put("signature", ExecutorController.class.getName());
+		nfItf.astSetAttributes(attr);
+		destination.addInterface(nfItf);
+	}
 }

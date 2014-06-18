@@ -18,22 +18,35 @@ import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.ACConstants;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast;
-import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
-public class AutonomicADLServiceTest extends CommonSetup {
+public class TestNFInterfacesADL extends CommonSetup {
 
 	Factory adlFactory;
-	Component composite;
 
 	@Before
 	 public void setUp() throws Exception {
 		super.setUp();
 		adlFactory = AFactoryFactory.getAFactory();
-		composite = (Component) adlFactory.newComponent("tests.components.Composite", new HashMap<String, Object>());
 	}
 
 	@Test
-    public void nfInterfacesAddition() {
+    public void FailInterfacesAddition() {
+		try {
+			adlFactory.newComponent("tests.components.FailComposite", null);
+		} catch (Exception e) {
+			assert(true);
+		}
+	}
+
+	@Test
+    public void InterfacesAddition() {
+		Component composite = null;
+		try {
+			composite = (Component) adlFactory.newComponent("tests.components.Composite", null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		
 		boolean found = false;
 		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
@@ -110,39 +123,6 @@ public class AutonomicADLServiceTest extends CommonSetup {
 			}
 		}
 		assert(found);
-	}
-	
-	@Test
-    public void nfControllersAddition() {
 
-		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
-			if (itf instanceof PAInterface) {
-				System.out.println(((PAGCMInterfaceType) ((PAInterface) itf).getFcItfType()).getFcItfName());
-			}
-		}
-		try {
-			Utils.getPAMembraneController(composite).startMembrane();
-			Remmos.addMonitoring(composite);
-			Remmos.addAnalysis(composite);
-			Remmos.addPlannerController(composite);
-			Remmos.addExecutorController(composite);
-			for (Component subComp : Utils.getPAContentController(composite).getFcSubComponents()) {
-				Utils.getPAMembraneController(subComp).startMembrane();
-				Remmos.addMonitoring(subComp);
-				Remmos.addAnalysis(subComp);
-				Remmos.addPlannerController(subComp);
-				Remmos.addExecutorController(subComp);
-			}
-			
-			Remmos.enableMonitoring(composite);
-			assert( (boolean) Remmos.getExecutorController(composite).execute("true();").getObject());
-			for (Component subComp : Utils.getPAContentController(composite).getFcSubComponents()) {
-				assert( (boolean) Remmos.getExecutorController(subComp).execute("true();").getObject());
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
 	}
 }
