@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE definition PUBLIC "-//objectweb.org//DTD Fractal ADL 2.0//EN" "classpath://org/objectweb/proactive/core/component/adl/xml/proactive.dtd">
 
-<definition name="tests.components.Composite">
+<definition name="tests.components.FailComposite">
 
 	<interface name="test-itf" role="server" signature="tests.components.Master"/>
 	<interface name="multicast-itf" role="client" cardinality="multicast"

@@ -26,19 +26,13 @@ public class TestControllersADL extends CommonSetup {
 	@Test
     public void TestControllers() {
 		try {
-			composite = (Component) adlFactory.newAutonomicComponent("tests.components.Composite", new HashMap<String, Object>());
-	
-			Utils.getPAMembraneController(composite).startMembrane();
-			for (Component subComp : Utils.getPAContentController(composite).getFcSubComponents()) {
-				Utils.getPAMembraneController(subComp).startMembrane();
-			}
-			
+			composite = (Component) adlFactory.newAutonomicComponent("tests.components.Composite", null);
+
 			Remmos.enableMonitoring(composite);
 			assert( (boolean) Remmos.getExecutorController(composite).execute("true();").getObject());
 			for (Component subComp : Utils.getPAContentController(composite).getFcSubComponents()) {
 				assert( (boolean) Remmos.getExecutorController(subComp).execute("true();").getObject());
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

@@ -118,9 +118,9 @@ public class Remmos {
 	private static final String MONITOR_SERVICE_COMP = "monitor-service-NF";
 	private static final String METRICS_STORE_COMP = "metrics-store-NF";
 	
-	private static final String ANALYSIS_CONTROLLER_COMP = "analysis-controller-NF";
-	private static final String PLANNER_CONTROLLER_COMP = "PlannerController";
-	private static final String EXECUTION_CONTROLLER_COMP = "execution-controller-NF";
+	private static final String ANALYZER_CONTROLLER_COMP = "analyzer-controller-NF";
+	private static final String PLANNER_CONTROLLER_COMP = "planner-controller-NF";
+	private static final String EXECUTOR_CONTROLLER_COMP = "executor-controller-NF";
 	
 	// SLA Management-related Components
 	// public static final String SLA_SERVICE_COMP = "sla-service-NF";
@@ -349,19 +349,19 @@ public class Remmos {
 		PAMembraneController membrane = Utils.getPAMembraneController(component);
 		PAGCMLifeCycleController lifeCycle = Utils.getPAGCMLifeCycleController(component);
 		States oldStates = stopMembraneAndLifeCycle(membrane, lifeCycle);
-
+		
 		// add components to the membrane
 		Node node = getDeploymentNode(component);
 		Component eventListener = createBasicEventListener(patf, pagf, EventListener.class.getName(), node);
 		Component recordStore = createBasicRecordStore(patf, pagf, RecordStoreImpl.class.getName(), node);
 		Component monitorService = createMonitorService(patf, pagf, MonitorControllerImpl.class.getName(), component, node);
 		Component metricsStore = createMetricsStore(patf, pagf, MetricStoreImpl.class.getName(), component, node);
-	
+		
 		membrane.nfAddFcSubComponent(eventListener);
 		membrane.nfAddFcSubComponent(recordStore);
 		membrane.nfAddFcSubComponent(monitorService);
 		membrane.nfAddFcSubComponent(metricsStore);
-
+		
 		// bindings between NF components
 		membrane.nfBindFc(MONITOR_SERVICE_COMP+"."+EventControl.ITF_NAME, EVENT_LISTENER_COMP+"."+EventControl.ITF_NAME);
 		membrane.nfBindFc(MONITOR_SERVICE_COMP+"."+RecordStore.ITF_NAME, RECORD_STORE_COMP+"."+RecordStore.ITF_NAME);
@@ -369,7 +369,7 @@ public class Remmos {
 		membrane.nfBindFc(EVENT_LISTENER_COMP+"."+RecordStore.ITF_NAME, RECORD_STORE_COMP+"."+RecordStore.ITF_NAME);
 		membrane.nfBindFc(EVENT_LISTENER_COMP+"."+RemmosEventListener.ITF_NAME, METRICS_STORE_COMP+"."+RemmosEventListener.ITF_NAME);
 		membrane.nfBindFc(METRICS_STORE_COMP+"."+RecordStore.ITF_NAME, RECORD_STORE_COMP+"."+RecordStore.ITF_NAME);
-		
+
 		// binding between the NF Monitoring Interface of the host component, and the Monitor Component
 		membrane.nfBindFc(ACConstants.MONITOR_CONTROLLER, MONITOR_SERVICE_COMP+"."+MonitorController.ITF_NAME);		
 
@@ -397,20 +397,20 @@ public class Remmos {
 		
 		// Bind with membrane
 		membrane.nfBindFc(ACConstants.ANALYZER_CONTROLLER,
-				ANALYSIS_CONTROLLER_COMP + "." + AnalyzerController.ITF_NAME);
+				ANALYZER_CONTROLLER_COMP + "." + AnalyzerController.ITF_NAME);
 
 		// Assumes MonitorController already added.
-		membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + MonitorController.ITF_NAME,
+		membrane.nfBindFc(ANALYZER_CONTROLLER_COMP + "." + MonitorController.ITF_NAME,
 				MONITOR_SERVICE_COMP + "." +  MonitorController.ITF_NAME);
 		membrane.nfBindFc(METRICS_STORE_COMP+"."+MetricEventListener.ITF_NAME,
-				ANALYSIS_CONTROLLER_COMP+"."+MetricEventListener.ITF_NAME);
+				ANALYZER_CONTROLLER_COMP+"."+MetricEventListener.ITF_NAME);
 
 
 		// Bind with PlannerController if it exist. NOTE: This ugly method is needed since the
 		//  "NoSuchComponentException" is thrown only on the remote thread.
 		for (Component comp : membrane.nfGetFcSubComponents()) {
 			if (GCM.getNameController(comp).getFcName().equals(PLANNER_CONTROLLER_COMP)) {
-				membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME,
+				membrane.nfBindFc(ANALYZER_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME,
 						PLANNER_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME);
 				
 				break;
@@ -451,15 +451,15 @@ public class Remmos {
 		Component[] compControllers = membrane.nfGetFcSubComponents();
 		while ( (analyzer || executor) && i < compControllers.length ) {
 	
-			if (analyzer && GCM.getNameController(compControllers[i]).getFcName().equals(ANALYSIS_CONTROLLER_COMP)) {
-				membrane.nfBindFc(ANALYSIS_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME,
+			if (analyzer && GCM.getNameController(compControllers[i]).getFcName().equals(ANALYZER_CONTROLLER_COMP)) {
+				membrane.nfBindFc(ANALYZER_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME,
 						PLANNER_CONTROLLER_COMP + "." + AlarmListener.ITF_NAME);
 				analyzer = false;
 			}
 
-			if (executor && GCM.getNameController(compControllers[i]).getFcName().equals(EXECUTION_CONTROLLER_COMP)) {
+			if (executor && GCM.getNameController(compControllers[i]).getFcName().equals(EXECUTOR_CONTROLLER_COMP)) {
 				membrane.nfBindFc(PLANNER_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME,
-						EXECUTION_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
+						EXECUTOR_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
 				executor = false;
 			}
 
@@ -486,7 +486,7 @@ public class Remmos {
 	
 		// Bind with membrane
 		membrane.nfBindFc(ACConstants.EXECUTOR_CONTROLLER,
-				EXECUTION_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
+				EXECUTOR_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
 
 		// Bind with PlannerController if it exist. NOTE: This ugly method is needed since the
 		// "NoSuchComponentException" is thrown only on the remote thread.
@@ -495,7 +495,7 @@ public class Remmos {
 			if (GCM.getNameController(comp).getFcName().equals(PLANNER_CONTROLLER_COMP)) {
 
 				membrane.nfBindFc(PLANNER_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME,
-						EXECUTION_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
+						EXECUTOR_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
 				break;
 			}
 		}
@@ -669,7 +669,7 @@ public class Remmos {
 			};
 
 			return pagf.newNfFcInstance(patf.createFcType(itfTypes), 
-					new ControllerDescription(ANALYSIS_CONTROLLER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
+					new ControllerDescription(ANALYZER_CONTROLLER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
 					new ContentDescription(AnalyzerControllerImpl.class.getName()), node);
 
 		} catch (InstantiationException e) {
@@ -703,7 +703,7 @@ public class Remmos {
 					patf.createGCMItfType(ExecutorController.ITF_NAME, ExecutorController.class.getName(), PAGCMTypeFactory.SERVER, PAGCMTypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY),
 			};
 			return pagf.newNfFcInstance(patf.createFcType(itfTypes), 
-					new ControllerDescription(EXECUTION_CONTROLLER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
+					new ControllerDescription(EXECUTOR_CONTROLLER_COMP, Constants.PRIMITIVE, COMPONENT_CONTROLLER_CONFIG), 
 					new ContentDescription(ExecutorControllerImpl.class.getName()), node);
 
 		} catch (InstantiationException e) {

@@ -36,6 +36,7 @@ public class TestNFInterfacesADL extends CommonSetup {
 		} catch (Exception e) {
 			assert(true);
 		}
+		assert(false);
 	}
 
 	@Test
