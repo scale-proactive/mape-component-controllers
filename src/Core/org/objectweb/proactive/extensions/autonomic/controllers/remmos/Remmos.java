@@ -238,11 +238,11 @@ public class Remmos {
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.MEMBRANE_CONTROLLER, PAMembraneController.class.getName(), TypeFactory.SERVER, TypeFactory.MANDATORY, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.MULTICAST_CONTROLLER, PAMulticastController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			
-			// server Monitoring interface
+			// server Monitoring interfaces
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ACConstants.MONITOR_CONTROLLER, MonitorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
-			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(AnalyzerController.ANALYSIS_CONTROLLER, AnalyzerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
-			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(PlannerController.PLANNER_CONTROLLER, PlannerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
-			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ExecutorController.EXECUTOR_CONTROLLER, ExecutorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ACConstants.ANALYZER_CONTROLLER, AnalyzerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ACConstants.PLANNER_CONTROLLER, PlannerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ACConstants.EXECUTOR_CONTROLLER, ExecutorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 
 			String itfName;
 		
@@ -396,7 +396,7 @@ public class Remmos {
 		membrane.nfAddFcSubComponent(analyzer);
 		
 		// Bind with membrane
-		membrane.nfBindFc(AnalyzerController.ANALYSIS_CONTROLLER,
+		membrane.nfBindFc(ACConstants.ANALYZER_CONTROLLER,
 				ANALYSIS_CONTROLLER_COMP + "." + AnalyzerController.ITF_NAME);
 
 		// Assumes MonitorController already added.
@@ -437,7 +437,7 @@ public class Remmos {
 		membrane.nfAddFcSubComponent(plannerController);
 
 		// Bind with membrane
-		membrane.nfBindFc(PlannerController.PLANNER_CONTROLLER,
+		membrane.nfBindFc(ACConstants.PLANNER_CONTROLLER,
 				PLANNER_CONTROLLER_COMP + "." + PlannerController.ITF_NAME);
 
 		// Bind with monitor.
@@ -485,7 +485,7 @@ public class Remmos {
 		membrane.nfAddFcSubComponent(executorController);
 	
 		// Bind with membrane
-		membrane.nfBindFc(ExecutorController.EXECUTOR_CONTROLLER,
+		membrane.nfBindFc(ACConstants.EXECUTOR_CONTROLLER,
 				EXECUTION_CONTROLLER_COMP + "." + ExecutorController.ITF_NAME);
 
 		// Bind with PlannerController if it exist. NOTE: This ugly method is needed since the
@@ -898,10 +898,11 @@ public class Remmos {
 			States oldStates = Remmos.stopMembraneAndLifeCycle(mc, lcc);
 			
 			String clientItfName = itf.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
-			String serverItfName = itf.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX;
 			mc.nfUnbindFc(MONITOR_SERVICE_COMP + "." + clientItfName);
 			mc.nfUnbindFc(METRICS_STORE_COMP + "." + clientItfName);
 			
+			// TODO
+			//String serverItfName = itf.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX;
 			//mc.nfUnbindFc(serverItfName);
 			
 			Remmos.startMembraneAndLifeCycle(oldStates, mc, lcc);
@@ -915,15 +916,15 @@ public class Remmos {
 	}
 	
 	public static AnalyzerController getAnalyzerController(Component component) throws NoSuchInterfaceException {
-		return (AnalyzerController) component.getFcInterface(AnalyzerController.ANALYSIS_CONTROLLER);
+		return (AnalyzerController) component.getFcInterface(ACConstants.ANALYZER_CONTROLLER);
 	}
 
 	public static PlannerController getPlannerController(Component component) throws NoSuchInterfaceException {
-		return (PlannerController) component.getFcInterface(PlannerController.PLANNER_CONTROLLER);
+		return (PlannerController) component.getFcInterface(ACConstants.PLANNER_CONTROLLER);
 	}
 
 	public static ExecutorController getExecutorController(Component component) throws NoSuchInterfaceException {
-		return (ExecutorController) component.getFcInterface(ExecutorController.EXECUTOR_CONTROLLER);
+		return (ExecutorController) component.getFcInterface(ACConstants.EXECUTOR_CONTROLLER);
 	}
 
 	// UTILS

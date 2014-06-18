@@ -8,7 +8,6 @@ import org.objectweb.proactive.extra.component.fscript.exceptions.Reconfiguratio
 
 public interface ExecutorController {
 
-    public static final String EXECUTOR_CONTROLLER = "executor-controller";
     public static final String ITF_NAME = "execution-service-nf";
 
     /**

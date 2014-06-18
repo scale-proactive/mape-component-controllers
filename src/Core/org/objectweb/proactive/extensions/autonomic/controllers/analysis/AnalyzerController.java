@@ -6,7 +6,6 @@ import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Rule;
 
 public interface AnalyzerController {
 
-	public final static String ANALYSIS_CONTROLLER = "analyzer-controller";
 	public final static String ITF_NAME = "analysis-service-nf";
 
 	public void addRule(String name, Rule rule);
