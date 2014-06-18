@@ -5,7 +5,6 @@ import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extra.component.fscript.model.GCMModel;
 
 import functionalTests.ComponentTest;
 

@@ -7,9 +7,8 @@ import org.objectweb.proactive.core.component.ControllerDescription;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extra.component.mape.monitoring.MonitorController;
-import org.objectweb.proactive.extra.component.mape.monitoring.metrics.library.AvgRespTimeIncomingMetric;
-import org.objectweb.proactive.extra.component.mape.remmos.Remmos;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
 import tests.CommonSetup;
 import tests.components.ServiceA;
