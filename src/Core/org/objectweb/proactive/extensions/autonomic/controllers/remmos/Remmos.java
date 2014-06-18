@@ -80,6 +80,7 @@ import org.objectweb.proactive.core.node.NodeException;
 import org.objectweb.proactive.core.node.NodeFactory;
 import org.objectweb.proactive.core.util.log.Loggers;
 import org.objectweb.proactive.core.util.log.ProActiveLogger;
+import org.objectweb.proactive.extensions.autonomic.controllers.ACConstants;
 import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AlarmListener;
 import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerController;
 import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerControllerImpl;
@@ -130,8 +131,6 @@ public class Remmos {
 
 	private static final String COMPONENT_CONTROLLER_CONFIG = 
 		"/org/objectweb/proactive/core/component/componentcontroller/config/default-component-controller-config.xml";
-
-	private static final String INTERNAL_MON_ITF = "internal-server-" + MonitorController.MONITOR_CONTROLLER;
 
 	private static PAGCMTypeFactory patf;
 	private static PAGenericFactory pagf;
@@ -240,7 +239,7 @@ public class Remmos {
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(Constants.MULTICAST_CONTROLLER, PAMulticastController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			
 			// server Monitoring interface
-			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(MonitorController.MONITOR_CONTROLLER, MonitorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
+			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ACConstants.MONITOR_CONTROLLER, MonitorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(AnalyzerController.ANALYSIS_CONTROLLER, AnalyzerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(PlannerController.PLANNER_CONTROLLER, PlannerController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(ExecutorController.EXECUTOR_CONTROLLER, ExecutorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
@@ -252,7 +251,7 @@ public class Remmos {
 			// Support client-singleton, and client-multicast interfaces
 			for(PAGCMInterfaceType itfType : fItfType) {
 				if (!itfType.isFcClientItf()) continue;
-				itfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
+				itfName = itfType.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX;
 				if ((itfType.isGCMSingletonItf() && !itfType.isGCMCollectiveItf()) || itfType.isGCMGathercastItf()) {
 					// add a client-singleton interface
 					typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(itfName, MonitorController.class.getName(), TypeFactory.CLIENT, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY));
@@ -269,12 +268,12 @@ public class Remmos {
 				for(PAGCMInterfaceType itfType : fItfType) {
 					// only server-singleton supported ... others ignored
 					if(!itfType.isFcClientItf() && itfType.isGCMSingletonItf() && !itfType.isGCMCollectiveItf()) {
-						itfName = itfType.getFcItfName() + "-internal-"+MonitorController.MONITOR_CONTROLLER;
+						itfName = itfType.getFcItfName() + ACConstants.INTERNAL_CLIENT_SUFFIX;
 						typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(itfName, MonitorController.class.getName(), TypeFactory.CLIENT, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY, PAGCMTypeFactory.INTERNAL));
 					}
 				}
 				// one server internal Monitoring interface in each composite
-				itfName = "internal-server-" + MonitorController.MONITOR_CONTROLLER;
+				itfName = ACConstants.INTERNAL_SERVER_NFITF;
 				typeList.add((PAGCMInterfaceType) pagcmTf.createGCMItfType(itfName, MonitorController.class.getName(), TypeFactory.SERVER, TypeFactory.OPTIONAL, PAGCMTypeFactory.SINGLETON_CARDINALITY, PAGCMTypeFactory.INTERNAL));
 			}
 
@@ -372,13 +371,13 @@ public class Remmos {
 		membrane.nfBindFc(METRICS_STORE_COMP+"."+RecordStore.ITF_NAME, RECORD_STORE_COMP+"."+RecordStore.ITF_NAME);
 		
 		// binding between the NF Monitoring Interface of the host component, and the Monitor Component
-		membrane.nfBindFc(MonitorController.MONITOR_CONTROLLER, MONITOR_SERVICE_COMP+"."+MonitorController.ITF_NAME);		
+		membrane.nfBindFc(ACConstants.MONITOR_CONTROLLER, MONITOR_SERVICE_COMP+"."+MonitorController.ITF_NAME);		
 
 		boolean isComposite = ((PAComponent) component).getComponentParameters().getHierarchicalType().equals(Constants.COMPOSITE);
 
 		if (isComposite) {
 			// and the binding from the internal server monitor interface, back to the NF Monitor Component
-			String clientItfName = "internal-server-" + MonitorController.MONITOR_CONTROLLER;
+			String clientItfName = ACConstants.INTERNAL_SERVER_NFITF;
 			String serverItfName = MonitorController.ITF_NAME;
 			membrane.nfBindFc(clientItfName, MONITOR_SERVICE_COMP + "." + serverItfName);
 		}
@@ -766,7 +765,7 @@ public class Remmos {
 
 			if(isComposite && isSingleton && !itfType.isFcClientItf()) {
 				
-				if ( isAlreadyBound(itfType.getFcItfName() + "-internal-" + MonitorController.MONITOR_CONTROLLER, membrane) ) {
+				if ( isAlreadyBound(itfType.getFcItfName() + ACConstants.INTERNAL_CLIENT_SUFFIX, membrane) ) {
 					continue; // break loops
 				}
 		
@@ -777,7 +776,7 @@ public class Remmos {
 				}
 	
 				String clientItfName = itfType.getFcItfName() + "-internal-" + MonitorController.ITF_NAME;
-				String serverItfName = itfType.getFcItfName() + "-internal-" + MonitorController.MONITOR_CONTROLLER;
+				String serverItfName = itfType.getFcItfName() + ACConstants.INTERNAL_CLIENT_SUFFIX;
 				try {
 					membrane.stopMembrane();
 					membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
@@ -796,7 +795,7 @@ public class Remmos {
 			
 			if (isSingleton || itfType.isGCMGathercastItf()) {
 				
-				if (isAlreadyBound(itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER, membrane)) {
+				if (isAlreadyBound(itfType.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX, membrane)) {
 					continue; // break loops
 				}
 				
@@ -813,13 +812,13 @@ public class Remmos {
 				}
 				
 				String clientItfName = itfType.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
-				String serverItfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
+				String serverItfName = itfType.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX;
 				
 				try {
 					membrane.stopMembrane();
 					membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
 					membrane.nfBindFc(MONITOR_SERVICE_COMP + "." + clientItfName, serverItfName);
-					membrane.nfBindFc(itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER, externalMonitor);
+					membrane.nfBindFc(itfType.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX, externalMonitor);
 					membrane.startMembrane();
 				} catch(Exception e) {
 					e.printStackTrace();
@@ -835,7 +834,7 @@ public class Remmos {
 					PAMulticastController pamc = Utils.getPAMulticastController(pacomponent);
 					
 					// Remove old NF destinations
-					String nfItfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
+					String nfItfName = itfType.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX;
 					try {
 						Object[] nfItfs = pamc.lookupGCMMulticast(nfItfName);
 						for (Object nfItf : nfItfs) {
@@ -865,13 +864,13 @@ public class Remmos {
 						}
 			
 						String clientItfName = itfType.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
-						String serverItfName = itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
+						String serverItfName = itfType.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX;
 						
 						try {
 							membrane.stopMembrane();
 							membrane.nfBindFc(METRICS_STORE_COMP + "." + clientItfName, serverItfName);
 							membrane.nfBindFc(MONITOR_SERVICE_COMP + "." + clientItfName, serverItfName);
-							membrane.nfBindFc(itfType.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER, externalMonitor);
+							membrane.nfBindFc(itfType.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX, externalMonitor);
 							membrane.startMembrane();
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -899,7 +898,7 @@ public class Remmos {
 			States oldStates = Remmos.stopMembraneAndLifeCycle(mc, lcc);
 			
 			String clientItfName = itf.getFcItfName() + "-external-" + MonitorController.ITF_NAME;
-			String serverItfName = itf.getFcItfName() + "-external-" + MonitorController.MONITOR_CONTROLLER;
+			String serverItfName = itf.getFcItfName() + ACConstants.EXTERNAL_CLIENT_SUFFIX;
 			mc.nfUnbindFc(MONITOR_SERVICE_COMP + "." + clientItfName);
 			mc.nfUnbindFc(METRICS_STORE_COMP + "." + clientItfName);
 			
@@ -912,7 +911,7 @@ public class Remmos {
 	// COMPONENT CONTROLLERS GETTERS
 
 	public static MonitorController getMonitorController(Component component) throws NoSuchInterfaceException {
-		return (MonitorController) component.getFcInterface(MonitorController.MONITOR_CONTROLLER);
+		return (MonitorController) component.getFcInterface(ACConstants.MONITOR_CONTROLLER);
 	}
 	
 	public static AnalyzerController getAnalyzerController(Component component) throws NoSuchInterfaceException {
@@ -995,7 +994,7 @@ public class Remmos {
 	
 	private static MonitorController getInternalMonitorControllerOrNull(Component comp) {
 		try {
-			return (MonitorController) comp.getFcInterface(INTERNAL_MON_ITF);
+			return (MonitorController) comp.getFcInterface(ACConstants.INTERNAL_SERVER_NFITF);
 		} catch(Exception e) {
 			return null;
 		}

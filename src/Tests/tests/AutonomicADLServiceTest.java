@@ -18,6 +18,7 @@ import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.ACConstants;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
 public class AutonomicADLServiceTest extends CommonSetup {
 
@@ -37,9 +38,9 @@ public class AutonomicADLServiceTest extends CommonSetup {
 		boolean found = false;
 		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
 			if (itf instanceof PAInterface
-					&& ((PAInterface) itf).getFcItfName().equals("test-itf" + ACConstants.ANF_CLIENT_ITF_SUFFIX)) {
+					&& ((PAInterface) itf).getFcItfName().equals("test-itf" + ACConstants.INTERNAL_CLIENT_SUFFIX)) {
 				PAGCMInterfaceType type = (PAGCMInterfaceType) ((PAInterface) itf).getFcItfType();
-				assert(type.getFcItfName().equals("test-itf" + ACConstants.ANF_CLIENT_ITF_SUFFIX));
+				assert(type.getFcItfName().equals("test-itf" + ACConstants.INTERNAL_CLIENT_SUFFIX));
 				assert(type.getGCMCardinality().equals(PAGCMTypeFactory.SINGLETON_CARDINALITY));
 				assert(type.getFcItfSignature().equals(MonitorController.class.getName()));
 				assert(type.isInternal() == PAGCMTypeFactory.INTERNAL);
@@ -53,9 +54,9 @@ public class AutonomicADLServiceTest extends CommonSetup {
 		found = false;
 		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
 			if (itf instanceof PAInterface
-					&& ((PAInterface) itf).getFcItfName().equals("multicast-itf" + ACConstants.ANF_CLIENT_ITF_SUFFIX)) {
+					&& ((PAInterface) itf).getFcItfName().equals("multicast-itf" + ACConstants.EXTERNAL_CLIENT_SUFFIX)) {
 				PAGCMInterfaceType type = (PAGCMInterfaceType) ((PAInterface) itf).getFcItfType();
-			assert(type.getFcItfName().equals("multicast-itf" + ACConstants.ANF_CLIENT_ITF_SUFFIX));
+			assert(type.getFcItfName().equals("multicast-itf" + ACConstants.EXTERNAL_CLIENT_SUFFIX));
 			assert(type.getGCMCardinality().equals(PAGCMTypeFactory.MULTICAST_CARDINALITY));
 			assert(type.getFcItfSignature().equals(MonitorControllerMulticast.class.getName()));
 			assert(type.isInternal() == PAGCMTypeFactory.EXTERNAL);
@@ -69,9 +70,9 @@ public class AutonomicADLServiceTest extends CommonSetup {
 		found = false;
 		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
 			if (itf instanceof PAInterface
-					&& ((PAInterface) itf).getFcItfName().equals(ACConstants.ANF_INTERNAL_SERVER_ITF)) {
+					&& ((PAInterface) itf).getFcItfName().equals(ACConstants.INTERNAL_SERVER_NFITF)) {
 				PAGCMInterfaceType type = (PAGCMInterfaceType) ((PAInterface) itf).getFcItfType();
-				assert(type.getFcItfName().equals(ACConstants.ANF_INTERNAL_SERVER_ITF));
+				assert(type.getFcItfName().equals(ACConstants.INTERNAL_SERVER_NFITF));
 				assert(type.getGCMCardinality().equals(PAGCMTypeFactory.SINGLETON_CARDINALITY));
 				assert(type.getFcItfSignature().equals(MonitorController.class.getName()));
 				assert(type.isInternal() == PAGCMTypeFactory.INTERNAL);
@@ -97,9 +98,9 @@ public class AutonomicADLServiceTest extends CommonSetup {
 		found = false;
 		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
 			if (itf instanceof PAInterface
-					&& ((PAInterface) itf).getFcItfName().equals("master" + ACConstants.ANF_CLIENT_ITF_SUFFIX)) {
+					&& ((PAInterface) itf).getFcItfName().equals("master" + ACConstants.EXTERNAL_CLIENT_SUFFIX)) {
 				PAGCMInterfaceType type = (PAGCMInterfaceType) ((PAInterface) itf).getFcItfType();
-			assert(type.getFcItfName().equals("master" + ACConstants.ANF_CLIENT_ITF_SUFFIX));
+			assert(type.getFcItfName().equals("master" + ACConstants.EXTERNAL_CLIENT_SUFFIX));
 			assert(type.getGCMCardinality().equals(PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			assert(type.getFcItfSignature().equals(MonitorController.class.getName()));
 			assert(type.isInternal() == PAGCMTypeFactory.EXTERNAL);
@@ -109,6 +110,39 @@ public class AutonomicADLServiceTest extends CommonSetup {
 			}
 		}
 		assert(found);
+	}
+	
+	@Test
+    public void nfControllersAddition() {
 
+		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
+			if (itf instanceof PAInterface) {
+				System.out.println(((PAGCMInterfaceType) ((PAInterface) itf).getFcItfType()).getFcItfName());
+			}
+		}
+		try {
+			Utils.getPAMembraneController(composite).startMembrane();
+			Remmos.addMonitoring(composite);
+			Remmos.addAnalysis(composite);
+			Remmos.addPlannerController(composite);
+			Remmos.addExecutorController(composite);
+			for (Component subComp : Utils.getPAContentController(composite).getFcSubComponents()) {
+				Utils.getPAMembraneController(subComp).startMembrane();
+				Remmos.addMonitoring(subComp);
+				Remmos.addAnalysis(subComp);
+				Remmos.addPlannerController(subComp);
+				Remmos.addExecutorController(subComp);
+			}
+			
+			Remmos.enableMonitoring(composite);
+			assert( (boolean) Remmos.getExecutorController(composite).execute("true();").getObject());
+			for (Component subComp : Utils.getPAContentController(composite).getFcSubComponents()) {
+				assert( (boolean) Remmos.getExecutorController(subComp).execute("true();").getObject());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 }

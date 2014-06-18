@@ -38,20 +38,14 @@ package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.objectweb.proactive.core.ProActiveRuntimeException;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.RequestPath;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.ComponentRequestID;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
 
 
 public interface MonitorController {
 
-	public static final String MONITOR_CONTROLLER = "monitor-controller";
 	public static final String ITF_NAME = "monitor-service-nf";
 
 	void startGCMMonitoring();

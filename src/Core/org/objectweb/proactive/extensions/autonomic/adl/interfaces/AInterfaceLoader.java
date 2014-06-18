@@ -11,8 +11,12 @@ import org.objectweb.fractal.adl.interfaces.Interface;
 import org.objectweb.fractal.adl.interfaces.InterfaceContainer;
 import org.objectweb.proactive.core.component.adl.interfaces.PAInterfaceLoader;
 import org.objectweb.proactive.core.component.adl.types.PATypeInterface;
+import org.objectweb.proactive.extensions.autonomic.controllers.ACConstants;
+import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerController;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast;
+import org.objectweb.proactive.extensions.autonomic.controllers.planning.PlannerController;
 
 import com.google.gson.Gson;
 
@@ -70,22 +74,54 @@ public class AInterfaceLoader extends PAInterfaceLoader{
 		InterfaceContainer nfItfContainer = (InterfaceContainer) ctrl;
 		Interface[] functionalItfs = itfContainer.getInterfaces();
 
-		// Add internal server nf autonomic interface on composite components.
 		// I need at least one interface as a reference.
-		if (hierarchy.equals("composite") && functionalItfs.length > 0) {
-			
+		if (functionalItfs.length > 0) {
+
 			// Generate a copy of this generated-class interface object
 			Interface nfItf = gson.fromJson(gson.toJson(functionalItfs[0]), functionalItfs[0].getClass());
-
+			
 			Map<String, String> attr = nfItf.astGetAttributes();
-			attr.put("name", "internal-server-monitor-controller");
-			attr.put("role", PATypeInterface.INTERNAL_SERVER_ROLE);
-			attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
+			attr.put("name", ACConstants.MONITOR_CONTROLLER);
+			attr.put("role", PATypeInterface.SERVER_ROLE);
 			attr.put("cardinality", PATypeInterface.SINGLETON_CARDINALITY);
+			attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
 			attr.put("signature", MonitorController.class.getName());
 			nfItf.astSetAttributes(attr);
-
 			nfItfContainer.addInterface(nfItf);
+			
+			nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
+			attr = nfItf.astGetAttributes();
+			attr.put("name", ACConstants.ANALYZER_CONTROLLER);
+			attr.put("signature", AnalyzerController.class.getName());
+			nfItf.astSetAttributes(attr);
+			nfItfContainer.addInterface(nfItf);
+			
+			nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
+			attr = nfItf.astGetAttributes();
+			attr.put("name", ACConstants.PLANNER_CONTROLLER);
+			attr.put("signature", PlannerController.class.getName());
+			nfItf.astSetAttributes(attr);
+			nfItfContainer.addInterface(nfItf);
+			
+			nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
+			attr = nfItf.astGetAttributes();
+			attr.put("name", ACConstants.EXECUTOR_CONTROLLER);
+			attr.put("signature", ExecutorController.class.getName());
+			nfItf.astSetAttributes(attr);
+			nfItfContainer.addInterface(nfItf);
+
+			// Add internal server nf autonomic interface on composite components.
+			if (hierarchy.equals("composite")) {
+
+				nfItf = gson.fromJson(gson.toJson(nfItf), nfItf.getClass());
+				attr = nfItf.astGetAttributes();
+				attr.put("name", ACConstants.INTERNAL_SERVER_NFITF);
+				attr.put("role", PATypeInterface.INTERNAL_SERVER_ROLE);
+				attr.put("signature", MonitorController.class.getName());
+				nfItf.astSetAttributes(attr);
+	
+				nfItfContainer.addInterface(nfItf);
+			}
 		}
 
 		for (final Interface fItf : functionalItfs) {
@@ -98,7 +134,7 @@ public class AInterfaceLoader extends PAInterfaceLoader{
     			Interface autonomicNFItf = gson.fromJson(gson.toJson(fItf), fItf.getClass());
     			
     			Map<String, String> attr = autonomicNFItf.astGetAttributes();
-    			attr.put("name", attr.get("name") + "-internal-monitor-controller");
+    			attr.put("name", attr.get("name") + ACConstants.INTERNAL_CLIENT_SUFFIX);
     			attr.put("role", PATypeInterface.INTERNAL_CLIENT_ROLE);
     			attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
     			attr.put("cardinality", PATypeInterface.SINGLETON_CARDINALITY);
@@ -114,7 +150,7 @@ public class AInterfaceLoader extends PAInterfaceLoader{
     			Interface autonomicNFItf = gson.fromJson(gson.toJson(fItf), fItf.getClass());
     			
     			Map<String, String> attr = autonomicNFItf.astGetAttributes();
-    			attr.put("name", attr.get("name") + "-external-monitor-controller");
+    			attr.put("name", attr.get("name") + ACConstants.EXTERNAL_CLIENT_SUFFIX);
     			attr.put("role", PATypeInterface.CLIENT_ROLE);
     			attr.put("contingency", PATypeInterface.OPTIONAL_CONTINGENCY);
 
