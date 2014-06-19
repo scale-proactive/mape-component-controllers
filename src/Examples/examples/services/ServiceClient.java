@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 import examples.services.autoadaptable.AASCST;
 
@@ -47,7 +47,7 @@ public class ServiceClient implements Runnable, Serializable {
 		while (true) {
 			String word = getRandomWord();
 			long init = System.currentTimeMillis();
-			ObjectWrapper ow = cracker.crack(md5.digest(word.getBytes()), maxLength);
+			Wrapper<String> ow = cracker.crack(md5.digest(word.getBytes()), maxLength);
 			if ( ! ow.isValid() ) {
 				System.out.println ("The service is failing.......................");
 			}

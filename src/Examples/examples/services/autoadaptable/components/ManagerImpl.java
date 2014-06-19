@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 
 import examples.services.Service;
 import examples.services.autoadaptable.AASCST;
@@ -57,7 +57,7 @@ public class ManagerImpl implements Service, ManagerAttributes, BindingControlle
 	}
 
 	@Override
-	public ObjectWrapper crack(byte[] hash, int maxLength) {
+	public Wrapper<String> crack(byte[] hash, int maxLength) {
 		
 		long possibilities = 0;
 		for (int i = 1; i <= maxLength; i++)
@@ -69,21 +69,21 @@ public class ManagerImpl implements Service, ManagerAttributes, BindingControlle
 		
 		long from = 0;
 		long to = (long) Math.floor(possibilities * p1);
-		ObjectWrapper r1 = solver1.crack(from, to, hash, maxLength);
+		Wrapper<String> r1 = solver1.crack(from, to, hash, maxLength);
 		from = (long) Math.ceil(possibilities * p1);
 		if (from == to) from++;
 		to = (long) Math.floor(possibilities * p2);
-		ObjectWrapper r2 = solver2.crack(from, to, hash, maxLength);
+		Wrapper<String> r2 = solver2.crack(from, to, hash, maxLength);
 		from = (long) Math.ceil(possibilities * p2);
 		if (from == to) from++;
-		ObjectWrapper r3 = solver3.crack(from, possibilities, hash, maxLength);
+		Wrapper<String> r3 = solver3.crack(from, possibilities, hash, maxLength);
 	
 		boolean b1 = r1.isValid();
 		boolean b2 = r2.isValid();
 		boolean b3 = r3.isValid();
 		
 		//System.out.println(msg + " [" + b1 + ", " + b2 + ", " + b3 + "]");
-		return b1 ? r1 : b2 ? r2 : b3 ? r3 : new WrongObjectWrapper("solution not found...");
+		return b1 ? r1 : b2 ? r2 : b3 ? r3 : new WrongWrapper<String>("solution not found...");
 	}
 
 	@Override

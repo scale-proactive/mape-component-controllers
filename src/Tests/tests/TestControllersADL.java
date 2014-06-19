@@ -27,9 +27,9 @@ public class TestControllersADL extends CommonSetup {
 			composite = (Component) adlFactory.newAutonomicComponent("tests.components.Composite", null);
 
 			Remmos.enableMonitoring(composite);
-			assert( (boolean) Remmos.getExecutorController(composite).execute("true();").getObject());
+			assert("True".equals(Remmos.getExecutorController(composite).execute("true();").get()));
 			for (Component subComp : Utils.getPAContentController(composite).getFcSubComponents()) {
-				assert( (boolean) Remmos.getExecutorController(subComp).execute("true();").getObject());
+				assert("True".equals(Remmos.getExecutorController(subComp).execute("true();").get()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

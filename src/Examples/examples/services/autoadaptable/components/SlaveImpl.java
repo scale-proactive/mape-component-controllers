@@ -4,9 +4,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidObjectWrapper;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 
 import examples.services.autoadaptable.AASCST;
 
@@ -15,14 +15,14 @@ public class SlaveImpl implements Slave {
 	private MessageDigest md5;
 	
 	@Override
-	public ObjectWrapper workOn(Task task) {
+	public Wrapper<String> workOn(Task task) {
         
 		if (md5 == null) {
 			try {
 				md5 = MessageDigest.getInstance("MD5");
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
-				new WrongObjectWrapper("This shouldnt happen");
+				new WrongWrapper<String>("This shouldnt happen");
 			}
 		}
 		
@@ -32,14 +32,14 @@ public class SlaveImpl implements Slave {
 			do {
 				byte[] proposal = md5.digest(option.getBytes());
 				if (Arrays.equals(proposal, task.hash) && compare(task.hash, option, md5)) {
-					return new ValidObjectWrapper(option);
+					return new ValidWrapper<String>(option);
 				}
 				option = AASCST.ALPHA.charAt(0) + option;
 			} while(option.length() <= task.maxLength);
 
 		}
 
-        return new WrongObjectWrapper("Not found");
+        return new WrongWrapper<String>("Not found");
 	}
 
 	private String converToString(long decimal) {

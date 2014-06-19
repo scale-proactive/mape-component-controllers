@@ -2,17 +2,27 @@ package org.objectweb.proactive.extensions.autonomic.controllers.utils;
 
 import java.io.Serializable;
 
-public class Wrapper<T> implements Serializable {
+public interface Wrapper<T extends Serializable> extends Serializable {
 
-	private static final long serialVersionUID = 1L;
-	private T t;
+	/**
+	 * Returns the value wrapped by this wrapper.
+	 * 
+	 * @return the value
+	 */
+	public T get();
 
-	public Wrapper(T element) {
-		t = element;
-	}
+	/**
+	 * Indicated if this wrapper contains the expected value.
+	 * 
+	 * @return TRUE if it contains the expected value, FALSE otherwise.
+	 */
+	public boolean isValid();
 
-	public T get() {
-		return t;
-	}
+	/**
+	 * Get the associated message, used to attach information about this value.
+	 * 
+	 * @return the message
+	 */
+	public String getMessage();
 
 }

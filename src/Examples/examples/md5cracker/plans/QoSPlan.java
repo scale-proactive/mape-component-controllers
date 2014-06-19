@@ -4,8 +4,7 @@ import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Alarm;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.planning.Plan;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongValueException;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 import examples.md5cracker.actions.AddSolverAction;
 import examples.md5cracker.actions.RemoveSolverAction;
@@ -61,35 +60,26 @@ public class QoSPlan extends Plan {
 			return; // is not the moment yet, try later.
 		}
 
-		try {
-			System.out.println("[PLANNER_CONTROLLER] trying to remove worker...");
-			ObjectWrapper result = executor.execute("remove-worker($this);");
-			if (result.isValid() && (boolean) result.getObject()) {
-				System.out.println("[PLANNER_CONTROLLER] worker removed.");
-				lastTime = System.currentTimeMillis();
-				return;
-			}
-		} catch (WrongValueException e2) {
-			e2.printStackTrace();
+
+		System.out.println("[PLANNER_CONTROLLER] trying to remove worker...");
+		Wrapper<String> result = executor.execute("remove-worker($this);");
+		if (result.isValid() && Boolean.parseBoolean(result.get())) {
+			System.out.println("[PLANNER_CONTROLLER] worker removed.");
+			lastTime = System.currentTimeMillis();
+			return;
 		}
 
+		System.out.println("[PLANNER_CONTROLLER] trying to remove solver...");
+		result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
+		if (result.isValid() && 1 < Double.parseDouble(result.get())) {
 
-		try {
-			System.out.println("[PLANNER_CONTROLLER] trying to remove solver...");
-			ObjectWrapper result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
-			if (result.isValid() && 1 < (double) result.getObject()) {
-				try {
-					result = executor.executeAction(RemoveSolverAction.DEFAULT_NAME);
-					if (result.isValid() && (boolean) result.getObject()) {
-						System.out.println("[PLANNER_CONTROLLER] solver removed.");
-					}
-				} catch (WrongValueException e) {
-					e.printStackTrace();
-				}
+			result = executor.executeAction(RemoveSolverAction.DEFAULT_NAME);
+			if (result.isValid() && Boolean.parseBoolean(result.get())) {
+				System.out.println("[PLANNER_CONTROLLER] solver removed.");
 			}
-		} catch (WrongValueException e1) {
-			e1.printStackTrace();
+
 		}
+
 
 		System.out.println("[PLANNER_CONTROLLER] nothing to do...");
 		lastTime = System.currentTimeMillis();
@@ -111,35 +101,25 @@ public class QoSPlan extends Plan {
 		}
 
 		System.out.println("[PLANNER_CONTROLLER] trying to add a worker...");
-		try {
-			ObjectWrapper result = executor.execute("improve-solvers($this, " + maxWorkers + ");");
-			if (result.isValid() && (boolean) result.getObject()) {
-				System.out.println("[PLANNER_CONTROLLER] new worker added.");
+		Wrapper<String> result = executor.execute("improve-solvers($this, " + maxWorkers + ");");
+		if (result.isValid() && Boolean.parseBoolean(result.get())) {
+			System.out.println("[PLANNER_CONTROLLER] new worker added.");
+			lastTime = System.currentTimeMillis();
+			return;
+		}
+
+		result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
+		if (result.isValid() && maxSolvers > Double.parseDouble(result.get())) {
+			System.out.println("[PLANNER_CONTROLLER] trying to add new solver...");
+
+			result = executor.executeAction(AddSolverAction.DEFAULT_NAME);
+			if (result.isValid() && Boolean.parseBoolean(result.get())) {
+				System.out.println("[PLANNER_CONTROLLER] new solver added.");
 				lastTime = System.currentTimeMillis();
 				return;
 			}
-		} catch (WrongValueException e2) {
-			e2.printStackTrace();
 		}
 
-		try {
-			ObjectWrapper result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
-			if (result.isValid() && maxSolvers > (double) result.getObject()) {
-				System.out.println("[PLANNER_CONTROLLER] trying to add new solver...");
-				try {
-					result = executor.executeAction(AddSolverAction.DEFAULT_NAME);
-					if (result.isValid() && (boolean) result.getObject()) {
-						System.out.println("[PLANNER_CONTROLLER] new solver added.");
-						lastTime = System.currentTimeMillis();
-						return;
-					}
-				} catch (WrongValueException e1) {
-					e1.printStackTrace();
-				}
-			}
-		} catch (WrongValueException e1) {
-			e1.printStackTrace();
-		}
 
 		// Try to add a new solver
 		

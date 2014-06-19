@@ -47,6 +47,7 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.recor
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.Condition;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidWrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 /**
@@ -121,11 +122,11 @@ public class RecordStoreImpl extends AbstractPAComponentController implements Re
 	}
 
 	public Wrapper<IncomingRequestRecord> getIncomingRequestRecord(ComponentRequestID id) {
-		return new Wrapper<IncomingRequestRecord>(inMap.get(id));
+		return new ValidWrapper<IncomingRequestRecord>(inMap.get(id));
 	}
 
 	public Wrapper<OutgoingRequestRecord> getOutgoingRequestRecord(ComponentRequestID id) {
-		return new Wrapper<OutgoingRequestRecord>(outMap.get(id));
+		return new ValidWrapper<OutgoingRequestRecord>(outMap.get(id));
 	}
 
 	@Override

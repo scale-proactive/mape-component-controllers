@@ -1,8 +1,9 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.execution;
 
+import java.io.Serializable;
 import java.util.Set;
 
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 import org.objectweb.proactive.extra.component.fscript.exceptions.ReconfigurationException;
 
 
@@ -35,7 +36,7 @@ public interface ExecutorController {
      * @return The value of the code fragment, if successfully executed.
      * @throws ReconfigurationException If an error occurred during the execution of the code fragment.
      */
-    public ObjectWrapper execute(String source);
+    public Wrapper<String> execute(String source);
 
     // ----- API -----
     
@@ -58,12 +59,12 @@ public interface ExecutorController {
 	 * Executes the stored action identified by the given name
 	 * @param actionName name of the stored Action to be executed
 	 */
-	public ObjectWrapper executeAction(String actionName);
+	public <T extends Serializable> Wrapper<T> executeAction(String actionName);
 	
 	/**
 	 * Executes the given Action
 	 * @param action Action to be executed
 	 */
-	public ObjectWrapper executeAction(Action action);
+	public <T extends Serializable> Wrapper<T> executeAction(Action action);
 
 }

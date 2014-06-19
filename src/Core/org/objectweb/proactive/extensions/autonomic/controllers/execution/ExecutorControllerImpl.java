@@ -38,6 +38,7 @@ package org.objectweb.proactive.extensions.autonomic.controllers.execution;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -54,9 +55,9 @@ import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidObjectWrapper;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 import org.objectweb.proactive.extra.component.fscript.GCMScript;
 import org.objectweb.proactive.extra.component.fscript.exceptions.ReconfigurationException;
 import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
@@ -73,6 +74,8 @@ import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 public class ExecutorControllerImpl extends AbstractPAComponentController implements ExecutorController {
 
 	private static final String AGCMSCRIPT_ADL = "org.objectweb.proactive.extensions.autonomic.gcmscript.AGCMScript";
+	private static final String MSG_NOT_SERIALIZABLE = "The result of action %s does not implement Serializable";
+	private static final String MSG_NOT_FOUND = "No action found with name \"%s\"";
 	
 	// action name --> action
 	private Map<String, Action> actions = new HashMap<String, Action>();
@@ -109,6 +112,7 @@ public class ExecutorControllerImpl extends AbstractPAComponentController implem
         }
     }
 
+    /** {@inheritDoc} */
 	@Override
 	public Set<String> load(String fileName) throws ReconfigurationException {
 		checkADLInitialized();
@@ -122,21 +126,25 @@ public class ExecutorControllerImpl extends AbstractPAComponentController implem
         }
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Set<String> getGlobals() throws ReconfigurationException {
 		checkADLInitialized();
 		return this.engine.getGlobals();
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public ObjectWrapper execute(String source) {
+	public Wrapper<String> execute(String source) {
 		try {
+
 			checkADLInitialized();
 			Object result = this.engine.execute(source);
-			return new ValidObjectWrapper(result == null ? "" : result.toString());
+			return new ValidWrapper<String>(result == null ? "(void)" : result.toString());
+
 		} catch (ReconfigurationException | FScriptException re) {
 			re.printStackTrace();
-			return new WrongObjectWrapper("Fail to execute [" + source + "]", re);
+			return new WrongWrapper<String>("Fail to execute: " + source);
 		}
 	}
 
@@ -150,40 +158,49 @@ public class ExecutorControllerImpl extends AbstractPAComponentController implem
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean addAction(String name, Action action) {
 		if (actions.containsKey(name)) return false;
 		return actions.put(name, action) == null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void removeAction(String name) {
 		actions.remove(name);
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public ObjectWrapper executeAction(String actionName) {
+	public <T extends Serializable> Wrapper<T> executeAction(String actionName) {
 		if (actions.containsKey(actionName)) {
-			try {
-				checkAPIInitialized();
-				return new ValidObjectWrapper(actions.get(actionName).execute(hostComponent, patf, pagf));
-			} catch (Exception e) {
-				e.printStackTrace();
-				return new WrongObjectWrapper("Fail to execute \"" + actionName + "\" action.", e);
-			}
+			return executeAction(actions.get(actionName), actionName);
 		}
-		return new WrongObjectWrapper("Action name \"" + actionName + "\" not found.");
+		return new WrongWrapper<T>(String.format(MSG_NOT_FOUND, actionName));
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public ObjectWrapper executeAction(Action action) {
+	public <T extends Serializable> Wrapper<T> executeAction(Action action) {
+		return executeAction(action, action.getClass().getCanonicalName());
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends Serializable> Wrapper<T> executeAction(Action action, String name) {
 		try {
 			checkAPIInitialized();
-			return new ValidObjectWrapper(action.execute(this.hostComponent, patf, pagf));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new WrongObjectWrapper("Fail to execute action (" + action.getClass().toString() + ").", e);
+		} catch (InstantiationException | NoSuchInterfaceException e1) {
+			return new WrongWrapper<T>("Fail to initialize the GCMScript engine");
 		}
+		
+		Object result = action.execute(hostComponent, patf, pagf);
+
+		if ( !(result instanceof Serializable) && result != null ) {
+			return new WrongWrapper<T>((T) result.toString(), String.format(MSG_NOT_SERIALIZABLE, name));
+		}
+
+		return new ValidWrapper<T>((T) result);
 	}
 
 }

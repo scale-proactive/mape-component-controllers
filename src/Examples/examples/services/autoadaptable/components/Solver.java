@@ -1,9 +1,9 @@
 package examples.services.autoadaptable.components;
 
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 public interface Solver {
 
-	public ObjectWrapper crack(long from, long to, byte[] hash, int maxLength);
+	public Wrapper<String> crack(long from, long to, byte[] hash, int maxLength);
 
 }

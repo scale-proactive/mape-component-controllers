@@ -1,9 +1,9 @@
 package examples.services;
 
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 public interface Service {
 
-	public ObjectWrapper crack(byte[] hash, int maxLength);
+	public Wrapper<String> crack(byte[] hash, int maxLength);
 
 }

@@ -2,8 +2,6 @@ package tests;
 
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-
 import org.etsi.uri.gcm.api.control.MonitorController;
 import org.junit.Before;
 import org.junit.Test;

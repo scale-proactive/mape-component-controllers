@@ -1,9 +1,9 @@
 package examples.services.autoadaptable.components;
 
 
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 public interface Slave {
 
-	public ObjectWrapper workOn(Task task);
+	public Wrapper<String> workOn(Task task);
 }

@@ -6,7 +6,7 @@ import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.node.Node;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 
 import examples.services.ServiceClient;
@@ -14,8 +14,8 @@ import examples.services.autoadaptable.AASCST;
 import examples.services.autoadaptable.AASFactory;
 import examples.services.autoadaptable.actions.AddSlaveAction;
 import examples.services.autoadaptable.actions.RemoveSlaveAction;
-import examples.services.autoadaptable.metrics.ResponseTimeMetric;
 import examples.services.autoadaptable.metrics.OptimalPointsMetric;
+import examples.services.autoadaptable.metrics.ResponseTimeMetric;
 import examples.services.autoadaptable.plans.AdaptationPlan;
 import examples.services.autoadaptable.rules.VariationRule;
 
@@ -119,8 +119,8 @@ public class TestAAS extends TestService {
 	}
 
 	private void addSlave(Component solver) throws NoSuchInterfaceException {
-		ObjectWrapper ow = Remmos.getExecutorController(solver).executeAction(AASCST.ADD_SLAVE_ACTION);
-		if (ow.isValid() && (boolean) ow.getObjectOrNull()) {
+		Wrapper<Boolean> ow = Remmos.getExecutorController(solver).executeAction(AASCST.ADD_SLAVE_ACTION);
+		if (ow.isValid() && ow.get()) {
 			System.out.println("[OK, slave added on solver  ]");
 		} else {
 			System.out.println("[FAIL, when trying to add a slave to solver ... ! ]");
@@ -128,8 +128,8 @@ public class TestAAS extends TestService {
 	}
 	
 	private void removeSlave(Component solver) throws NoSuchInterfaceException {
-		ObjectWrapper ow = Remmos.getExecutorController(solver).executeAction(AASCST.REMOVE_SLAVE_ACTION);
-		if (ow.isValid() && (boolean) ow.getObjectOrNull()) {
+		Wrapper<Boolean> ow = Remmos.getExecutorController(solver).executeAction(AASCST.REMOVE_SLAVE_ACTION);
+		if (ow.isValid() && ow.get()) {
 			System.out.println("[OK, slave removed on solver  ]");
 		} else {
 			System.out.println("[FAIL, when trying to remove a slave to solver ... ! ]");

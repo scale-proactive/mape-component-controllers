@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
-import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongObjectWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 
 import examples.services.autoadaptable.AASCST;
 
@@ -48,10 +48,10 @@ public class MasterImpl implements Solver, MasterAttributes, BindingController, 
 	}
 
 	@Override
-	public ObjectWrapper crack(long from, long to, byte[] hash, int maxLength) {
+	public Wrapper<String> crack(long from, long to, byte[] hash, int maxLength) {
 
 		if (numberOfSlaves < 1) {
-			return new WrongObjectWrapper("I dont have slaves! I cant do nothing");
+			return new WrongWrapper<String>("I dont have slaves! I cant do nothing");
 		}
 		
 		long pSet = to - from + 1; // +1 because the "to" is included
@@ -70,17 +70,17 @@ public class MasterImpl implements Solver, MasterAttributes, BindingController, 
 		}
 
 		//System.out.println(msg);
-		List<ObjectWrapper> results = slaves.workOn(tasks);
+		List<Wrapper<String>> results = slaves.workOn(tasks);
 
-		ObjectWrapper validResult = null;
+		Wrapper<String> validResult = null;
 
-		for (ObjectWrapper ow : results) {
+		for (Wrapper<String> ow : results) {
 			if (ow.isValid()) {
 				validResult = ow;
 			} // wait for the others anyway
 		}
 	
-		return validResult != null ? validResult : new WrongObjectWrapper("Not Found");
+		return validResult != null ? validResult : new WrongWrapper<String>("Not Found");
 	}
 
 	@Override
