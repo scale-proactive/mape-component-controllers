@@ -36,12 +36,13 @@
  */
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import org.objectweb.proactive.core.ProActiveRuntimeException;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 
 public interface MonitorController {
@@ -123,7 +124,7 @@ public interface MonitorController {
      * @param name	the name of the metric
      * @return MetricValue wrapper containing the output of the calculate() method.
      */
-    public MetricValue calculateMetric(String name);
+    public <T extends Serializable> Wrapper<T> calculateMetric(String name);
 
     /**
      * Executes the calculate() method for the desired metric.
@@ -131,7 +132,7 @@ public interface MonitorController {
      * @param itfPath	path to the metric's owner component. See more details at {@link #getMetricList(String)}
      * @return MetricValue wrapper containing the output of the calculate() method.
      */
-    public MetricValue calculateMetric(String name, String itfPath);
+    public <T extends Serializable> Wrapper<T> calculateMetric(String name, String itfPath);
  
 
     /**
@@ -139,7 +140,7 @@ public interface MonitorController {
      * @param name	the name of the metric
      * @return a MetricValue wrapper containing the value of the metric
      */
-    public MetricValue getMetricValue(String name);
+    public <T extends Serializable> Wrapper<T> getMetricValue(String name);
     
     /**
      * Gets the current value of a metric.
@@ -147,7 +148,7 @@ public interface MonitorController {
      * @param itfPath	path to the metric's owner component. See more details at {@link #getMetricList(String)}
      * @return a MetricValue wrapper containing the value of the metric
      */
-    public MetricValue getMetricValue(String name, String itfPath);
+    public <T extends Serializable> Wrapper<T> getMetricValue(String name, String itfPath);
 
 
     /**

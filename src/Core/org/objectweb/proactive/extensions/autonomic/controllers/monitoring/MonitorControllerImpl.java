@@ -36,34 +36,24 @@
  */
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.fractal.api.control.IllegalBindingException;
 import org.objectweb.fractal.api.control.IllegalLifeCycleException;
-import org.objectweb.proactive.core.component.Constants;
-import org.objectweb.proactive.core.component.PAInterface;
-import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
-import org.objectweb.proactive.core.component.control.PAMulticastController;
-import org.objectweb.proactive.core.component.representative.PAComponentRepresentative;
 import org.objectweb.proactive.core.runtime.ProActiveRuntimeImpl;
 import org.objectweb.proactive.core.util.log.Loggers;
 import org.objectweb.proactive.core.util.log.ProActiveLogger;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.ComponentRequestID;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.Condition;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 /**
  * Monitor Controller component for the Monitoring Framework
@@ -80,7 +70,6 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = ProActiveLogger.getLogger(Loggers.COMPONENTS_MONITORING);
-	private static final Logger rpLogger = ProActiveLogger.getLogger(Loggers.COMPONENTS_REQUEST_PATH);
 
 	private EventControl eventControl = null;
 	private RecordStore recordStore = null;
@@ -581,22 +570,22 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	}
 
 	@Override
-	public MetricValue calculateMetric(String name) {
+	public <T extends Serializable> Wrapper<T> calculateMetric(String name) {
 		return metricsStore.calculate(name);
 	}
 
 	@Override
-	public MetricValue calculateMetric(String name, String itfPath) {
+	public <T extends Serializable> Wrapper<T> calculateMetric(String name, String itfPath) {
 		return metricsStore.calculate(name, itfPath);
 	}
 
 	@Override
-	public MetricValue getMetricValue(String name) {
+	public <T extends Serializable> Wrapper<T> getMetricValue(String name) {
 		return metricsStore.getValue(name);
 	}
 
 	@Override
-	public MetricValue getMetricValue(String name, String itfPath) {
+	public <T extends Serializable> Wrapper<T> getMetricValue(String name, String itfPath) {
 		return metricsStore.getValue(name, itfPath);
 	}
 

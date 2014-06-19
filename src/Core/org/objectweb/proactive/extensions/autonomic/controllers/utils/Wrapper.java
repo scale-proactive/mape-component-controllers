@@ -9,7 +9,7 @@ public interface Wrapper<T extends Serializable> extends Serializable {
 	 * 
 	 * @return the value
 	 */
-	public T get();
+	public T getValue();
 
 	/**
 	 * Indicated if this wrapper contains the expected value.

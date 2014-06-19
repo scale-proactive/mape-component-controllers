@@ -365,7 +365,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     	boolean newRecord = false;
     	
     	// checks if the request data has already been entered in the map
-    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).get();
+    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).getValue();
     	if (rs != null) {
     		rs.setArrivalTime(notification.getTimeStamp());
     	} else {
@@ -408,7 +408,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     	String methodName = cmTagFields[5];
     	ComponentRequestID root = new ComponentRequestID(Long.parseLong(cmTagFields[6]));
     	
-    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).get();
+    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).getValue();
     	boolean newRecord = false;
     	
     	if (rs == null) {
@@ -455,7 +455,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     	String methodName = cmTagFields[5];
     	ComponentRequestID root = new ComponentRequestID(Long.parseLong(cmTagFields[6]));
     	
-    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).get();
+    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).getValue();
     	boolean newRecord = false;
     	
     	if (rs == null) {
@@ -504,7 +504,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     	}
     	ComponentRequestID root = new ComponentRequestID(Long.parseLong(cmTagFields[6]));
     	
-    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).get();
+    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).getValue();
     	boolean newRecord = false;
     	
     	if (cs == null) {
@@ -552,7 +552,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     	}
     	ComponentRequestID root = new ComponentRequestID(Long.parseLong(cmTagFields[6]));
     	
-    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).get();
+    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).getValue();
     	boolean newRecord = false;
     	
     	if (cs == null) {
@@ -597,7 +597,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     	}
     	ComponentRequestID root = new ComponentRequestID(Long.parseLong(cmTagFields[6]));
     	
-    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).get();
+    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).getValue();
     	boolean newRecord = false;
     	
     	if (cs == null) {
@@ -643,7 +643,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     	String methodName = cmTagFields[5];
     	ComponentRequestID root = new ComponentRequestID(Long.parseLong(cmTagFields[6]));
     	
-    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).get();
+    	IncomingRequestRecord rs = recordStore.getIncomingRequestRecord(current).getValue();
     	boolean newRecord = false;
     	
     	if (rs == null) {
@@ -690,7 +690,7 @@ public class EventListener extends AbstractPAComponentController implements Noti
     		return;
     	}
     	
-    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).get();
+    	OutgoingRequestRecord cs = recordStore.getOutgoingRequestRecord(current).getValue();
     	boolean newRecord = false;
     	
     	if (cs == null) {

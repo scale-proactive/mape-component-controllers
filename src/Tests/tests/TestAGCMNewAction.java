@@ -39,14 +39,14 @@ public class TestAGCMNewAction extends CommonSetup {
 			return;
 		}
 		String appDescriptor = this.getClass().getResource("GCMALocal.xml").getPath();
-    	System.out.println("-- " + executor.execute("gcma = deploy-gcma(\"" + appDescriptor + "\");").get());
-    	System.out.println("-- " + executor.execute("slave = gcm-new-autonomic(\"tests.components.Slave\", $gcma);").get());
-    	System.out.println("-- " + executor.execute("set-name($slave, \"Slave2\");").get());
-    	System.out.println("-- " + executor.execute("stop($this);").get());
-    	System.out.println("-- " + executor.execute("add($this, $slave);").get());
-    	System.out.println("-- " + executor.execute("start($this);").get());
+    	System.out.println("-- " + executor.execute("gcma = deploy-gcma(\"" + appDescriptor + "\");").getValue());
+    	System.out.println("-- " + executor.execute("slave = gcm-new-autonomic(\"tests.components.Slave\", $gcma);").getValue());
+    	System.out.println("-- " + executor.execute("set-name($slave, \"Slave2\");").getValue());
+    	System.out.println("-- " + executor.execute("stop($this);").getValue());
+    	System.out.println("-- " + executor.execute("add($this, $slave);").getValue());
+    	System.out.println("-- " + executor.execute("start($this);").getValue());
 
-    	System.out.println("-- " + executor.execute("$this/child::*;").get());
+    	System.out.println("-- " + executor.execute("$this/child::*;").getValue());
 	
 
     	
@@ -71,7 +71,7 @@ public class TestAGCMNewAction extends CommonSetup {
     	try {
     		Slave itf = (Slave) slave.getFcInterface("slave");
     		itf.run2();
-			System.out.println(Remmos.getExecutorController(slave).execute("true();").get());
+			System.out.println(Remmos.getExecutorController(slave).execute("true();").getValue());
 		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
 			fail(e.getMessage());

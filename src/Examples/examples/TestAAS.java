@@ -120,7 +120,7 @@ public class TestAAS extends TestService {
 
 	private void addSlave(Component solver) throws NoSuchInterfaceException {
 		Wrapper<Boolean> ow = Remmos.getExecutorController(solver).executeAction(AASCST.ADD_SLAVE_ACTION);
-		if (ow.isValid() && ow.get()) {
+		if (ow.isValid() && ow.getValue()) {
 			System.out.println("[OK, slave added on solver  ]");
 		} else {
 			System.out.println("[FAIL, when trying to add a slave to solver ... ! ]");
@@ -129,7 +129,7 @@ public class TestAAS extends TestService {
 	
 	private void removeSlave(Component solver) throws NoSuchInterfaceException {
 		Wrapper<Boolean> ow = Remmos.getExecutorController(solver).executeAction(AASCST.REMOVE_SLAVE_ACTION);
-		if (ow.isValid() && ow.get()) {
+		if (ow.isValid() && ow.getValue()) {
 			System.out.println("[OK, slave removed on solver  ]");
 		} else {
 			System.out.println("[FAIL, when trying to remove a slave to solver ... ! ]");

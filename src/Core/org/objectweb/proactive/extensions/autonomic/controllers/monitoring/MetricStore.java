@@ -36,10 +36,11 @@
  */
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 
 /**
@@ -66,17 +67,17 @@ public interface MetricStore {
 	 * @param name
 	 * @return
 	 */
-	MetricValue calculate(String name);
+	public <T extends Serializable> Wrapper<T> calculate(String name);
 	
-	MetricValue getValue(String name);
+	public <T extends Serializable> Wrapper<T> getValue(String name);
 	
 	void setValue(String name, Object v);
 	
 	List<String> getMetricList();
 	
 	// EXTERNAL METRICS API: The same, but for an external monitor indicated by "itfPath"
-	MetricValue calculate(String name, String itfPath);
-	MetricValue getValue(String name, String itfPath);
+	public <T extends Serializable> Wrapper<T> calculate(String name, String itfPath);
+	public <T extends Serializable> Wrapper<T> getValue(String name, String itfPath);
 	void setValue(String name, Object v, String itfPath);
 	List<String> getMetricList(String itfPath);
 

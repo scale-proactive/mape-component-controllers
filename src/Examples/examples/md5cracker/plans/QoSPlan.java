@@ -63,7 +63,7 @@ public class QoSPlan extends Plan {
 
 		System.out.println("[PLANNER_CONTROLLER] trying to remove worker...");
 		Wrapper<String> result = executor.execute("remove-worker($this);");
-		if (result.isValid() && Boolean.parseBoolean(result.get())) {
+		if (result.isValid() && Boolean.parseBoolean(result.getValue())) {
 			System.out.println("[PLANNER_CONTROLLER] worker removed.");
 			lastTime = System.currentTimeMillis();
 			return;
@@ -71,10 +71,10 @@ public class QoSPlan extends Plan {
 
 		System.out.println("[PLANNER_CONTROLLER] trying to remove solver...");
 		result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
-		if (result.isValid() && 1 < Double.parseDouble(result.get())) {
+		if (result.isValid() && 1 < Double.parseDouble(result.getValue())) {
 
 			result = executor.executeAction(RemoveSolverAction.DEFAULT_NAME);
-			if (result.isValid() && Boolean.parseBoolean(result.get())) {
+			if (result.isValid() && Boolean.parseBoolean(result.getValue())) {
 				System.out.println("[PLANNER_CONTROLLER] solver removed.");
 			}
 
@@ -102,18 +102,18 @@ public class QoSPlan extends Plan {
 
 		System.out.println("[PLANNER_CONTROLLER] trying to add a worker...");
 		Wrapper<String> result = executor.execute("improve-solvers($this, " + maxWorkers + ");");
-		if (result.isValid() && Boolean.parseBoolean(result.get())) {
+		if (result.isValid() && Boolean.parseBoolean(result.getValue())) {
 			System.out.println("[PLANNER_CONTROLLER] new worker added.");
 			lastTime = System.currentTimeMillis();
 			return;
 		}
 
 		result = executor.execute("value($this/child::CrackerManager/attribute::numberOfSolvers);");
-		if (result.isValid() && maxSolvers > Double.parseDouble(result.get())) {
+		if (result.isValid() && maxSolvers > Double.parseDouble(result.getValue())) {
 			System.out.println("[PLANNER_CONTROLLER] trying to add new solver...");
 
 			result = executor.executeAction(AddSolverAction.DEFAULT_NAME);
-			if (result.isValid() && Boolean.parseBoolean(result.get())) {
+			if (result.isValid() && Boolean.parseBoolean(result.getValue())) {
 				System.out.println("[PLANNER_CONTROLLER] new solver added.");
 				lastTime = System.currentTimeMillis();
 				return;

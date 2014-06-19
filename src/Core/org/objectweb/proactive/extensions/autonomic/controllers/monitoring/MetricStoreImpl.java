@@ -36,6 +36,7 @@
  */
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,16 +47,12 @@ import java.util.StringTokenizer;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MetricEventListener;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MetricStore;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEvent;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventListener;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.ValidMetricValue;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.WrongMetricValue;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 
 
 public class MetricStoreImpl extends AbstractPAComponentController implements MetricStore, RemmosEventListener, BindingController {
@@ -84,17 +81,19 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		metrics.put(name, metric);
 	}
 
+	
 	@Override
-	public MetricValue calculate(String name) {
+	@SuppressWarnings("unchecked")
+	public <T extends Serializable> Wrapper<T> calculate(String name) {
 		if(metrics.containsKey(name)) {
 			Object result = metrics.get(name).calculate();
-			MetricValue mv = new ValidMetricValue(result, false);
+			Wrapper<T> mv = new ValidWrapper<T>((T) result);
 			if (metricEventListener != null) {
 				metricEventListener.notifyMetricUpdate(name);
 			}
 			return mv;
 		}
-		return new WrongMetricValue("Metric \"" + name + "\" not found.");
+		return new WrongWrapper<T>("Metric \"" + name + "\" not found.");
 	}
 
 	@Override
@@ -113,13 +112,15 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		}
 	}
 
+	
 	@Override
-	public MetricValue getValue(String name) {
+	@SuppressWarnings("unchecked")
+	public <T extends Serializable> Wrapper<T> getValue(String name) {
 		Metric<?> metric = metrics.get(name);
 		if(metric != null) {
-			return new ValidMetricValue(metric.getValue(), false);
+			return new ValidWrapper<T>((T) metric.getValue());
 		}
-		return new WrongMetricValue("Metric \"" + name + "\" not found.");
+		return new WrongWrapper<T>("Metric \"" + name + "\" not found.");
 	}
 
 	@Override
@@ -176,8 +177,10 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		return remoteMon;
 	}
 
+	
 	@Override
-	public MetricValue calculate(String name, String itfPath) {
+	@SuppressWarnings("unchecked")
+	public <T extends Serializable> Wrapper<T> calculate(String name, String itfPath) {
 		String nextItfName = getNextItfName(itfPath);
 		if (nextItfName == null) {
 			return this.calculate(name);
@@ -189,15 +192,16 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 			return ((MonitorController) remoteMon).calculateMetric(name, getNextItfPath(itfPath));
 		}
 		else if (remoteMon instanceof MonitorControllerMulticast) {
-			return new ValidMetricValue(((MonitorControllerMulticast) remoteMon).calculateMetric(name, getNextItfPath(itfPath)), true);
+			List<Wrapper<T>> l = ((MonitorControllerMulticast) remoteMon).calculateMetric(name, getNextItfPath(itfPath));
+			return new ValidWrapper<T>((T) l);
 		}
 	
-		return new WrongMetricValue("Monitor cant reach interface \"" + nextItfName + "\".",
-				new NoSuchInterfaceException(nextItfName));
+		return new WrongWrapper<T>("Monitor cant reach interface \"" + nextItfName + "\".");
 	}
 
 	@Override
-	public MetricValue getValue(String name, String itfPath) {
+	@SuppressWarnings("unchecked")
+	public <T extends Serializable> Wrapper<T> getValue(String name, String itfPath) {
 		String nextItfName = getNextItfName(itfPath);
 		if (nextItfName == null) {
 			// LocalRequest
@@ -209,11 +213,11 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		if (remoteMon instanceof MonitorController) {
 			return ((MonitorController) remoteMon).getMetricValue(name, getNextItfPath(itfPath));
 		} else if (remoteMon instanceof MonitorControllerMulticast) {
-			return new ValidMetricValue(((MonitorControllerMulticast) remoteMon).getMetricValue(name, getNextItfPath(itfPath)), true);
+			List<Wrapper<T>> l = ((MonitorControllerMulticast) remoteMon).getMetricValue(name, getNextItfPath(itfPath));
+			return new ValidWrapper<T>((T) l);
 		}
 	
-		return new WrongMetricValue("Monitor cant reach interface \"" + nextItfName + "\".",
-				new NoSuchInterfaceException(nextItfName));
+		return new WrongWrapper<T>("Monitor cant reach interface \"" + nextItfName + "\".");
 	}
 
 	@Override

@@ -36,20 +36,16 @@
  */
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.objectweb.proactive.core.ProActiveRuntimeException;
 import org.objectweb.proactive.core.component.type.annotations.multicast.ClassDispatchMetadata;
 import org.objectweb.proactive.core.component.type.annotations.multicast.ParamDispatchMetadata;
 import org.objectweb.proactive.core.component.type.annotations.multicast.ParamDispatchMode;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.RequestPath;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.ComponentRequestID;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 /**
  * Multicast version of MonitorControl interface.
@@ -124,13 +120,13 @@ public interface MonitorControllerMulticast {
 
     public void addMetric(String name, Metric<?> metric);
 
-    public List<MetricValue> calculateMetric(String name);
+    public <T extends Serializable> List<Wrapper<T>> calculateMetric(String name);
 
-    public List<MetricValue> calculateMetric(String name, String itfPath);
+    public <T extends Serializable> List<Wrapper<T>> calculateMetric(String name, String itfPath);
  
-    public List<MetricValue> getMetricValue(String name);
+    public <T extends Serializable> List<Wrapper<T>> getMetricValue(String name);
     
-    public List<MetricValue> getMetricValue(String name, String itfPath);
+    public <T extends Serializable> List<Wrapper<T>> getMetricValue(String name, String itfPath);
 
     public void setMetricValue(String name, Object value);
 

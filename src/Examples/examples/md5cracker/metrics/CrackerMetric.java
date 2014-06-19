@@ -1,8 +1,7 @@
 package examples.md5cracker.metrics;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricValue;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.WrongMetricValueException;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 import examples.md5cracker.cracker.CCST;
 
@@ -24,29 +23,21 @@ public class CrackerMetric extends Metric<Double> {
 	@Override
 	public Double calculate() {
 			total = 0;
-			MetricValue mv;
+			Wrapper<Double> mv = this.metricStore.calculate(SolverMetric.DEFAULT_NAME, "/" + CCST.CRACKER_ITF + "/" + CCST.SOLVER_C1);
+			if (mv.isValid()) {
+				total += (double) mv.getValue();
+			}
 
-			try {
-				mv = this.metricStore.calculate(SolverMetric.DEFAULT_NAME, "/" + CCST.CRACKER_ITF + "/" + CCST.SOLVER_C1);
-				if (mv.isValid()) {
-					total += (double) mv.getValue();
-				}
-			} catch (WrongMetricValueException e) { }
+			mv = this.metricStore.calculate(SolverMetric.DEFAULT_NAME, "/" + CCST.CRACKER_ITF + "/" + CCST.SOLVER_C2);
+			if (mv.isValid()) {
+				total += (double) mv.getValue();
+			}
 
-			try {
-				mv = this.metricStore.calculate(SolverMetric.DEFAULT_NAME, "/" + CCST.CRACKER_ITF + "/" + CCST.SOLVER_C2);
-				if (mv.isValid()) {
-					total += (double) mv.getValue();
-				}
-			} catch (WrongMetricValueException e) { }
-			
-			try {
-				mv = this.metricStore.calculate(SolverMetric.DEFAULT_NAME, "/" + CCST.CRACKER_ITF + "/" + CCST.SOLVER_C3);
-				if (mv.isValid()) {
-					total += (double) mv.getValue();
-				}
-			} catch (WrongMetricValueException e) { }
-			
+			mv = this.metricStore.calculate(SolverMetric.DEFAULT_NAME, "/" + CCST.CRACKER_ITF + "/" + CCST.SOLVER_C3);
+			if (mv.isValid()) {
+				total += (double) mv.getValue();
+			}
+
 			return total;
 	}
 

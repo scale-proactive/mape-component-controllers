@@ -23,7 +23,7 @@ public class WrongWrapper<T extends Serializable> implements Wrapper<T> {
 
 	/** {@inheritDoc} */
 	@Override
-	public T get() {
+	public T getValue() {
 		return value;
 	}
 
