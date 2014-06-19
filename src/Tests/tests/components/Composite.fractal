@@ -4,7 +4,7 @@
 <definition name="tests.components.Composite">
 
 	<interface name="test-itf" role="server" signature="tests.components.Master"/>
-	<interface name="multicast-itf" role="client" cardinality="multicast"
+	<interface name="multicast-itf" role="client" cardinality="multicast" contingency="optional"
 		signature="org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast"/>
 
 	<component name="Master">
@@ -14,11 +14,7 @@
 		<controller desc="primitive"/>
 	</component>
 
-	<component name="Slave">
-		<interface signature="tests.components.Slave" role="server" name="slave"/>
-		<content class="tests.components.SlaveImpl"/>
-		<controller desc="primitive"/>
-	</component>
+	<component name="Slave" definition="tests.components.Slave" />
 
 	<binding client="this.test-itf" server="Master.master"/>
 	<binding client="Master.slave" server="Slave.slave"/>

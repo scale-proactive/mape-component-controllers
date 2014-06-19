@@ -11,24 +11,6 @@ public interface ExecutorController {
     public static final String ITF_NAME = "execution-service-nf";
 
     /**
-     * Instantiates a new GCMScript engine from the default GCMScript ADL file and sets it as
-     * default engine for the controller.
-     *
-     * @throws ReconfigurationException If an error occurred during the instantiation.
-     */
-    public void setNewEngineFromADL() throws ReconfigurationException;
-
-    /**
-     * Instantiates a new GCMScript engine from an ADL file and sets it as default engine for the
-     * controller.
-     *
-     * @param adlFile The ADL file name containing the GCMScript architecture to instantiate and to set
-     * as default engine for the controller.
-     * @throws ReconfigurationException If an error occurred during the instantiation.
-     */
-    public void setNewEngineFromADL(String adlFile) throws ReconfigurationException;
-
-    /**
      * Loads procedure definitions from a file containing source code, and makes them available for later invocation
      * by name.
      *

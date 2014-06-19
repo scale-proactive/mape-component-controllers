@@ -36,6 +36,8 @@
  */
 package org.objectweb.proactive.extensions.autonomic.controllers.execution;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +45,11 @@ import java.util.Set;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.factory.InstantiationException;
+import org.objectweb.fractal.fscript.FScript;
+import org.objectweb.fractal.fscript.FScriptEngine;
+import org.objectweb.fractal.fscript.FScriptException;
+import org.objectweb.fractal.fscript.InvalidScriptException;
+import org.objectweb.fractal.fscript.ScriptLoader;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
@@ -50,9 +57,9 @@ import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.ObjectWrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidObjectWrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongObjectWrapper;
-import org.objectweb.proactive.extra.component.fscript.control.PAReconfigurationController;
-import org.objectweb.proactive.extra.component.fscript.control.PAReconfigurationControllerImpl;
+import org.objectweb.proactive.extra.component.fscript.GCMScript;
 import org.objectweb.proactive.extra.component.fscript.exceptions.ReconfigurationException;
+import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 
 /**
  * Reconfiguration component embedding a PAGCMScript engine.
@@ -65,55 +72,69 @@ import org.objectweb.proactive.extra.component.fscript.exceptions.Reconfiguratio
 @SuppressWarnings("serial")
 public class ExecutorControllerImpl extends AbstractPAComponentController implements ExecutorController {
 
+	private static final String AGCMSCRIPT_ADL = "org.objectweb.proactive.extensions.autonomic.gcmscript.AGCMScript";
+	
 	// action name --> action
 	private Map<String, Action> actions = new HashMap<String, Action>();
 
-    private PAReconfigurationController reconfigurationObject;
     private PAGCMTypeFactory patf;
     private PAGenericFactory pagf;
 
+    private transient ScriptLoader loader;
+    private transient FScriptEngine engine;
+
     // ----- ADL ------
 
-    private void checkReconfigurationObject() throws ReconfigurationException {
-        if (reconfigurationObject == null) {
-        	reconfigurationObject = new PAReconfigurationControllerImpl(this.hostComponent);
-    		String fractalProvider = System.getProperty("fractal.provider");
-    		if (fractalProvider == null) {
-    			System.setProperty("fractal.provider", System.getProperty("gcm.provider"));
-    		}
+    private void checkADLInitialized() throws ReconfigurationException {
+        if ((this.loader == null) || (this.engine == null)) {
+        	try {
+                String defaultFcProvider = System.getProperty("fractal.provider");
+                if (defaultFcProvider == null) {
+                	defaultFcProvider = System.getProperty("gcm.provider");
+                	if (defaultFcProvider == null) {
+                		 throw new ReconfigurationException("Unable to find neither fractal nor gcm provier");
+                	}
+        		}
+
+                System.setProperty("fractal.provider", "org.objectweb.fractal.julia.Julia");
+                Component gcmScript = GCMScript.newEngineFromAdl(AGCMSCRIPT_ADL);
+                this.loader = FScript.getScriptLoader(gcmScript);
+                this.engine = FScript.getFScriptEngine(gcmScript);
+                this.engine.setGlobalVariable("this", ((GCMNodeFactory) FScript.getNodeFactory(gcmScript))
+                        .createGCMComponentNode(this.hostComponent));
+                System.setProperty("fractal.provider", defaultFcProvider);
+            } catch (Exception e) {
+                throw new ReconfigurationException("Unable to set new engine for reconfiguration controller", e);
+            }
         }
     }
 
 	@Override
-	public void setNewEngineFromADL() throws ReconfigurationException {
-		checkReconfigurationObject();
-		reconfigurationObject.setNewEngineFromADL();
-	}
-
-	@Override
-	public void setNewEngineFromADL(String adlFile) throws ReconfigurationException {
-		checkReconfigurationObject();
-		reconfigurationObject.setNewEngineFromADL(adlFile);
-	}
-
-	@Override
 	public Set<String> load(String fileName) throws ReconfigurationException {
-		checkReconfigurationObject();
-		return reconfigurationObject.load(fileName);
+		checkADLInitialized();
+		
+        try {
+            return this.loader.load(new FileReader(fileName));
+        } catch (FileNotFoundException fnfe) {
+            throw new ReconfigurationException("Unable to load procedure definitions", fnfe);
+        } catch (InvalidScriptException ise) {
+            throw new ReconfigurationException("Unable to load procedure definitions\n" + ise.getMessage());
+        }
 	}
 
 	@Override
 	public Set<String> getGlobals() throws ReconfigurationException {
-		checkReconfigurationObject();
-		return reconfigurationObject.getGlobals();
+		checkADLInitialized();
+		return this.engine.getGlobals();
 	}
 
 	@Override
 	public ObjectWrapper execute(String source) {
 		try {
-			checkReconfigurationObject();
-			return new ValidObjectWrapper(reconfigurationObject.execute(source));
-		} catch (ReconfigurationException re) {
+			checkADLInitialized();
+			Object result = this.engine.execute(source);
+			return new ValidObjectWrapper(result == null ? "" : result.toString());
+		} catch (ReconfigurationException | FScriptException re) {
 			re.printStackTrace();
 			return new WrongObjectWrapper("Fail to execute [" + source + "]", re);
 		}

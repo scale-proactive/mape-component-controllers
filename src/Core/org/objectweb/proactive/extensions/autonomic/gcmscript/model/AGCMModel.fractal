@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE definition PUBLIC "-//objectweb.org//DTD Fractal ADL 2.0//EN" "classpath://org/objectweb/fractal/adl/xml/standard.dtd">
+
+<!-- This component describes the GCM component model in the framework of the abstract Model API defined by FScript. -->
+<definition name="org.objectweb.proactive.extensions.autonomic.gcmscript.model.AGCMModel"
+			extends="org.objectweb.proactive.extra.component.fscript.model.GCMModel">
+
+	<content class="org.objectweb.proactive.extensions.autonomic.gcmscript.model.AGCMModel"/>
+
+</definition>
