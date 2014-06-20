@@ -65,7 +65,7 @@ public abstract class Metric<T> implements Serializable {
 
 	// Indicates if metric is enable or not. A disabled metric will ignore any RemmosEvent subscription and
 	// will not upgrade its value on new events.
-	private boolean enable = true;
+	private boolean enable = false;
 
 
 	public void setRecordSource(RecordStore rs) {
@@ -90,7 +90,7 @@ public abstract class Metric<T> implements Serializable {
 
 	/**
 	 * Enables the RemmosEvent subscription. If enabled, the {@link #calculate()} method will be call after every
-	 * notification of a subscribed RemmosEvent. Enabled by default. 
+	 * notification of a subscribed RemmosEvent. Disabled by default. 
 	 */
 	public void enableEventSubscription() {
 		this.enable = true;
