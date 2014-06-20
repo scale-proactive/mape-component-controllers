@@ -94,7 +94,26 @@ public interface MonitorController {
     public void setRecordStoreCapacity(int maxCapacity);
     
     // ---------------------------------------------------------------------------
-    
+
+    /**
+     * Returns the state of a {@link Metric}. The state of a metric could be ENABLE or DISABLE.
+     * Only enabled metrics will be automatically calculated.
+     * 
+     * @param metricName The name of the metric.
+     * @return True if the metric is enable, False otherwise.
+     */
+    public Wrapper<Boolean> getMetricState(String metricName);
+
+    /**
+     * Changes the state of a {@link Metric}. The state of a metric could be ENABLE or DISABLE.
+     * Only enabled metrics will be automatically calculated.
+     * 
+     * @param metricName The name of the metric.
+     * @param enable True to enable the metric, False to disable.
+     * @return True if success, False otherwise.
+     */
+    public Wrapper<Boolean> setMetricState(String metricName, boolean enable);
+  
     /**
      * Return the name of all the currently added metrics.
      * @return List of the names of the currently added metrics.

@@ -74,6 +74,28 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 	private RecordStore records;
 	private MetricEventListener metricEventListener;
 
+
+	@Override
+	public Wrapper<Boolean> getState(String metricName) {
+		Metric<?> metric = metrics.get(metricName);
+		return metric == null ? new WrongWrapper<Boolean>("Metric not found") 
+				: new ValidWrapper<Boolean>(metric.isEventSubscriptionEnable());
+	}
+
+	@Override
+	public Wrapper<Boolean> setState(String metricName, boolean enable) {
+		Metric<?> metric = metrics.get(metricName);
+		if (metric == null)
+			return new WrongWrapper<Boolean>(false, "Metric not found");
+
+		if (enable)
+			metric.enableEventSubscription();
+		else
+			metric.disableEventSubsctiption();
+
+		return new ValidWrapper<Boolean>(true);
+	}
+
 	@Override
 	public void addMetric(String name, Metric<?> metric) {
 		metric.setRecordSource(records);
@@ -360,4 +382,5 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 			throw new NoSuchInterfaceException(name);
 		}
 	}
+
 }
