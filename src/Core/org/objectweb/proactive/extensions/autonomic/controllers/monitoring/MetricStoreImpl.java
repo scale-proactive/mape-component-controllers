@@ -44,18 +44,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.objectweb.fractal.api.Interface;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
+import org.objectweb.fractal.api.control.IllegalLifeCycleException;
+import org.objectweb.fractal.api.control.LifeCycleController;
+import org.objectweb.fractal.api.type.InterfaceType;
+import org.objectweb.proactive.core.component.PAInterface;
+import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
+import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEvent;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventListener;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.*;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidWrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 
 
-public class MetricStoreImpl extends AbstractPAComponentController implements MetricStore, RemmosEventListener, BindingController {
+public class MetricStoreImpl extends AbstractPAComponentController implements MetricStore, RemmosEventListener,
+		BindingController, LifeCycleController {
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,7 +78,9 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 
 	// metric name --> metric
 	private Map<String, Metric<?>> metrics = new HashMap<String, Metric<?>>();
-		
+
+	private boolean initialized = false;
+
 	private RecordStore records;
 	private MetricEventListener metricEventListener;
 
@@ -381,6 +391,48 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		} else {
 			throw new NoSuchInterfaceException(name);
 		}
+	}
+
+	@Override
+	public String getFcState() {
+		return null; // This method is ignored by the current ProActive implementation
+	}
+
+	@Override
+	public void startFc() throws IllegalLifeCycleException {
+		
+		if (initialized) return;
+
+		metrics.put("avgInc", new AvgRespTimeIncomingMetric());
+		metrics.put("avgOut", new AvgRespTimeOutgoingMetric());
+		metrics.put("maxInc", new MaxRespTimeIncomingMetric());
+		metrics.put("maxOut", new MaxRespTimeOutgoingMetric());
+		metrics.put("minInc", new MinRespTimeIncomingMetric());
+		metrics.put("minOut", new MinRespTimeOutgoingMetric());
+
+		for (Object itf: this.hostComponent.getFcInterfaces()) {
+
+			String itfName = ((Interface) itf).getFcItfName();
+			if (Utils.isControllerItfName(itfName))
+				continue;
+
+			if (((InterfaceType) ((Interface) itf).getFcItfType()).isFcClientItf()) {
+				metrics.put("avgOut-" + itfName, new AvgRespTimePerItfOutgoingMetric(itfName));
+				metrics.put("maxOut-" + itfName, new MaxRespTimePerItfOutgoingMetric(itfName));
+				metrics.put("minOut-" + itfName, new MinRespTimePerItfOutgoingMetric(itfName));
+			} else {
+				metrics.put("avgInc-" + itfName, new AvgRespTimePerItfIncomingMetric(itfName));
+				metrics.put("maxInc-" + itfName, new MaxRespTimePerItfIncomingMetric(itfName));
+				metrics.put("minInc-" + itfName, new MinRespTimePerItfIncomingMetric(itfName));
+			}
+		}
+
+		initialized = true;
+	}
+
+	@Override
+	public void stopFc() throws IllegalLifeCycleException {
+		// nothing
 	}
 
 }
