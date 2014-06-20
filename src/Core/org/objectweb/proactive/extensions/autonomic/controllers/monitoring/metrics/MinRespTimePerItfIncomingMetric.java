@@ -34,7 +34,7 @@
  * ################################################################
  * $$PROACTIVE_INITIAL_DEV$$
  */
-package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.library;
+package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics;
 
 import java.util.List;
 
@@ -50,11 +50,15 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.recor
  *
  */
 
-public class MinRespTimeIncomingMetric extends Metric<Long> {
+public class MinRespTimePerItfIncomingMetric extends Metric<Long> {
 
+	private static final long serialVersionUID = 1L;
 	private Long value;
-
-	public MinRespTimeIncomingMetric() {
+	private String itfName;
+	
+	public MinRespTimePerItfIncomingMetric(String interfaceName) {
+		this.value = 0L;
+		this.itfName = interfaceName;
 		this.subscribeTo(RemmosEventType.INCOMING_REQUEST_EVENT);
 	}
 	
@@ -62,13 +66,14 @@ public class MinRespTimeIncomingMetric extends Metric<Long> {
 
 		List<IncomingRequestRecord> recordList = null;
 		recordList = recordStore.getIncomingRequestRecords(new Condition<IncomingRequestRecord>(){
-			// condition that returns true for every record
-			@Override
+			private static final long serialVersionUID = 1L;
 			public boolean evaluate(IncomingRequestRecord irr) {
-				return true;
+				if(irr.getInterfaceName().equals(itfName)) {
+					return true;
+				}
+				return false;
 			}
-		}
-		);
+		});
 		
 		// and calculates the average
 		long min = Long.MAX_VALUE;
@@ -84,7 +89,7 @@ public class MinRespTimeIncomingMetric extends Metric<Long> {
 		value = min;
 		return value;
 	}
-
+	
 	@Override
 	public Long getValue() {
 		return this.value;

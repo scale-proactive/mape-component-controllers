@@ -34,14 +34,13 @@
  * ################################################################
  * $$PROACTIVE_INITIAL_DEV$$
  */
-package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.library;
+package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics;
 
 import java.util.List;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventType;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.Condition;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
 
 /**
  * Calculates the Average Response Time of all the requests that have been served by the component.
@@ -50,53 +49,47 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.recor
  *
  */
 
-public class MinRespTimePerItfOutgoingMetric extends Metric<Long> {
+public class AvgRespTimePerItfIncomingMetric extends Metric<Double> {
 
-	private Long value;
+	private static final long serialVersionUID = 1L;
+	private Double value;
 	private String itfName;
-	
-	public MinRespTimePerItfOutgoingMetric(String interfaceName) {
-		itfName = interfaceName;
-		this.subscribeTo(RemmosEventType.OUTGOING_REQUEST_EVENT);
+
+	public AvgRespTimePerItfIncomingMetric(String interfaceName) {
+		this.value = 0.0;
+		this.itfName = interfaceName;
+		this.subscribeTo(RemmosEventType.INCOMING_REQUEST_EVENT);
 	}
 	
-	public Long calculate() {
+	public Double calculate() {
 
-		List<OutgoingRequestRecord> recordList = null;
-		recordList = recordStore.getOutgoingRequestRecords(new Condition<OutgoingRequestRecord>(){
-			// condition that returns true for every record
-			@Override
-			public boolean evaluate(OutgoingRequestRecord orr) {
-				if(orr.getInterfaceName().equals(itfName)) {
-					return true;
-				}
-				return false;
+		List<IncomingRequestRecord> recordList = null;
+		recordList = recordStore.getIncomingRequestRecords(new Condition<IncomingRequestRecord>(){
+			private static final long serialVersionUID = 1L;
+			public boolean evaluate(IncomingRequestRecord irr) {
+				return irr.getInterfaceName().equals(itfName);
 			}
-		}
-		);
-		
+		});
+
 		// and calculates the average
-		long min = Long.MAX_VALUE;
-		long respTime;
-		for(OutgoingRequestRecord orr : recordList) {
-			if(orr.isFinished()) {
-				respTime = orr.getReplyReceptionTime() - orr.getSentTime();
-				if( respTime <= min ) {
-					min = respTime;
-				}
+		double sum = 0.0;
+		double nRecords = recordList.size();
+		for(IncomingRequestRecord irr : recordList) {
+			if(irr.isFinished()) {
+				sum += (double)(irr.getReplyTime() - irr.getArrivalTime());
 			}
 		}
-		value = min;
-		return value;
+		
+		return (value = nRecords > 0 ? sum/nRecords: 0);
 	}
-
+	
 	@Override
-	public Long getValue() {
+	public Double getValue() {
 		return this.value;
 	}
 
 	@Override
-	public void setValue(Long value) {
+	public void setValue(Double value) {
 		this.value = value;
 	}
 

@@ -34,60 +34,67 @@
  * ################################################################
  * $$PROACTIVE_INITIAL_DEV$$
  */
-package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.library;
+package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics;
 
 import java.util.List;
 
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventType;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.Condition;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
 
 /**
- * Obtains Infrastructure-Deployment information: Host, Node, VN
+ * Calculates the Average Response Time of all the requests that have been served by the component.
  * 
  * @author cruz
  *
  */
 
-public class DeploymentSensor extends Metric<String> {
+public class MinRespTimeIncomingMetric extends Metric<Long> {
 
-	private String value;
+	private static final long serialVersionUID = 1L;
+	private Long value;
 
-	public String calculate() {
+	public MinRespTimeIncomingMetric() {
+		this.value = 0L;
+		this.subscribeTo(RemmosEventType.INCOMING_REQUEST_EVENT);
+	}
+	
+	public Long calculate() {
 
-		String response;
-		
 		List<IncomingRequestRecord> recordList = null;
 		recordList = recordStore.getIncomingRequestRecords(new Condition<IncomingRequestRecord>(){
-			// condition that returns true for every record
-			@Override
+			private static final long serialVersionUID = 1L;
 			public boolean evaluate(IncomingRequestRecord irr) {
 				return true;
 			}
-		}
-		);
+		});
 		
 		// and calculates the average
-		double sum = 0.0;
-		double nRecords = recordList.size();
+		long min = Long.MAX_VALUE;
+		long respTime;
 		for(IncomingRequestRecord irr : recordList) {
 			if(irr.isFinished()) {
-				sum += (double)(irr.getReplyTime() - irr.getArrivalTime());
+				respTime = irr.getReplyTime() - irr.getArrivalTime();
+				if( respTime <= min ) {
+					min = respTime;
+				}
 			}
 		}
-		//value = sum/nRecords;
-		return value.toString();
+		value = min;
+		return value;
 	}
 
 	@Override
-	public String getValue() {
+	public Long getValue() {
 		return this.value;
 	}
 
 	@Override
-	public void setValue(String value) {
+	public void setValue(Long value) {
 		this.value = value;
 	}
+
 }
 
 

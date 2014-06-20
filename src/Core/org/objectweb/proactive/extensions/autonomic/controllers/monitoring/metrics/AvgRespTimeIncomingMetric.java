@@ -34,15 +34,13 @@
  * ################################################################
  * $$PROACTIVE_INITIAL_DEV$$
  */
-package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.library;
+package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics;
 
 import java.util.List;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventType;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.Condition;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
 
 /**
  * Calculates the Average Response Time of all the requests that have been served by the component.
@@ -51,39 +49,38 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.recor
  *
  */
 
-public class AvgRespTimeOutgoingMetric extends Metric<Double> {
+public class AvgRespTimeIncomingMetric extends Metric<Double> {
+
 	private static final long serialVersionUID = 1L;
 
 	private Double value;
 
-	public AvgRespTimeOutgoingMetric() {
-		this.subscribeTo(RemmosEventType.OUTGOING_REQUEST_EVENT);
+
+	public AvgRespTimeIncomingMetric() {
+		this.value = 0.0;
+		this.subscribeTo(RemmosEventType.INCOMING_REQUEST_EVENT);
 	}
 	
 	public Double calculate() {
 
-		List<OutgoingRequestRecord> recordList = null;
-		recordList = recordStore.getOutgoingRequestRecords(new Condition<OutgoingRequestRecord>(){
+		List<IncomingRequestRecord> recordList = null;
+		recordList = recordStore.getIncomingRequestRecords(new Condition<IncomingRequestRecord>(){
 			private static final long serialVersionUID = 1L;
-
-			// condition that returns true for every record
-			@Override
-			public boolean evaluate(OutgoingRequestRecord orr) {
+			public boolean evaluate(IncomingRequestRecord irr) {
 				return true;
 			}
-		}
-		);
+		});
 		
 		// and calculates the average
 		double sum = 0.0;
 		double nRecords = recordList.size();
-		for(OutgoingRequestRecord orr : recordList) {
-			if(!orr.isVoidRequest() && orr.isFinished()) {
-				sum += (double)(orr.getReplyReceptionTime() - orr.getSentTime());
+		for(IncomingRequestRecord irr : recordList) {
+			if(irr.isFinished()) {
+				sum += (double)(irr.getReplyTime() - irr.getArrivalTime());
 			}
 		}
-		value = sum/nRecords;
-		return value;
+
+		return (value = nRecords > 0 ? sum/nRecords: 0);
 	}
 
 	@Override
@@ -95,7 +92,7 @@ public class AvgRespTimeOutgoingMetric extends Metric<Double> {
 	public void setValue(Double value) {
 		this.value = value;
 	}
-	
+
 }
 
 

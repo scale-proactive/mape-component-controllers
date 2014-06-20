@@ -34,14 +34,14 @@
  * ################################################################
  * $$PROACTIVE_INITIAL_DEV$$
  */
-package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.library;
+package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics;
 
 import java.util.List;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventType;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.Condition;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
 
 /**
  * Calculates the Average Response Time of all the requests that have been served by the component.
@@ -50,32 +50,32 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.recor
  *
  */
 
-public class MaxRespTimeOutgoingMetric extends Metric<Long> {
+public class MaxRespTimeIncomingMetric extends Metric<Long> {
 
+	private static final long serialVersionUID = 1L;
 	private Long value;
 
-	public MaxRespTimeOutgoingMetric() {
-		this.subscribeTo(RemmosEventType.OUTGOING_REQUEST_EVENT);
+	public MaxRespTimeIncomingMetric() {
+		this.value = 0L;
+		this.subscribeTo(RemmosEventType.INCOMING_REQUEST_EVENT);
 	}
 	
 	public Long calculate() {
 
-		List<OutgoingRequestRecord> recordList = null;
-		recordList = recordStore.getOutgoingRequestRecords(new Condition<OutgoingRequestRecord>(){
-			// condition that returns true for every record
-			@Override
-			public boolean evaluate(OutgoingRequestRecord orr) {
+		List<IncomingRequestRecord> recordList = null;
+		recordList = recordStore.getIncomingRequestRecords(new Condition<IncomingRequestRecord>(){
+			private static final long serialVersionUID = 1L;
+			public boolean evaluate(IncomingRequestRecord irr) {
 				return true;
 			}
-		}
-		);
+		});
 		
 		// and calculates the average
 		long max = 0;
 		long respTime;
-		for(OutgoingRequestRecord orr : recordList) {
-			if(orr.isFinished()) {
-				respTime = orr.getReplyReceptionTime() - orr.getSentTime();
+		for(IncomingRequestRecord irr : recordList) {
+			if(irr.isFinished()) {
+				respTime = irr.getReplyTime() - irr.getArrivalTime();
 				if( respTime >= max ) {
 					max = respTime;
 				}

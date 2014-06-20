@@ -34,7 +34,7 @@
  * ################################################################
  * $$PROACTIVE_INITIAL_DEV$$
  */
-package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.library;
+package org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics;
 
 import java.util.List;
 
@@ -52,11 +52,13 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.recor
 
 public class MaxRespTimePerItfOutgoingMetric extends Metric<Long> {
 
+	private static final long serialVersionUID = 1L;
 	private Long value;
 	private String itfName;
 	
 	public MaxRespTimePerItfOutgoingMetric(String interfaceName) {
-		itfName = interfaceName;
+		this.value = 0L;
+		this.itfName = interfaceName;
 		this.subscribeTo(RemmosEventType.OUTGOING_REQUEST_EVENT);
 	}
 	
@@ -64,16 +66,14 @@ public class MaxRespTimePerItfOutgoingMetric extends Metric<Long> {
 
 		List<OutgoingRequestRecord> recordList = null;
 		recordList = recordStore.getOutgoingRequestRecords(new Condition<OutgoingRequestRecord>(){
-			// condition that returns true for every record
-			@Override
+			private static final long serialVersionUID = 1L;
 			public boolean evaluate(OutgoingRequestRecord orr) {
 				if(orr.getInterfaceName().equals(itfName)) {
 					return true;
 				}
 				return false;
 			}
-		}
-		);
+		});
 		
 		// and calculates the average
 		long max = 0;
