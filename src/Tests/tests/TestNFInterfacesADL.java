@@ -2,37 +2,28 @@ package tests;
 
 import static org.junit.Assert.fail;
 
-import org.etsi.uri.gcm.api.control.MonitorController;
-import org.junit.Before;
 import org.junit.Test;
-import org.objectweb.fractal.adl.Factory;
 import org.objectweb.fractal.api.Component;
+import org.objectweb.fractal.api.Interface;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.proactive.core.component.PAInterface;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.ACConstants;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorControllerMulticast;
 
 public class TestNFInterfacesADL extends CommonSetup {
 
-	Factory adlFactory;
-
-	@Before
-	 public void setUp() throws Exception {
-		super.setUp();
-		adlFactory = AFactoryFactory.getAFactory();
-	}
-
 	@Test
     public void FailInterfacesAddition() {
 		try {
-			adlFactory.newComponent("tests.components.FailComposite", null);
+			Component comp = (Component) adlFactory.newAutonomicComponent("tests.components.FailComposite", null);
 		} catch (Exception e) {
 			assert(true);
+			return;
 		}
 		assert(false);
 	}
@@ -108,11 +99,12 @@ public class TestNFInterfacesADL extends CommonSetup {
 		assert(master != null);
 	
 		found = false;
-		for (Object itf : ((PAComponent) composite).getFcInterfaces()) {
+		for (Object itf : ((PAComponent) master).getFcInterfaces()) {
 			if (itf instanceof PAInterface
-					&& ((PAInterface) itf).getFcItfName().equals("master" + ACConstants.EXTERNAL_CLIENT_SUFFIX)) {
+					&& ((PAInterface) itf).getFcItfName().equals("slave" + ACConstants.EXTERNAL_CLIENT_SUFFIX)) {
+
 				PAGCMInterfaceType type = (PAGCMInterfaceType) ((PAInterface) itf).getFcItfType();
-			assert(type.getFcItfName().equals("master" + ACConstants.EXTERNAL_CLIENT_SUFFIX));
+			assert(type.getFcItfName().equals("slave" + ACConstants.EXTERNAL_CLIENT_SUFFIX));
 			assert(type.getGCMCardinality().equals(PAGCMTypeFactory.SINGLETON_CARDINALITY));
 			assert(type.getFcItfSignature().equals(MonitorController.class.getName()));
 			assert(type.isInternal() == PAGCMTypeFactory.EXTERNAL);

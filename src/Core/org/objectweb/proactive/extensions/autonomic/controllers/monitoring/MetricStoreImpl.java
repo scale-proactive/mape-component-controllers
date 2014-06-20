@@ -50,13 +50,23 @@ import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.fractal.api.control.IllegalLifeCycleException;
 import org.objectweb.fractal.api.control.LifeCycleController;
 import org.objectweb.fractal.api.type.InterfaceType;
-import org.objectweb.proactive.core.component.PAInterface;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
-import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEvent;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventListener;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.*;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.AvgRespTimeIncomingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.AvgRespTimeOutgoingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.AvgRespTimePerItfIncomingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.AvgRespTimePerItfOutgoingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MaxRespTimeIncomingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MaxRespTimeOutgoingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MaxRespTimePerItfIncomingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MaxRespTimePerItfOutgoingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MinRespTimeIncomingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MinRespTimeOutgoingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MinRespTimePerItfIncomingMetric;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MinRespTimePerItfOutgoingMetric;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidWrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
@@ -403,12 +413,12 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		
 		if (initialized) return;
 
-		metrics.put("avgInc", new AvgRespTimeIncomingMetric());
-		metrics.put("avgOut", new AvgRespTimeOutgoingMetric());
-		metrics.put("maxInc", new MaxRespTimeIncomingMetric());
-		metrics.put("maxOut", new MaxRespTimeOutgoingMetric());
-		metrics.put("minInc", new MinRespTimeIncomingMetric());
-		metrics.put("minOut", new MinRespTimeOutgoingMetric());
+		addMetric("avgInc", new AvgRespTimeIncomingMetric());
+		addMetric("avgOut", new AvgRespTimeOutgoingMetric());
+		addMetric("maxInc", new MaxRespTimeIncomingMetric());
+		addMetric("maxOut", new MaxRespTimeOutgoingMetric());
+		addMetric("minInc", new MinRespTimeIncomingMetric());
+		addMetric("minOut", new MinRespTimeOutgoingMetric());
 
 		for (Object itf: this.hostComponent.getFcInterfaces()) {
 
@@ -417,13 +427,13 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 				continue;
 
 			if (((InterfaceType) ((Interface) itf).getFcItfType()).isFcClientItf()) {
-				metrics.put("avgOut-" + itfName, new AvgRespTimePerItfOutgoingMetric(itfName));
-				metrics.put("maxOut-" + itfName, new MaxRespTimePerItfOutgoingMetric(itfName));
-				metrics.put("minOut-" + itfName, new MinRespTimePerItfOutgoingMetric(itfName));
+				addMetric("avgOut-" + itfName, new AvgRespTimePerItfOutgoingMetric(itfName));
+				addMetric("maxOut-" + itfName, new MaxRespTimePerItfOutgoingMetric(itfName));
+				addMetric("minOut-" + itfName, new MinRespTimePerItfOutgoingMetric(itfName));
 			} else {
-				metrics.put("avgInc-" + itfName, new AvgRespTimePerItfIncomingMetric(itfName));
-				metrics.put("maxInc-" + itfName, new MaxRespTimePerItfIncomingMetric(itfName));
-				metrics.put("minInc-" + itfName, new MinRespTimePerItfIncomingMetric(itfName));
+				addMetric("avgInc-" + itfName, new AvgRespTimePerItfIncomingMetric(itfName));
+				addMetric("maxInc-" + itfName, new MaxRespTimePerItfIncomingMetric(itfName));
+				addMetric("minInc-" + itfName, new MinRespTimePerItfIncomingMetric(itfName));
 			}
 		}
 

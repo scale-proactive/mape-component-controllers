@@ -1,26 +1,31 @@
 package records;
 
+import org.junit.Before;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.ContentDescription;
 import org.objectweb.proactive.core.component.ControllerDescription;
 import org.objectweb.proactive.core.component.Utils;
+import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
-import tests.CommonSetup;
 import tests.components.ServiceA;
 import tests.components.ServiceAImpl;
 
-public class RecordStress extends CommonSetup {
+public class RecordStress {
 
 	protected ServiceA service;
 	protected MonitorController serviceMonitor;
 
+	@Before
 	public void setUp() throws Exception {
-		super.setUp();
+		Component boot = Utils.getBootstrapComponent();
+		PAGCMTypeFactory patf = Utils.getPAGCMTypeFactory(boot);
+		PAGenericFactory pagf = Utils.getPAGenericFactory(boot);
+
 		Remmos remmos = new Remmos(patf, pagf);
 
 		PAGCMInterfaceType itfType = (PAGCMInterfaceType) patf.createGCMItfType("service-a", ServiceA.class.getName(), PAGCMTypeFactory.SERVER,

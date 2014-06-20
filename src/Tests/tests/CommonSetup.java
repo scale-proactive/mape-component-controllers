@@ -2,27 +2,23 @@ package tests;
 
 import org.junit.Before;
 import org.objectweb.fractal.api.Component;
-import org.objectweb.proactive.core.component.Utils;
-import org.objectweb.proactive.core.component.factory.PAGenericFactory;
-import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
+import org.objectweb.proactive.extensions.autonomic.adl.AFactory;
+import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 
 import functionalTests.ComponentTest;
 
 public abstract class CommonSetup extends ComponentTest {
 
-    protected static PAGCMTypeFactory patf;
-	protected static PAGenericFactory pagf;
-
+    protected static AFactory adlFactory;
+    protected static Component composite;
 
     @Before
     public void setUp() throws Exception {
     	System.setProperty("gcm.provider", "org.objectweb.proactive.core.component.Fractive");
-        if (patf == null || pagf == null) {
-        	Component boot = Utils.getBootstrapComponent();
-    		patf = Utils.getPAGCMTypeFactory(boot);
-    		pagf = Utils.getPAGenericFactory(boot);
+        if (adlFactory == null || composite == null) {
+        	adlFactory = (AFactory) AFactoryFactory.getAFactory();
+        	composite = (Component) adlFactory.newAutonomicComponent("tests.components.Composite", null);
         }
-        
     }
 
 }

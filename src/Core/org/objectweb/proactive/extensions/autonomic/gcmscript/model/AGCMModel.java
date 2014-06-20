@@ -36,16 +36,31 @@
  */
 package org.objectweb.proactive.extensions.autonomic.gcmscript.model;
 
+import static org.objectweb.fractal.fscript.types.PrimitiveType.BOOLEAN;
+import static org.objectweb.fractal.fscript.types.PrimitiveType.STRING;
+import static org.objectweb.fractal.fscript.types.PrimitiveType.OBJECT;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.fractal.api.control.BindingController;
+import org.objectweb.fractal.fscript.model.ComposedAxis;
 import org.objectweb.fractal.fscript.model.Model;
+import org.objectweb.fractal.fscript.model.Property;
+import org.objectweb.fractal.fscript.model.ReflectiveAxis;
+import org.objectweb.fractal.fscript.model.TransitiveAxis;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
 import org.objectweb.fractal.fscript.procedures.NativeLibrary;
+import org.objectweb.proactive.extra.component.fscript.model.GCMAttributeAxis;
+import org.objectweb.proactive.extra.component.fscript.model.GCMBindingAxis;
+import org.objectweb.proactive.extra.component.fscript.model.GCMChildAxis;
+import org.objectweb.proactive.extra.component.fscript.model.GCMComponentAxis;
 import org.objectweb.proactive.extra.component.fscript.model.GCMModel;
+import org.objectweb.proactive.extra.component.fscript.model.GCMNodeAxis;
 import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
+import org.objectweb.proactive.extra.component.fscript.model.GCMParentAxis;
 import org.objectweb.proactive.extra.component.fscript.model.GCMProcedure;
+import org.objectweb.proactive.extra.component.fscript.model.GCMVirtualNodeAxis;
 
 
 /**
@@ -60,6 +75,28 @@ import org.objectweb.proactive.extra.component.fscript.model.GCMProcedure;
  * @author The ProActive Team
  */
 public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingController {
+
+    /**
+     * Contributes the different kinds of nodes used to represent GCM architectures.
+     */
+    @Override
+    protected void createNodeKinds() {
+        super.createNodeKinds();
+
+        addKind("metric", new Property("name", STRING, false), new Property("value", OBJECT, false),
+        		new Property("calculate", OBJECT, false), new Property("state", BOOLEAN, true));
+    }
+
+    /**
+     * Contributes the axes which can be used to connect GCM nodes in order to represent the structure of
+     * a GCM architecture.
+     */
+    @Override
+    protected void createAxes() {
+        super.createAxes();
+
+        addAxis(new MetricAxis(this));
+    }
 
     /**
      * Contributes a few custom procedures to manipulate GCM architecture which can not be described and
