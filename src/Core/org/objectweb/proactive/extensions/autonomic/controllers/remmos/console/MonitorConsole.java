@@ -60,10 +60,8 @@ import org.objectweb.proactive.core.util.log.Loggers;
 import org.objectweb.proactive.core.util.log.ProActiveLogger;
 import org.objectweb.proactive.core.util.wrapper.StringWrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.RequestPath;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.library.MetricsLibrary;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.ComponentRequestID;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.MetricsLibrary;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.utils.RemmosUtils;
 
