@@ -10,8 +10,6 @@ import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveServi
 @DefineGroups({ @Group(name = "G1", selfCompatible = true) })
 public class SlaveImpl implements Slave, RunActive {
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	@MemberOf("G1")
 	public void run1() {

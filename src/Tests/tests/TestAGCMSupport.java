@@ -8,17 +8,25 @@ import org.junit.Test;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.proactive.core.component.Utils;
+import org.objectweb.proactive.extensions.autonomic.adl.AFactory;
+import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
 import tests.components.Slave;
 
-public class TestAGCMNewAction extends CommonSetup {
+public class TestAGCMSupport {
 	
+    protected static AFactory adlFactory;
+    protected static Component composite;
+
     @Before
     public void setUp() throws Exception {
-   		super.setUp();
-   		Remmos.enableMonitoring(composite);
+    	System.setProperty("gcm.provider", "org.objectweb.proactive.core.component.Fractive");
+        if (adlFactory == null || composite == null) {
+        	adlFactory = (AFactory) AFactoryFactory.getAFactory();
+        	composite = (Component) adlFactory.newAutonomicComponent("tests.components.Composite", null);
+        }
     }
     
     @Test
@@ -31,6 +39,7 @@ public class TestAGCMNewAction extends CommonSetup {
 			fail(e.getMessage());
 			return;
 		}
+		
 		String appDescriptor = this.getClass().getResource("GCMALocal.xml").getPath();
     	System.out.println("-- " + executor.execute("gcma = deploy-gcma(\"" + appDescriptor + "\");").getValue());
     	System.out.println("-- " + executor.execute("slave = gcm-new-autonomic(\"tests.components.Slave\", $gcma);").getValue());
@@ -70,4 +79,17 @@ public class TestAGCMNewAction extends CommonSetup {
 			fail(e.getMessage());
 		}
     }
+    
+	@Test
+	public void TestMetrics() throws NoSuchInterfaceException {
+		
+		ExecutorController executor = Remmos.getExecutorController(composite);
+		
+		String result2 = executor.execute("$this/child::Master/metric::avgInc;").getValue();
+		System.out.println(result2);
+
+		String result = executor.execute("name($this/child::Master/metric::avgInc);").getValue();
+		System.out.println(result);
+		assert "avgInc".equals(result);
+	}
 }

@@ -12,7 +12,6 @@ import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveServi
 @DefineGroups({ @Group(name = "G1", selfCompatible = true) })
 public class MasterImpl implements Master, BindingController, RunActive {
 
-	private static final long serialVersionUID = 1L;
 	private Slave slave;
 
 	@Override
