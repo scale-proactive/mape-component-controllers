@@ -80,11 +80,11 @@ public class MetricNode extends AbstractNode {
 		return monitorController.calculateMetric(metricName).getValue();
 	}
 
-	public boolean getState() {
-		return monitorController.getMetricState(metricName).getValue();
+	public Object getState() {
+		return monitorController.getMetricState(metricName).getValue().toString();
 	}
 
 	private void setState(boolean enabled) {
-		monitorController.setMetricState(metricName, enabled).getValue();
+		monitorController.setMetricState(metricName, enabled).getValue().toString();
 	}
 }

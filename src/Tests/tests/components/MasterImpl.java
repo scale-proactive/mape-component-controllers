@@ -4,32 +4,23 @@ import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.proactive.Body;
 import org.objectweb.proactive.RunActive;
-import org.objectweb.proactive.annotation.multiactivity.DefineGroups;
-import org.objectweb.proactive.annotation.multiactivity.Group;
-import org.objectweb.proactive.annotation.multiactivity.MemberOf;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
-@DefineGroups({ @Group(name = "G1", selfCompatible = true) })
 public class MasterImpl implements Master, BindingController, RunActive {
 
 	private Slave slave;
 
 	@Override
-	@MemberOf("G1")
 	public void run() {
-		for(int i = 0; i <= 4; i++) {
-			slave.run1();
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return;
-			}
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		slave.run1();
 	}
 	
 	@Override
-	@MemberOf("G1")
 	public void run2() {
 		slave.run2();
 	}
