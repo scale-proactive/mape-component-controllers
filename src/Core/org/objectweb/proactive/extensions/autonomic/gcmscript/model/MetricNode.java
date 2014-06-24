@@ -34,6 +34,10 @@ public class MetricNode extends AbstractNode {
      */
 	public MetricNode(FractalModel model, MonitorController monitorController, String metricName) {
 		super(model.getNodeKind("metric"));
+		if (monitorController == null || metricName == null) {
+			throw new NullPointerException();
+		}
+
 		this.metricName = metricName;
 		this.monitorController = monitorController;
 	}
@@ -82,8 +86,8 @@ public class MetricNode extends AbstractNode {
 		return monitorController.calculateMetric(metricName).getValue();
 	}
 
-	public Object getState() {
-		return monitorController.getMetricState(metricName).getValue().toString();
+	public String getState() {
+		return monitorController.getMetricState(metricName).getValue();
 	}
 
 	private void setState(String state) {

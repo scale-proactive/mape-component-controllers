@@ -93,15 +93,15 @@ public abstract class Metric<T> implements Serializable {
 	}
 
 
-	private boolean setState(String state) {
-		if (state.equals(ENABLED)) {
-			state = ENABLED;
-		} else if (state.equals(DISABLED)) {
-			state = DISABLED;
+	private boolean setState(String newState) {
+		if (newState.equals(ENABLED)) {
+			this.state = ENABLED;
+		} else if (newState.equals(DISABLED)) {
+			this.state = DISABLED;
 		} else {
 			return false;
 		}
-		
+
 		return true;
 	}
 
