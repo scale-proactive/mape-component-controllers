@@ -68,8 +68,6 @@ public class AvgRespTimeOutgoingMetric extends Metric<Double> {
 				return true;
 			}
 		});
-		
-		System.out.println("STACK SIZE = " + recordList.size());
 	
 		// and calculates the average
 		double sum = 0.0;
