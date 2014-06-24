@@ -1,14 +1,17 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.analysis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.proactive.core.component.componentcontroller.AbstractPAComponentController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MetricEventListener;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.ValidWrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 
 
 public class AnalyzerControllerImpl extends AbstractPAComponentController implements AnalyzerController,
@@ -32,18 +35,18 @@ public class AnalyzerControllerImpl extends AbstractPAComponentController implem
 	}
 
 	@Override
-	public Alarm checkRule(String ruleName) throws NoSuchElementException {
+	public Wrapper<Alarm> checkRule(String ruleName) {
 		if (rules.containsKey(ruleName)) {
-			return rules.get(ruleName).check(monitor);
+			return new ValidWrapper<Alarm>(rules.get(ruleName).check(monitor));
 		}
-		throw new NoSuchElementException("Could not found rule \"" + ruleName + "\"");
+		return new WrongWrapper<Alarm>("Could not found rule \"" + ruleName + "\"");
 	}
 
-	private void checkRuleAndNotifyAlarm(String ruleName, Rule rule) {
-		Alarm alarm = rule.check(monitor);
-		if (alarm != null && alarmListener != null) {
-			alarmListener.listenAlarm(ruleName, alarm);
-		}
+	@Override
+	public Wrapper<ArrayList<String>> getRuleNames() {
+		ArrayList<String> list = new ArrayList<String>();
+		list.addAll(rules.keySet());
+		return new ValidWrapper<ArrayList<String>>(list);
 	}
 
 	// METRIC EVENT LISTENER
@@ -54,6 +57,13 @@ public class AnalyzerControllerImpl extends AbstractPAComponentController implem
 			if (entry.getValue().isSubscribedToMetric(metricName)) {
 				checkRuleAndNotifyAlarm(entry.getKey(), entry.getValue());
 			}
+		}
+	}
+
+	private void checkRuleAndNotifyAlarm(String ruleName, Rule rule) {
+		Alarm alarm = rule.check(monitor);
+		if (alarm != null && alarmListener != null) {
+			alarmListener.listenAlarm(ruleName, alarm);
 		}
 	}
 

@@ -74,6 +74,7 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
 
         addKind("metric", new Property("name", STRING, false), new Property("value", OBJECT, false),
         		new Property("calculate", OBJECT, false), new Property("state", STRING, true));
+        addKind("rule", new Property("name", STRING, false), new Property("check", STRING, false));
     }
 
     /**
@@ -85,6 +86,7 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
         super.createAxes();
 
         addAxis(new MetricAxis(this));
+        addAxis(new RuleAxis(this));
     }
 
     /**
@@ -114,4 +116,5 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
     public String toString() {
         return "A GCM model";
     }
+
 }
