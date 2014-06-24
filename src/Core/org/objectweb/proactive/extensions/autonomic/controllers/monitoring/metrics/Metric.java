@@ -54,6 +54,10 @@ public abstract class Metric<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String ENABLED = "ENABLED";
+	public static final String DISABLED = "DISABLED";
+
+
 	/** The record source */
 	protected RecordStore recordStore = null;
 
@@ -65,7 +69,7 @@ public abstract class Metric<T> implements Serializable {
 
 	// Indicates if metric is enable or not. A disabled metric will ignore any RemmosEvent subscription and
 	// will not upgrade its value on new events.
-	private boolean enable = false;
+	private String state = DISABLED;
 
 
 	public void setRecordSource(RecordStore rs) {
@@ -88,28 +92,50 @@ public abstract class Metric<T> implements Serializable {
 		return subscribedEvents.contains(ret);
 	}
 
-	/**
-	 * Enables the RemmosEvent subscription. If enabled, the {@link #calculate()} method will be call after every
-	 * notification of a subscribed RemmosEvent. Disabled by default. 
-	 */
-	public void enableEventSubscription() {
-		this.enable = true;
-	}
-	
-	/**
-	 * Disables the RemmosEvent subscription. If disables, the metric will ignore any RemmosEvent subscription and
-	 * the method {@link #calculate()} will not be called after event notifications.
-	 */
-	public void disableEventSubsctiption() {
-		this.enable = false;
+
+	private boolean setState(String state) {
+		if (state.equals(ENABLED)) {
+			state = ENABLED;
+		} else if (state.equals(DISABLED)) {
+			state = DISABLED;
+		} else {
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**
-	 * Shows if this metric is being recalculated after every notification of a subscribed RemmosEvent.
-	 * @return
+	 * Change the state of the metric to ENABLED. This means that
+	 * the metric will be automatic recalculated on every
+	 * reception of subscribed events, if any.
 	 */
-	public boolean isEventSubscriptionEnable() {
-		return this.enable;
+	public boolean enable() {
+		return setState(ENABLED);
+	}
+
+	/**
+	 * Change the state of the metric to DISABLED. This means that
+	 * the metric will not be recalculated automatically.
+	 */
+	public boolean disable() {
+		return setState(DISABLED);
+	}
+
+	/**
+	 * Returns the state of the metric, it could be ENABLED or DISABLED
+	 * @return the state of the metric
+	 */
+	public String getState() {
+		return state;
+	}
+
+	/**
+	 * Shows if the state of the metric is ENABLED
+	 * @return true if the state is ENABLED, false otherwise
+	 */
+	public boolean isEnabled() {
+		return state.equals(ENABLED);
 	}
 
 	/**

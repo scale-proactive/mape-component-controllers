@@ -36,7 +36,6 @@
  */
 package org.objectweb.proactive.extensions.autonomic.gcmscript.model;
 
-import static org.objectweb.fractal.fscript.types.PrimitiveType.BOOLEAN;
 import static org.objectweb.fractal.fscript.types.PrimitiveType.OBJECT;
 import static org.objectweb.fractal.fscript.types.PrimitiveType.STRING;
 
@@ -74,7 +73,7 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
         super.createNodeKinds();
 
         addKind("metric", new Property("name", STRING, false), new Property("value", OBJECT, false),
-        		new Property("calculate", OBJECT, false), new Property("state", BOOLEAN, true));
+        		new Property("calculate", OBJECT, false), new Property("state", STRING, true));
     }
 
     /**

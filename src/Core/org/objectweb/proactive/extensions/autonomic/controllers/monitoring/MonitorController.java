@@ -96,26 +96,32 @@ public interface MonitorController {
     // ---------------------------------------------------------------------------
 
     /**
-     * Returns the state of a {@link Metric}. The state of a metric could be ENABLE or DISABLE.
+     * Returns the state of a {@link Metric}. The state of a metric could be ENABLED or DISABLED.
      * Only enabled metrics will be automatically calculated.
      * 
-     * @param metricName The name of the metric.
-     * @return True if the metric is enable, False otherwise.
+     * @param metricName the name of the metric.
+     * @return the state of the metric
      */
-    public Wrapper<Boolean> getMetricState(String metricName);
+    public Wrapper<String> getMetricState(String metricName);
 
     /**
-     * Changes the state of a {@link Metric}. The state of a metric could be ENABLE or DISABLE.
-     * Only enabled metrics will be automatically calculated.
+     * Changes the state of a metric to ENABLED
      * 
-     * @param metricName The name of the metric.
-     * @param enable True to enable the metric, False to disable.
-     * @return True if success, False otherwise.
+     * @param metricName the name of the metric
+     * @return true if success, false otherwise (i.e. metric not found)
      */
-    public Wrapper<Boolean> setMetricState(String metricName, boolean enable);
-  
+    public Wrapper<Boolean> enableMetric(String metricName);
+
     /**
-     * Return the name of all the currently added metrics.
+     * Changes the state of a metric to DISABLED
+     * @param metricName the name of the metric
+     * @return true if success, false otherwise (i.e. metric not found)
+     */
+    public Wrapper<Boolean> disableMetric(String metricName);
+
+
+    /**
+     * Return the name of all the currently added metrics
      * @return List of the names of the currently added metrics.
      */
     public List<String> getMetricList();

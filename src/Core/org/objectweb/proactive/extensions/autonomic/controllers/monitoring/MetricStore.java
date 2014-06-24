@@ -53,17 +53,14 @@ public interface MetricStore {
 	// default metric store interface name
 	public final static String ITF_NAME = "metric-store-nf";
 
-	public Wrapper<Boolean> getState(String metricName);
-	public Wrapper<Boolean> setState(String metricName, boolean enable);
-	
+	public Wrapper<String> getMetricState(String metricName);
+	public Wrapper<Boolean> enableMetric(String metricName);
+	public Wrapper<Boolean> disableMetric(String metricName);
+
 	void addMetric(String name, Metric<?> metric);
 	
 	void removeMetric(String name);
-	
-	void disableMetric(String name);
-	
-	void enableMetric(String name);
-	
+
 	/**
 	 * Updates the metric value using the arguments stored
 	 * @param name

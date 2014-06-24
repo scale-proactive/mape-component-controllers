@@ -96,24 +96,30 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 
 
 	@Override
-	public Wrapper<Boolean> getState(String metricName) {
+	public Wrapper<String> getMetricState(String metricName) {
 		Metric<?> metric = metrics.get(metricName);
-		return metric == null ? new WrongWrapper<Boolean>("Metric not found") 
-				: new ValidWrapper<Boolean>(metric.isEventSubscriptionEnable());
+		if (metric == null)
+			return new WrongWrapper<String>("Metric not found");
+
+		return new ValidWrapper<String>(metric.getState());
 	}
 
 	@Override
-	public Wrapper<Boolean> setState(String metricName, boolean enable) {
+	public Wrapper<Boolean> enableMetric(String metricName) {
 		Metric<?> metric = metrics.get(metricName);
-		if (metric == null)
-			return new WrongWrapper<Boolean>(false, "Metric not found");
+		if (metric == null) {
+			return new ValidWrapper<Boolean>(false, "Metric not found");
+		}
+		return new ValidWrapper<Boolean>(metric.enable());
+	}
 
-		if (enable)
-			metric.enableEventSubscription();
-		else
-			metric.disableEventSubsctiption();
-
-		return new ValidWrapper<Boolean>(true);
+	@Override
+	public Wrapper<Boolean> disableMetric(String metricName) {
+		Metric<?> metric = metrics.get(metricName);
+		if (metric == null) {
+			return new ValidWrapper<Boolean>(false, "Metric not found");
+		}
+		return new ValidWrapper<Boolean>(metric.disable());
 	}
 
 	@Override
@@ -136,22 +142,6 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 			return mv;
 		}
 		return new WrongWrapper<T>("Metric \"" + name + "\" not found.");
-	}
-
-	@Override
-	public void disableMetric(String name) {
-		Metric<?> metric = metrics.get(name);
-		if(metric != null) {
-			metric.disableEventSubsctiption();
-		}
-	}
-
-	@Override
-	public void enableMetric(String name) {
-		Metric<?> metric = metrics.get(name);
-		if(metric != null) {
-			metric.enableEventSubscription();
-		}
 	}
 
 	
@@ -312,7 +302,7 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		//System.out.println("EVENT ON " + hostComponent.getComponentParameters().getControllerDescription().getName() + ": " + re.getType());
 		for(Map.Entry<String, Metric<?>> entry : metrics.entrySet()) {
 			
-			if(entry.getValue().isEventSubscriptionEnable() && entry.getValue().isSubscribedTo(re.getType())) {
+			if(entry.getValue().isEnabled() && entry.getValue().isSubscribedTo(re.getType())) {
 	
 				entry.getValue().calculate();
 				

@@ -6,6 +6,8 @@ import org.objectweb.fractal.fscript.model.AbstractNode;
 import org.objectweb.fractal.fscript.model.Node;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 /**
  * A {@link Node} which represents a Metric.
@@ -62,7 +64,7 @@ public class MetricNode extends AbstractNode {
 	public void setProperty(String name, Object value) {
         checkSetRequest(name, value);
         if ("state".equals(name)) {
-            setState((boolean) value);
+            setState((String) value);
         } else {
             throw new NoSuchElementException("Invalid property name '" + name + "'");
         }
@@ -84,7 +86,30 @@ public class MetricNode extends AbstractNode {
 		return monitorController.getMetricState(metricName).getValue().toString();
 	}
 
-	private void setState(boolean enabled) {
-		monitorController.setMetricState(metricName, enabled).getValue().toString();
+	private void setState(String state) {
+		if (state.equals(Metric.ENABLED)) {
+			Wrapper<Boolean> result = monitorController.enableMetric(metricName);
+			if (!result.isValid() || !result.getValue()) {
+				String details = metricName + ": " + result.getMessage();
+				System.err.println("[Warning] Error while enabling metric " + details);
+			}
+		} else if (state.equals(Metric.DISABLED)) {
+			Wrapper<Boolean> result = monitorController.disableMetric(metricName);
+			if (!result.isValid() || !result.getValue()) {
+				String details = metricName + ": " + result.getMessage();
+				System.err.println("[Warning] Error while disabling metric " + details);
+			}
+		} else {
+			String details = metricName + ": the state must be " + Metric.ENABLED + " or " + Metric.DISABLED;
+			System.err.println("[Warning] Error while trying to change the state of meitrc " + details);
+		}
 	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "#<metric: " + metricName + ">";
+    }
 }

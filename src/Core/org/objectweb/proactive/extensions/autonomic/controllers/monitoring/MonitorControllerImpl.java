@@ -556,14 +556,20 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 
 	/** {@inheritDoc} */
 	@Override
-	public Wrapper<Boolean> getMetricState(String metricName) {
-		return metricsStore.getState(metricName);
+	public Wrapper<String> getMetricState(String metricName) {
+		return metricsStore.getMetricState(metricName);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public Wrapper<Boolean> setMetricState(String metricName, boolean enable) {
-		return metricsStore.setState(metricName, enable);
+    public Wrapper<Boolean> enableMetric(String metricName) {
+		return metricsStore.enableMetric(metricName);
+	}
+
+    /** {@inheritDoc} */
+	@Override
+    public Wrapper<Boolean> disableMetric(String metricName) {
+		return metricsStore.disableMetric(metricName);
 	}
 
 	@Override

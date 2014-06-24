@@ -77,8 +77,8 @@ public class AvgRespTimeOutgoingMetric extends Metric<Double> {
 				sum += (double)(orr.getReplyReceptionTime() - orr.getSentTime());
 			}
 		}
-		value = sum/nRecords;
-		return value;
+
+		return (value = nRecords > 0 ? sum/nRecords: 0);
 	}
 
 	@Override
