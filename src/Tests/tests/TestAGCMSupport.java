@@ -3,31 +3,16 @@ package tests;
 import static org.junit.Assert.fail;
 
 import org.etsi.uri.gcm.util.GCM;
-import org.junit.Before;
 import org.junit.Test;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.proactive.core.component.Utils;
-import org.objectweb.proactive.extensions.autonomic.adl.AFactory;
-import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
 import tests.components.Slave;
 
-public class TestAGCMSupport {
-	
-    protected static AFactory adlFactory;
-    protected static Component composite;
-
-    @Before
-    public void setUp() throws Exception {
-    	System.setProperty("gcm.provider", "org.objectweb.proactive.core.component.Fractive");
-        if (adlFactory == null || composite == null) {
-        	adlFactory = (AFactory) AFactoryFactory.getAFactory();
-        	composite = (Component) adlFactory.newAutonomicComponent("tests.components.Composite", null);
-        }
-    }
+public class TestAGCMSupport extends CommonSetup {
     
     @Test
     public void TestAComponentInstantiaton() {

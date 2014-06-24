@@ -2,7 +2,6 @@ package tests;
 
 import static org.junit.Assert.fail;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
@@ -11,8 +10,6 @@ import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.extensions.autonomic.adl.AFactory;
-import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.ACConstants;
 import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerController;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
@@ -21,19 +18,7 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.Monit
 import org.objectweb.proactive.extensions.autonomic.controllers.planning.PlannerController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
-public class TestADLSupport {
-
-    protected static AFactory adlFactory;
-    protected static Component composite;
-
-    @Before
-    public void setUp() throws Exception {
-    	System.setProperty("gcm.provider", "org.objectweb.proactive.core.component.Fractive");
-        if (adlFactory == null || composite == null) {
-        	adlFactory = (AFactory) AFactoryFactory.getAFactory();
-        	composite = (Component) adlFactory.newAutonomicComponent("tests.components.Composite", null);
-        }
-    }
+public class TestADLSupport extends CommonSetup {
 
 	@Test
     public void TestInterfaces() {
