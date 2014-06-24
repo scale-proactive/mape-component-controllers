@@ -73,7 +73,7 @@ import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 @SuppressWarnings("serial")
 public class ExecutorControllerImpl extends AbstractPAComponentController implements ExecutorController {
 
-	private static final String AGCMSCRIPT_ADL = "org.objectweb.proactive.extensions.autonomic.gcmscript.AGCMScript";
+	public static final String AGCMSCRIPT_ADL = "org.objectweb.proactive.extensions.autonomic.gcmscript.AGCMScript";
 	private static final String MSG_NOT_SERIALIZABLE = "The result of action %s does not implement Serializable";
 	private static final String MSG_NOT_FOUND = "No action found with name \"%s\"";
 	
