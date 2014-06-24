@@ -1,29 +1,22 @@
 package tests.components;
 
-import org.objectweb.proactive.Body;
-import org.objectweb.proactive.RunActive;
-import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
-public class SlaveImpl implements Slave, RunActive {
+public class SlaveImpl implements Slave {
 
 	@Override
-	public void run1() {
-		System.out.println("run1 working");
+	public long run1() {
+		return System.currentTimeMillis();
 	}
 
 	@Override
-	public void run2() {
+	public long run2() {
 		try {
-			Thread.sleep(100);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("run2 working");
-	}
-
-	@Override
-	public void runActivity(Body body) {
-		(new ComponentMultiActiveService(body)).multiActiveServing();
+		return System.currentTimeMillis();
+		//System.out.println("run2 working");
 	}
 
 }

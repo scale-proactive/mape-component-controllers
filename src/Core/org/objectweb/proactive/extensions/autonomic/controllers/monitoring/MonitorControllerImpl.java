@@ -136,19 +136,29 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	}
 
 	@Override
-	public Boolean isGCMMonitoringStarted() {
-		return new Boolean(started);
+	public boolean isGCMMonitoringStarted() {
+		return started;
 	}
 
+	/**
+	 * WARNING: NOT IMPLEMENTED.
+	 * @return null
+	 */
 	@Override
-	public Object getGCMStatistics(String arg0, String arg1) {
+	public Object getGCMStatistics(String arg0, String arg1, Class<?>[] arg2)
+			throws NoSuchInterfaceException, NoSuchMethodException {
 		return null;
 	}
 
+	/**
+	 * WARNING: NOT IMPLEMENTED.
+	 * @return null
+	 */
 	@Override
 	public Map<String, Object> getAllGCMStatistics() {
 		return null;
 	}
+
 	/*
 	public List<ComponentRequestID> getListOfIncomingRequestIDs() {
 		return recordStore.getListOfRequestIDs();

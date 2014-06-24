@@ -17,4 +17,7 @@
 	<!-- Loader component -->
 	<component name="loader" definition="org.objectweb.proactive.extensions.autonomic.adl.ALoader"/>
 
+	<!-- Compiler component -->
+	<component name="compiler" definition="org.objectweb.proactive.extensions.autonomic.adl.ACompiler"/>
+
 </definition>

@@ -60,7 +60,7 @@ public class AvgRespTimeIncomingMetric extends Metric<Double> {
 		this.value = 0.0;
 		this.subscribeTo(RemmosEventType.INCOMING_REQUEST_EVENT);
 	}
-	
+
 	public Double calculate() {
 
 		List<IncomingRequestRecord> recordList = null;
@@ -71,6 +71,8 @@ public class AvgRespTimeIncomingMetric extends Metric<Double> {
 			}
 		});
 		
+		System.out.println("STACK SIZE = " + recordList.size());
+
 		// and calculates the average
 		double sum = 0.0;
 		double nRecords = recordList.size();

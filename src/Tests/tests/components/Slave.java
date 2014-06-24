@@ -2,7 +2,7 @@ package tests.components;
 
 public interface Slave {
 
-	public void run1();
-	public void run2();
+	public long run1();
+	public long run2();
 
 }

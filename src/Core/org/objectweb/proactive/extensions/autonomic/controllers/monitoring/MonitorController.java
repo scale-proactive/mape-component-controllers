@@ -38,28 +38,15 @@ package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
-import org.objectweb.proactive.core.ProActiveRuntimeException;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 
-public interface MonitorController {
+public interface MonitorController extends org.etsi.uri.gcm.api.control.MonitorController {
 
 	public static final String ITF_NAME = "monitor-service-nf";
 
-	void startGCMMonitoring();
-	void stopGCMMonitoring();
-	void resetGCMMonitoring();
-	Boolean isGCMMonitoringStarted();
-	Object getGCMStatistics(String itfName, String methodName) throws ProActiveRuntimeException;
-	//Object getGCMStatistics(String itfName, String methodName, Class<?>[] parameterTypes) throws ProActiveRuntimeException;
-	Map<String, Object> getAllGCMStatistics();
-
-    //-------------------------------------------------------------------------
-    // Extensions for the Monitoring Framework
-    //
     
     /**
      * Get the list of all requests that have been entered this component

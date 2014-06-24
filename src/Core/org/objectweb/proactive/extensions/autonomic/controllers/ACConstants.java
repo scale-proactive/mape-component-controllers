@@ -1,8 +1,10 @@
 package org.objectweb.proactive.extensions.autonomic.controllers;
 
+import org.objectweb.proactive.core.component.Constants;
+
 public interface ACConstants {
 
-	public static final String MONITOR_CONTROLLER = "autonomic-monitor-controller";
+	public static final String MONITOR_CONTROLLER = Constants.MONITOR_CONTROLLER;
 	public static final String ANALYZER_CONTROLLER = "analyzer-controller";
 	public static final String PLANNER_CONTROLLER = "planner-controller";
 	public static final String EXECUTOR_CONTROLLER = "executor-controller";

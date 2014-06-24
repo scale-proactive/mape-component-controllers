@@ -2,27 +2,24 @@ package tests.components;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.BindingController;
-import org.objectweb.proactive.Body;
-import org.objectweb.proactive.RunActive;
-import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
-public class MasterImpl implements Master, BindingController, RunActive {
+public class MasterImpl implements Master, BindingController {
 
 	private Slave slave;
 
 	@Override
-	public void run() {
+	public long run() {
 		try {
-			Thread.sleep(100);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		slave.run1();
+		return slave.run1();
 	}
 	
 	@Override
-	public void run2() {
-		slave.run2();
+	public long run2() {
+		return slave.run2();
 	}
 
 	@Override
@@ -55,11 +52,6 @@ public class MasterImpl implements Master, BindingController, RunActive {
 		} else {
 			throw new NoSuchInterfaceException(arg0);
 		}
-	}
-
-	@Override
-	public void runActivity(Body body) {
-		(new ComponentMultiActiveService(body)).multiActiveServing();
 	}
 
 }

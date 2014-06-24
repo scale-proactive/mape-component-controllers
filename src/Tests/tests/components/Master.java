@@ -3,7 +3,7 @@ package tests.components;
 
 public interface Master {
 
-	public void run();
-	public void run2();
+	public long run();
+	public long run2();
 
 }
