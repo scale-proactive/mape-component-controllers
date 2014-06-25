@@ -10,6 +10,7 @@ import org.objectweb.fractal.fscript.model.Node;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
+import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 import org.objectweb.proactive.extra.component.fscript.model.GCMComponentNode;
 import org.objectweb.proactive.extra.component.fscript.model.GCMInterfaceNode;
 
@@ -57,10 +58,17 @@ public class MetricAxis extends AbstractAxis {
         Set<Node> result = new HashSet<Node>();
         try {
         	MonitorController monitorController = Remmos.getMonitorController(comp);
-			for (Object metricName : monitorController.getMetricList().toArray()) {
-				Node node = new MetricNode((FractalModel) model, monitorController, (String) metricName);
-				result.add(node);
-			}
+        	Wrapper<HashSet<String>> metricNames = monitorController.getMetricList();
+        	if (metricNames.isValid()) {
+				for (String metricName : metricNames.getValue()) {
+					Node node = ((AGCMModel) model).createMetricNode(monitorController, metricName);
+					result.add(node);
+				}
+        	} else {
+        		// warn making some noise
+        		String msg = "MetricController detected, but failed to get the matric names: ";
+        		(new Exception(msg + metricNames.getMessage())).printStackTrace();
+        	}
 		} catch (NoSuchInterfaceException e) {
 			// continue silently
 		}

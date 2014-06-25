@@ -37,7 +37,7 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
@@ -57,7 +57,7 @@ public interface MetricStore {
 	public Wrapper<Boolean> enableMetric(String metricName);
 	public Wrapper<Boolean> disableMetric(String metricName);
 
-	void addMetric(String name, Metric<?> metric);
+	public Wrapper<Boolean> addMetric(String name, Metric<?> metric);
 	
 	void removeMetric(String name);
 
@@ -72,12 +72,12 @@ public interface MetricStore {
 	
 	void setValue(String name, Object v);
 	
-	List<String> getMetricList();
+	public Wrapper<HashSet<String>> getMetricList();
 	
 	// EXTERNAL METRICS API: The same, but for an external monitor indicated by "itfPath"
 	public <T extends Serializable> Wrapper<T> calculate(String name, String itfPath);
 	public <T extends Serializable> Wrapper<T> getValue(String name, String itfPath);
 	void setValue(String name, Object v, String itfPath);
-	List<String> getMetricList(String itfPath);
+	public Wrapper<HashSet<String>> getMetricList(String itfPath);
 
 }

@@ -37,6 +37,7 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
@@ -111,7 +112,7 @@ public interface MonitorController extends org.etsi.uri.gcm.api.control.MonitorC
      * Return the name of all the currently added metrics
      * @return List of the names of the currently added metrics.
      */
-    public List<String> getMetricList();
+    public Wrapper<HashSet<String>> getMetricList();
 
     /**
      * Return the name of all the currently added metrics.
@@ -121,16 +122,15 @@ public interface MonitorController extends org.etsi.uri.gcm.api.control.MonitorC
      * itfPath = "/"
      * @return List of the names of the currently added metrics.
      */
-    public List<String> getMetricList(String itfPath);
+    public Wrapper<HashSet<String>> getMetricList(String itfPath);
 
     /**
      * Add a metric on this monitor.
      * @param name		the name of the metric
      * @param metric	the metric
      */
-    public void addMetric(String name, Metric<?> metric);
+    public Wrapper<Boolean> addMetric(String name, Metric<?> metric);
 
-  
     /**
      * Executes the calculate() method for the desired metric.
      * @param name	the name of the metric

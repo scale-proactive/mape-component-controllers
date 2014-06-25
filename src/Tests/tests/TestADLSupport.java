@@ -116,7 +116,7 @@ public class TestADLSupport extends CommonSetup {
 		}
 		
 		int counter = 0;
-		for (String metricName : monitor.getMetricList()) {
+		for (String metricName : monitor.getMetricList().getValue()) {
 			System.out.println("Metric on composite monitor: " + metricName);
 			counter++;
 		}

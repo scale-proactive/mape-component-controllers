@@ -38,6 +38,7 @@ package org.objectweb.proactive.extensions.autonomic.controllers.remmos.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,15 +48,15 @@ import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.type.InterfaceType;
 import org.objectweb.fractal.util.Fractal;
 import org.objectweb.proactive.core.component.Constants;
+import org.objectweb.proactive.core.component.identity.PAComponent;
+import org.objectweb.proactive.core.component.type.PAComponentType;
+import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.PathItem;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.RequestPath;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.ComponentRequestID;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.IncomingRequestRecord;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.records.OutgoingRequestRecord;
-import org.objectweb.proactive.core.component.identity.PAComponent;
-import org.objectweb.proactive.core.component.type.PAComponentType;
-import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 
 public class RemmosUtils {
 
@@ -311,9 +312,9 @@ public class RemmosUtils {
 		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
 		}
-		List<String> metricSet = null;
+		HashSet<String> metricSet = null;
 		try {
-			metricSet = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getMetricList();
+			metricSet = ((MonitorController)comp.getFcInterface(Constants.MONITOR_CONTROLLER)).getMetricList().getValue();
 		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
 		}

@@ -39,9 +39,9 @@ package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.objectweb.fractal.api.Interface;
@@ -123,10 +123,19 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 	}
 
 	@Override
-	public void addMetric(String name, Metric<?> metric) {
+	public Wrapper<Boolean> addMetric(String name, Metric<?> metric) {
+		if (metric == null) {
+			return new ValidWrapper<Boolean>(false, "metric can not be null");
+		}
+
+		if (metrics.containsKey(name)) {
+			return new ValidWrapper<Boolean>(false, "the name \"" + name + "\" already exist");
+		}
+
 		metric.setRecordSource(records);
 		metric.setMetricSource((MetricStore) this);
 		metrics.put(name, metric);
+		return new ValidWrapper<Boolean>(true);
 	}
 
 	
@@ -170,11 +179,8 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 	}
 	
 	@Override
-	public List<String> getMetricList() {
-		Set<String> keys = metrics.keySet();
-		List<String> res = new ArrayList<String>(keys.size());
-		res.addAll(keys);
-		return res;
+	public Wrapper<HashSet<String>> getMetricList() {
+		return new ValidWrapper<HashSet<String>>(new HashSet<String>(metrics.keySet()));
 	}
 
 	// EXTERNAL METRICS API
@@ -273,7 +279,7 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 	}
 
 	@Override
-	public List<String> getMetricList(String itfPath) {
+	public Wrapper<HashSet<String>> getMetricList(String itfPath) {
 		String nextItfName = getNextItfName(itfPath);
 		if (nextItfName == null) {
 			// LocalRequest
@@ -287,11 +293,9 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		} else if (remoteMon instanceof MonitorControllerMulticast) {
 			//return ((MonitorControllerMulticast) remoteMon).getMetricList(getNextItfPath(itfPath));
 			// TODO: support multicast
-			return new ArrayList<String>();
+			return new WrongWrapper<HashSet<String>>(new HashSet<String>(), "Not supported yet");
 		}
-	
-		(new NoSuchInterfaceException(nextItfName)).printStackTrace();
-		return new ArrayList<String>();
+		return new WrongWrapper<HashSet<String>>(new HashSet<String>(), "Itf path not found");
 	}
 
 	// REMMOS EVENT

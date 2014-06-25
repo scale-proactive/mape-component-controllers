@@ -48,6 +48,7 @@ import org.objectweb.fractal.fscript.model.Property;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
 import org.objectweb.fractal.fscript.procedures.NativeLibrary;
 import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerController;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extra.component.fscript.model.GCMModel;
 import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 import org.objectweb.proactive.extra.component.fscript.model.GCMProcedure;
@@ -113,6 +114,10 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
 
     public RuleNode createRuleNode(AnalyzerController analyzerController, String ruleName) {
     	return new RuleNode(this, analyzerController, ruleName);
+    }
+
+    public MetricNode createMetricNode(MonitorController monitorController, String metricName) {
+    	return new MetricNode(this, monitorController, metricName);
     }
 
     /**

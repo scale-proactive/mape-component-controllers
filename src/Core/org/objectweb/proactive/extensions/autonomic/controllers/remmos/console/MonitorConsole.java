@@ -37,6 +37,7 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.remmos.console;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -473,7 +474,7 @@ public class MonitorConsole {
 						System.out.println("Component "+name+" not found.");
 						continue;
 					}
-					List<String> metrics = ((MonitorController)found.getFcInterface(Constants.MONITOR_CONTROLLER)).getMetricList();
+					HashSet<String> metrics = ((MonitorController)found.getFcInterface(Constants.MONITOR_CONTROLLER)).getMetricList().getValue();
 					for(String metricName : metrics) {
 						Object result = ((MonitorController)found.getFcInterface(Constants.MONITOR_CONTROLLER)).getMetricValue(metricName);
 						System.out.println(name+"."+metricName+" = "+ result + " ("+result.getClass()+")");
@@ -531,7 +532,7 @@ public class MonitorConsole {
 						System.out.println("Component "+name+" not found.");
 						continue;
 					}
-					List<String> metrics = ((MonitorController)found.getFcInterface(Constants.MONITOR_CONTROLLER)).getMetricList();
+					HashSet<String> metrics = ((MonitorController)found.getFcInterface(Constants.MONITOR_CONTROLLER)).getMetricList().getValue();
 					for(String metricName : metrics) {
 						Object result = ((MonitorController)found.getFcInterface(Constants.MONITOR_CONTROLLER)).calculateMetric(metricName);
 						System.out.println(name+"."+metricName+" = "+ result + " ("+result.getClass()+")");

@@ -39,6 +39,7 @@ package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -583,17 +584,17 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	}
 
 	@Override
-	public void addMetric(String name, Metric<?> metric) {
-		metricsStore.addMetric(name, metric);
+	public Wrapper<Boolean> addMetric(String name, Metric<?> metric) {
+		return metricsStore.addMetric(name, metric);
 	}
 
 	@Override
-	public List<String> getMetricList() {
+	public Wrapper<HashSet<String>> getMetricList() {
 		return metricsStore.getMetricList();
 	}
 
 	@Override
-	public List<String> getMetricList(String itfPath) {
+	public Wrapper<HashSet<String>> getMetricList(String itfPath) {
 		return metricsStore.getMetricList(itfPath);
 	}
 
