@@ -9,7 +9,14 @@ public interface AnalyzerController {
 
 	public final static String ITF_NAME = "analysis-service-nf";
 
-	public void addRule(String name, Rule rule);
+	/**
+	 * Adds a new rule to analyzer controller
+	 * @param name name of the rule
+	 * @param rule the rule
+	 * @return true if success, false otherwise
+	 */
+	public Wrapper<Boolean> addRule(String name, Rule rule);
+
 	public void removeRule(String name);
 
 	/**

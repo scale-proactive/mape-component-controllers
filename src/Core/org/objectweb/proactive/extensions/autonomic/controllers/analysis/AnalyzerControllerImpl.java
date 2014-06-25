@@ -25,8 +25,12 @@ public class AnalyzerControllerImpl extends AbstractPAComponentController implem
 	private Map<String, Rule> rules = new HashMap<String, Rule>(); // rule name --> rule
 
 	@Override
-	public void addRule(String name, Rule rule) {
+	public Wrapper<Boolean> addRule(String name, Rule rule) {
+		if (rules.containsKey(name)) {
+			return new ValidWrapper<Boolean>(false, "A rule with name " + name + " already exist.");
+		}
 		rules.put(name, rule);
+		return new ValidWrapper<Boolean>(true);
 	}
 
 	@Override

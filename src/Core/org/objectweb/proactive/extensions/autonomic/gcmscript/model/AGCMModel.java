@@ -47,6 +47,7 @@ import org.objectweb.fractal.fscript.model.Model;
 import org.objectweb.fractal.fscript.model.Property;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
 import org.objectweb.fractal.fscript.procedures.NativeLibrary;
+import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerController;
 import org.objectweb.proactive.extra.component.fscript.model.GCMModel;
 import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 import org.objectweb.proactive.extra.component.fscript.model.GCMProcedure;
@@ -99,6 +100,7 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
 
         List<GCMProcedure> procedures = new ArrayList<GCMProcedure>();
         procedures.add(new AGCMNewAction());
+        procedures.add(new NewRuleAction());
         for (GCMProcedure procedure : procedures) {
             try {
                 procedure.bindFc(GCMProcedure.MODEL_NAME, this);
@@ -107,6 +109,10 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
             }
             addProcedure(procedure);
         }
+    }
+
+    public RuleNode createRuleNode(AnalyzerController analyzerController, String ruleName) {
+    	return new RuleNode(this, analyzerController, ruleName);
     }
 
     /**

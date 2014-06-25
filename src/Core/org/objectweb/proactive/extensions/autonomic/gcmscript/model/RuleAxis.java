@@ -12,7 +12,6 @@ import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Analyze
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 import org.objectweb.proactive.extra.component.fscript.model.GCMComponentNode;
-import org.objectweb.proactive.extra.component.fscript.model.GCMInterfaceNode;
 
 /**
  * Implements the <code>rule</code> axis in FPath. This axis connects a component to its metrics (if any),
@@ -49,8 +48,6 @@ public class RuleAxis extends AbstractAxis {
         Component comp = null;
         if (source instanceof GCMComponentNode) {
             comp = ((GCMComponentNode) source).getComponent();
-        } else if (source instanceof GCMInterfaceNode) {
-            comp = ((GCMInterfaceNode) source).getInterface().getFcItfOwner();
         } else {
         	throw new IllegalArgumentException("Invalid source node kind " + source.getKind());
         }
@@ -61,7 +58,7 @@ public class RuleAxis extends AbstractAxis {
         	Wrapper<HashSet<String>> ruleNames = analyzerController.getRulesNames();
         	if (ruleNames.isValid()) {
 				for (String ruleName : ruleNames.getValue()) {
-					Node node = new RuleNode((FractalModel) model, analyzerController, ruleName);
+					Node node = ((AGCMModel) model).createRuleNode(analyzerController, ruleName);
 					result.add(node);
 				}
         	} else {

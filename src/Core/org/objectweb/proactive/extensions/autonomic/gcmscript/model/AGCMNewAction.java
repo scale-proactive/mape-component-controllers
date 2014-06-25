@@ -43,12 +43,10 @@ import java.util.Set;
 import org.objectweb.fractal.adl.Factory;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
-import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.fractal.fscript.ScriptExecutionError;
 import org.objectweb.fractal.fscript.ast.SourceLocation;
 import org.objectweb.fractal.fscript.diagnostics.Diagnostic;
 import org.objectweb.fractal.fscript.interpreter.Context;
-import org.objectweb.fractal.fscript.procedures.NativeProcedure;
 import org.objectweb.proactive.core.component.adl.nodes.ADLNodeProvider;
 import org.objectweb.proactive.core.node.Node;
 import org.objectweb.proactive.extensions.autonomic.adl.AFactory;
@@ -66,9 +64,8 @@ import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
  * A GCM procedure to implement the <code>gcm-new-autonomic()</code> action which instantiates a GCM component, with
  * the autonomic component controllers inside its membrane.
  *
- * @author The ProActive Team
  */
-public class AGCMNewAction extends GCMNewAction implements NativeProcedure, BindingController {
+public class AGCMNewAction extends GCMNewAction {
     /**
      * Returns the name of the procedure.
      *
