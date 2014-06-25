@@ -3,18 +3,16 @@ package tests;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.etsi.uri.gcm.util.GCM;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
-import org.objectweb.fractal.api.control.IllegalLifeCycleException;
 import org.objectweb.fractal.fscript.FScript;
 import org.objectweb.fractal.fscript.FScriptEngine;
+import org.objectweb.fractal.fscript.FScriptException;
 import org.objectweb.proactive.extensions.autonomic.controllers.analysis.Alarm;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorControllerImpl;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.autonomic.gcmscript.model.AGCMModel;
 import org.objectweb.proactive.extensions.autonomic.gcmscript.model.MetricNode;
@@ -23,7 +21,6 @@ import org.objectweb.proactive.extra.component.fscript.GCMScript;
 import org.objectweb.proactive.extra.component.fscript.exceptions.ReconfigurationException;
 import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 
-import tests.components.Master;
 import tests.rules.FooRule;
 
 public class TestRuleNode extends CommonSetup {
@@ -88,9 +85,29 @@ public class TestRuleNode extends CommonSetup {
         node.setProperty("invalid", null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void setInvalidSubscription() {
+        node.setSubscription(0.0);
+    }
+
     @Test
     public void checkRuleFunctions() {
     	assert("foo".equals(node.getProperty("name")));
     	assert(Alarm.WARNING.toString().equals(node.getProperty("check")));
+    	
+    	assert(node.getSubscriptions().size() == 0);
+    	node.setSubscription("avgInc");
+    	assert(node.getSubscriptions().size() == 1);
+
+    	try {
+    		@SuppressWarnings("rawtypes")
+			MetricNode mnode = (MetricNode) ((Set) engine.execute("$this/metric::avgOut;")).toArray()[0];
+			 node.setSubscription(mnode);
+		    assert(node.getSubscriptions().size() == 2);
+		} catch (FScriptException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+
     }
 }

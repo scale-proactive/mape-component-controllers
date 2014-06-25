@@ -1,6 +1,5 @@
 package org.objectweb.proactive.extensions.autonomic.gcmscript.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,7 +58,7 @@ public class RuleAxis extends AbstractAxis {
         Set<Node> result = new HashSet<Node>();
         try {
         	AnalyzerController analyzerController = Remmos.getAnalyzerController(comp);
-        	Wrapper<ArrayList<String>> ruleNames = analyzerController.getRuleNames();
+        	Wrapper<HashSet<String>> ruleNames = analyzerController.getRulesNames();
         	if (ruleNames.isValid()) {
 				for (String ruleName : ruleNames.getValue()) {
 					Node node = new RuleNode((FractalModel) model, analyzerController, ruleName);
@@ -67,7 +66,8 @@ public class RuleAxis extends AbstractAxis {
 				}
         	} else {
         		// warn making some noise
-        		(new Exception("AnalyzerController detected, but failed to get the rule names.")).printStackTrace();
+        		String msg = "AnalyzerController detected, but failed to get the rule names: ";
+        		(new Exception(msg + ruleNames.getMessage())).printStackTrace();
         	}
 		} catch (NoSuchInterfaceException e) {
 			// continue silently

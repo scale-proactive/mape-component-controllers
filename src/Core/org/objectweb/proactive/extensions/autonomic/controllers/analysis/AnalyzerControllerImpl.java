@@ -1,7 +1,7 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.analysis;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.objectweb.fractal.api.NoSuchInterfaceException;
@@ -39,15 +39,34 @@ public class AnalyzerControllerImpl extends AbstractPAComponentController implem
 		if (rules.containsKey(ruleName)) {
 			return new ValidWrapper<Alarm>(rules.get(ruleName).check(monitor));
 		}
-		return new WrongWrapper<Alarm>("Could not found rule \"" + ruleName + "\"");
+		return new WrongWrapper<Alarm>("No rule was found with name \"" + ruleName + "\"");
 	}
 
 	@Override
-	public Wrapper<ArrayList<String>> getRuleNames() {
-		ArrayList<String> list = new ArrayList<String>();
-		list.addAll(rules.keySet());
-		return new ValidWrapper<ArrayList<String>>(list);
+	public Wrapper<HashSet<String>> getRulesNames() {
+		return new ValidWrapper<HashSet<String>>(new HashSet<String>(rules.keySet()));
 	}
+
+	@Override
+	public Wrapper<HashSet<String>> getRuleSubscriptions(String ruleName) {
+		if (rules.containsKey(ruleName)) {
+			return new ValidWrapper<HashSet<String>>(rules.get(ruleName).getSubscriptions());
+		}
+		return new WrongWrapper<HashSet<String>>("No rule was found with name \"" + ruleName + "\"");
+	}
+
+	@Override
+	public Wrapper<Boolean> subscribeRuleTo(String ruleName, String metricName) {
+		if (rules.containsKey(ruleName)) {
+			boolean subscription = rules.get(ruleName).subscribeToMetric(metricName);
+			if (subscription) {
+				return new ValidWrapper<Boolean>(true);
+			}
+			return new ValidWrapper<Boolean>(false, "The subscription failed inside the rule.");
+		}
+		return new WrongWrapper<Boolean>("No rule was found with name \"" + ruleName + "\"");
+	}
+
 
 	// METRIC EVENT LISTENER
 
@@ -66,6 +85,7 @@ public class AnalyzerControllerImpl extends AbstractPAComponentController implem
 			alarmListener.listenAlarm(ruleName, alarm);
 		}
 	}
+
 
 	// BINDING CONTROLLER
 

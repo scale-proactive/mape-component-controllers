@@ -1,6 +1,8 @@
 package org.objectweb.proactive.extensions.autonomic.gcmscript.model;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.objectweb.fractal.fscript.model.AbstractNode;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
@@ -48,10 +50,12 @@ public class RuleNode extends AbstractNode {
      */
 	@Override
 	public Object getProperty(String name) {
-		if ("name".equals(name)) {
+		if (name.equals("name")) {
             return getName();
-        } else if ("check".equals(name)) {
+        } else if (name.equals("check")) {
             return check();
+        } else if (name.equals("subscription")) {
+        	return getSubscriptions();
         } else {
             throw new NoSuchElementException("Invalid property name '" + name + "'.");
         }
@@ -59,7 +63,11 @@ public class RuleNode extends AbstractNode {
 
 	@Override
 	public void setProperty(String name, Object value) {
-		throw new NoSuchElementException("Invalid property name '" + name + "'");
+		if (name.equals("subscription")) {
+        	setSubscription(value);
+		} else {
+			throw new NoSuchElementException("Invalid property name '" + name + "'");
+		}
 	}
 
 	public String getName() {
@@ -74,4 +82,27 @@ public class RuleNode extends AbstractNode {
 		throw new NoSuchElementException(alarm.getMessage());
 	}
 
+	public Set<String> getSubscriptions() {
+		Wrapper<HashSet<String>> set = analyzerController.getRuleSubscriptions(ruleName);
+		if (set.isValid()) {
+			return set.getValue();
+		}
+		throw new NoSuchElementException(set.getMessage());
+	}
+
+	public void setSubscription(Object metric) {
+		String metricName = null;
+		if (metric instanceof String) {
+			metricName = (String) metric;
+		} else if (metric instanceof MetricNode) {
+			metricName = ((MetricNode) metric).getName();
+		} else {
+			throw new IllegalArgumentException("The argument must be a MetricNode or a String (name of the metric)");
+		}
+
+		Wrapper<Boolean> subscription = analyzerController.subscribeRuleTo(ruleName, metricName);
+		if (!subscription.isValid() || !subscription.getValue()) {
+			throw new IllegalStateException(subscription.getMessage());
+		}
+	}
 }

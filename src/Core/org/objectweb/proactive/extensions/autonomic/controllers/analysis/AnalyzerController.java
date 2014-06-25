@@ -1,6 +1,6 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.analysis;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
@@ -20,8 +20,24 @@ public interface AnalyzerController {
 	public Wrapper<Alarm> checkRule(String ruleName);
 
 	/**
-	 * Return a list with the names of all the existent rules.
-	 * @return list of names
+	 * Returns a set with the names of all the existent rules.
+	 * @return set of names
 	 */
-	public Wrapper<ArrayList<String>> getRuleNames();
+	public Wrapper<HashSet<String>> getRulesNames();
+
+	/**
+	 * Returns a set with all the subscriptions (metric names) of one rule.
+	 * @param ruleName name of the rule to query
+	 * @return set with subscriptions (metric names)
+	 */
+	public Wrapper<HashSet<String>> getRuleSubscriptions(String ruleName);
+
+	/**
+	 * Subscribe a rule to a metric
+	 * @param ruleName name of the rule
+	 * @param metricName name of the metric to subscribe to
+	 * @return true if success, false otherwise
+	 */
+	public Wrapper<Boolean> subscribeRuleTo(String ruleName, String metricName);
+
 }

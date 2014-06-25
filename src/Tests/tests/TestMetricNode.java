@@ -1,7 +1,5 @@
 package tests;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -14,7 +12,6 @@ import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.IllegalLifeCycleException;
 import org.objectweb.fractal.fscript.FScript;
 import org.objectweb.fractal.fscript.FScriptEngine;
-import org.objectweb.fractal.fscript.FScriptException;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorControllerImpl;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;

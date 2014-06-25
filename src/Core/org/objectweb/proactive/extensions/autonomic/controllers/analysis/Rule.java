@@ -40,4 +40,8 @@ public abstract class Rule implements Serializable {
 		return subscribedMetrics.contains(metricName);
 	}
 
+	protected HashSet<String> getSubscriptions() {
+		return new HashSet<String>(subscribedMetrics);
+	}
+
 }
