@@ -92,12 +92,12 @@ public class NewMetricAction extends AbstractGCMProcedure {
 
 	@Override
 	public String getName() {
-		return "new-rule";
+		return "new-metric";
 	}
 
 	@Override
 	public Signature getSignature() {
-		return new Signature(model.getNodeKind("rule"), model.getNodeKind("component"), STRING, STRING);
+		return new Signature(model.getNodeKind("metric"), model.getNodeKind("component"), STRING, STRING);
 	}
 
 	@Override

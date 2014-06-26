@@ -12,6 +12,7 @@ import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.api.control.IllegalLifeCycleException;
 import org.objectweb.fractal.fscript.FScript;
 import org.objectweb.fractal.fscript.FScriptEngine;
+import org.objectweb.fractal.fscript.FScriptException;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorControllerImpl;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
@@ -116,6 +117,22 @@ public class TestMetricNode extends CommonSetup {
 
         assert((double) node.getProperty("value") > 0.0);
         assert((double) node.getProperty("calculate") > 0.0);
-        
+    }
+
+    @SuppressWarnings("rawtypes")
+	@Test
+    public void checkAddMetric() {
+    	try {
+			assert(((Set) engine.execute("$this/metric::foo;")).size() == 0);
+			
+			MetricNode mnode = (MetricNode) engine.execute("new-metric($this, \"foo\", \"tests.metrics.FooMetric\");");
+			assert(((Set) engine.execute("$this/metric::foo;")).size() == 1);
+			assert((double) mnode.getValue() == 0.0);
+			assert((double) mnode.calculate() == 1.0);
+
+		} catch (FScriptException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
     }
 }
