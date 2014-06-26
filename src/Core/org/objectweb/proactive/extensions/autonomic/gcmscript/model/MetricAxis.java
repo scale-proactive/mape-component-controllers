@@ -27,7 +27,7 @@ public class MetricAxis extends AbstractAxis {
 
 	@Override
 	public boolean isModifiable() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -76,4 +76,13 @@ public class MetricAxis extends AbstractAxis {
         return result;
     }
 
+    @Override
+    public void connect(Node source, Node dest) {
+    	
+    }
+
+    @Override
+    public void disconnect(Node source, Node dest) {
+    	
+    }
 }

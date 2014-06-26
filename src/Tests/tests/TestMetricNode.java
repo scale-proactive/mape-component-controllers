@@ -125,7 +125,7 @@ public class TestMetricNode extends CommonSetup {
     	try {
 			assert(((Set) engine.execute("$this/metric::foo;")).size() == 0);
 			
-			MetricNode mnode = (MetricNode) engine.execute("new-metric($this, \"foo\", \"tests.metrics.FooMetric\");");
+			MetricNode mnode = (MetricNode) engine.execute("add-metric($this, \"foo\", \"tests.metrics.FooMetric\");");
 			assert(((Set) engine.execute("$this/metric::foo;")).size() == 1);
 			assert((double) mnode.getValue() == 0.0);
 			assert((double) mnode.calculate() == 1.0);

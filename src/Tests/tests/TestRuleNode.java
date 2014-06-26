@@ -115,7 +115,7 @@ public class TestRuleNode extends CommonSetup {
     public void checkAddRule() {
     	try {
 			assert(((Set) engine.execute("$this/rule::foo2;")).size() == 0);
-			engine.execute("new-rule($this, \"foo2\", \"tests.rules.FooRule\");");
+			engine.execute("add-rule($this, \"foo2\", \"tests.rules.FooRule\");");
 			assert(((Set) engine.execute("$this/rule::foo2;")).size() == 1);
 		} catch (FScriptException e) {
 			e.printStackTrace();
