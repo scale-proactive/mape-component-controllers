@@ -165,8 +165,11 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 	}
 
 	@Override
-	public void removeMetric(String name) {
-		metrics.remove(name);
+	public Wrapper<Boolean> removeMetric(String name) {
+		if (metrics.remove(name) != null) {
+			return new ValidWrapper<Boolean>(true);
+		}
+		return new ValidWrapper<Boolean>(false, "Metric \"" + name + "\" not found.");
 	}
 
 	@Override

@@ -27,15 +27,18 @@ public class AnalyzerControllerImpl extends AbstractPAComponentController implem
 	@Override
 	public Wrapper<Boolean> addRule(String name, Rule rule) {
 		if (rules.containsKey(name)) {
-			return new ValidWrapper<Boolean>(false, "A rule with name " + name + " already exist.");
+			
 		}
 		rules.put(name, rule);
 		return new ValidWrapper<Boolean>(true);
 	}
 
 	@Override
-	public void removeRule(String name) {
-		rules.remove(name);
+	public Wrapper<Boolean> removeRule(String name) {
+		if (rules.remove(name) == null) {
+			return new ValidWrapper<Boolean>(false, "A rule with name " + name + " already exist.");
+		}
+		return new ValidWrapper<Boolean>(true);
 	}
 
 	@Override

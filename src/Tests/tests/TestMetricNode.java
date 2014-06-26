@@ -121,7 +121,7 @@ public class TestMetricNode extends CommonSetup {
 
     @SuppressWarnings("rawtypes")
 	@Test
-    public void checkAddMetric() {
+    public void checkAddRemoveMetric() {
     	try {
 			assert(((Set) engine.execute("$this/metric::foo;")).size() == 0);
 			
@@ -130,6 +130,8 @@ public class TestMetricNode extends CommonSetup {
 			assert((double) mnode.getValue() == 0.0);
 			assert((double) mnode.calculate() == 1.0);
 
+			engine.execute("remove-metric($this/metric::foo);");
+			assert(((Set) engine.execute("$this/metric::foo;")).size() == 0);
 		} catch (FScriptException e) {
 			e.printStackTrace();
 			Assert.fail();

@@ -59,7 +59,7 @@ public interface MetricStore {
 
 	public Wrapper<Boolean> addMetric(String name, Metric<?> metric);
 	
-	void removeMetric(String name);
+	public Wrapper<Boolean> removeMetric(String name);
 
 	/**
 	 * Updates the metric value using the arguments stored

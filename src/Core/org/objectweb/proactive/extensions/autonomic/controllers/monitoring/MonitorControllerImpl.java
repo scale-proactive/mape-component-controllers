@@ -589,6 +589,11 @@ public class MonitorControllerImpl extends AbstractPAComponentController impleme
 	}
 
 	@Override
+	public Wrapper<Boolean> removeMetric(String metricName) {
+		return metricsStore.removeMetric(metricName);
+	}
+
+	@Override
 	public Wrapper<HashSet<String>> getMetricList() {
 		return metricsStore.getMetricList();
 	}

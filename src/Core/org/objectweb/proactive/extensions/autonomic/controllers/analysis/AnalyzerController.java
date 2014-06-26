@@ -17,7 +17,12 @@ public interface AnalyzerController {
 	 */
 	public Wrapper<Boolean> addRule(String name, Rule rule);
 
-	public void removeRule(String name);
+	/**
+	 * Removes a rule
+	 * @param name the name of the rule to be removed
+	 * @return true if success
+	 */
+	public Wrapper<Boolean> removeRule(String name);
 
 	/**
 	 * Checks the rule identified by the name "ruleName"

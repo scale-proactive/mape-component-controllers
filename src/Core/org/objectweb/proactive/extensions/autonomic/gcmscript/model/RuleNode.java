@@ -105,4 +105,8 @@ public class RuleNode extends AbstractNode {
 			throw new IllegalStateException(subscription.getMessage());
 		}
 	}
+
+	public Wrapper<Boolean> remove() {
+		return analyzerController.removeRule(ruleName);
+	}
 }

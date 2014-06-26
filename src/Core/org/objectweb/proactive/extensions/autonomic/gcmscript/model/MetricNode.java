@@ -90,7 +90,7 @@ public class MetricNode extends AbstractNode {
 		return monitorController.getMetricState(metricName).getValue();
 	}
 
-	private void setState(String state) {
+	public void setState(String state) {
 		if (state.equals(Metric.ENABLED)) {
 			Wrapper<Boolean> result = monitorController.enableMetric(metricName);
 			if (!result.isValid() || !result.getValue()) {
@@ -107,6 +107,10 @@ public class MetricNode extends AbstractNode {
 			String details = metricName + ": the state must be " + Metric.ENABLED + " or " + Metric.DISABLED;
 			System.err.println("[Warning] Error while trying to change the state of meitrc " + details);
 		}
+	}
+
+	public Wrapper<Boolean> remove() {
+		return monitorController.removeMetric(metricName);
 	}
 
     /**

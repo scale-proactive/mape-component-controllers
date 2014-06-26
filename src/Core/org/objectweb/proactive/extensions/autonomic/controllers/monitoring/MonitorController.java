@@ -132,6 +132,13 @@ public interface MonitorController extends org.etsi.uri.gcm.api.control.MonitorC
     public Wrapper<Boolean> addMetric(String name, Metric<?> metric);
 
     /**
+     * Remove a metric
+     * @param metricName the name of the metric to be removed
+     * @return true if success
+     */
+	public Wrapper<Boolean> removeMetric(String metricName);
+
+    /**
      * Executes the calculate() method for the desired metric.
      * @param name	the name of the metric
      * @return MetricValue wrapper containing the output of the calculate() method.

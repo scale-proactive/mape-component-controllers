@@ -101,9 +101,13 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
 
         List<GCMProcedure> procedures = new ArrayList<GCMProcedure>();
         procedures.add(new AGCMNewAction());
-        procedures.add(new AddRuleAction());
-        procedures.add(new AddMetricAction());
 
+        procedures.add(new AddMetricAction());
+        procedures.add(new AddRuleAction());
+        
+        procedures.add(new RemoveMetricAction());
+        procedures.add(new RemoveRuleAction());
+        
         for (GCMProcedure procedure : procedures) {
             try {
                 procedure.bindFc(GCMProcedure.MODEL_NAME, this);
