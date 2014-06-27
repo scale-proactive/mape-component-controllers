@@ -2,11 +2,14 @@ package org.objectweb.proactive.extensions.autonomic.gcmscript.model;
 
 import java.util.NoSuchElementException;
 
+import org.objectweb.fractal.api.Component;
+import org.objectweb.fractal.api.NoSuchInterfaceException;
 import org.objectweb.fractal.fscript.model.AbstractNode;
 import org.objectweb.fractal.fscript.model.Node;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
+import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 /**
@@ -26,20 +29,30 @@ public class MetricNode extends AbstractNode {
     private final MonitorController monitorController;
 
     /**
+     * The owner component
+     */
+    private final Component owner;
+
+    /**
      * Creates a new {@link MetricNode}.
      *
      * @param model The GCM model the node is part of.
      * @param monitorController The MonitorController of the component containing this metric.
      * @param metricName The name of the metric.
      */
-	public MetricNode(FractalModel model, MonitorController monitorController, String metricName) {
+	public MetricNode(FractalModel model, Component owner, String metricName) {
 		super(model.getNodeKind("metric"));
-		if (monitorController == null || metricName == null) {
+		if (owner == null || metricName == null) {
 			throw new NullPointerException();
 		}
 
+		this.owner = owner;
 		this.metricName = metricName;
-		this.monitorController = monitorController;
+		try {
+			this.monitorController = Remmos.getMonitorController(owner);
+		} catch (NoSuchInterfaceException e) {
+			throw new NullPointerException(e.getMessage());
+		}
 	}
 
 	/**
@@ -111,6 +124,10 @@ public class MetricNode extends AbstractNode {
 
 	public Wrapper<Boolean> remove() {
 		return monitorController.removeMetric(metricName);
+	}
+
+	public Component getOwner() {
+		return owner;
 	}
 
     /**

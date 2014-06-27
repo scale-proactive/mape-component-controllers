@@ -42,7 +42,7 @@ public class AddMetricAction extends AbstractAddElementAction {
 	    	throw new ScriptExecutionError(Diagnostic.warning(SourceLocation.UNKNOWN, msg));
 		}
 	
-		return ((AGCMModel) model).createMetricNode(monitorController, elementName);
+		return ((AGCMModel) model).createMetricNode(target.getComponent(), elementName);
 	}
 
 

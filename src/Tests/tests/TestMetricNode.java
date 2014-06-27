@@ -66,12 +66,7 @@ public class TestMetricNode extends CommonSetup {
 
     @Test(expected = NullPointerException.class)
     public void createWithNullMetricName() {
-    	try {
-			new MetricNode(model, Remmos.getMonitorController(composite), null);
-		} catch (NoSuchInterfaceException e) {
-			e.printStackTrace();
-			Assert.fail("shouldn't happens..");
-		}
+		new MetricNode(model, composite, null);
     }
 
     @Test(expected = NoSuchElementException.class)

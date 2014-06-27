@@ -45,8 +45,8 @@ public class AddRuleAction extends AbstractAddElementAction {
 			String msg = "Failed while trying to add the new rule to analyzer controller: " + result.getMessage();
 	    	throw new ScriptExecutionError(Diagnostic.warning(SourceLocation.UNKNOWN, msg));
 		}
-	
-		return ((AGCMModel) model).createRuleNode(analyzerController, elementName);
+
+		return ((AGCMModel) model).createRuleNode(target.getComponent(), elementName);
 	}
 
 }

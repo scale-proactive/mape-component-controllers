@@ -61,7 +61,7 @@ public class MetricAxis extends AbstractAxis {
         	Wrapper<HashSet<String>> metricNames = monitorController.getMetricList();
         	if (metricNames.isValid()) {
 				for (String metricName : metricNames.getValue()) {
-					Node node = ((AGCMModel) model).createMetricNode(monitorController, metricName);
+					Node node = ((AGCMModel) model).createMetricNode(comp, metricName);
 					result.add(node);
 				}
         	} else {

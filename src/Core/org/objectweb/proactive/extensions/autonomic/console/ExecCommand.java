@@ -20,7 +20,7 @@ public class ExecCommand extends AbstractCommand {
 
 	@Override
 	public void execute(String args) throws Exception {
-		Wrapper<String> result = console.executor.execute(args);
+		Wrapper<String> result = console.executorController.execute(args);
 		if (result.isValid()) {
 			console.printMsg(result.getValue());
 		} else {

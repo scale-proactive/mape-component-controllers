@@ -25,10 +25,10 @@ public class HelpCommand extends AbstractCommand {
 		
 		console.printMsg("\t(COMMAND)\t(INFO)");
 
-		for (AbstractCommand c : console.commands.values()) {
+		for (AbstractCommand c : console.getCommands()) {
 			console.printMsg("\t:" + c.getName() + "\t" + c.getInfo());
 		}
-		
+
 		console.printMsg("");
 	}
 

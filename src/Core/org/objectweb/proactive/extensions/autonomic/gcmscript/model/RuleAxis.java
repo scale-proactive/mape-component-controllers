@@ -58,7 +58,7 @@ public class RuleAxis extends AbstractAxis {
         	Wrapper<HashSet<String>> ruleNames = analyzerController.getRulesNames();
         	if (ruleNames.isValid()) {
 				for (String ruleName : ruleNames.getValue()) {
-					Node node = ((AGCMModel) model).createRuleNode(analyzerController, ruleName);
+					Node node = ((AGCMModel) model).createRuleNode(comp, ruleName);
 					result.add(node);
 				}
         	} else {

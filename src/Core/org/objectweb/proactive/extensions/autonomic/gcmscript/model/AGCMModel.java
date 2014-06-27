@@ -42,13 +42,12 @@ import static org.objectweb.fractal.fscript.types.PrimitiveType.STRING;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.control.BindingController;
 import org.objectweb.fractal.fscript.model.Model;
 import org.objectweb.fractal.fscript.model.Property;
 import org.objectweb.fractal.fscript.model.fractal.FractalModel;
 import org.objectweb.fractal.fscript.procedures.NativeLibrary;
-import org.objectweb.proactive.extensions.autonomic.controllers.analysis.AnalyzerController;
-import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extra.component.fscript.model.GCMModel;
 import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 import org.objectweb.proactive.extra.component.fscript.model.GCMProcedure;
@@ -89,6 +88,7 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
 
         addAxis(new MetricAxis(this));
         addAxis(new RuleAxis(this));
+        addAxis(new SubscriptionAxis(this));
     }
 
     /**
@@ -108,6 +108,9 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
         procedures.add(new RemoveMetricAction());
         procedures.add(new RemoveRuleAction());
         
+        procedures.add(new PrintMetricsFunction());
+        procedures.add(new PrintRulesFunction());
+
         for (GCMProcedure procedure : procedures) {
             try {
                 procedure.bindFc(GCMProcedure.MODEL_NAME, this);
@@ -118,12 +121,12 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
         }
     }
 
-    public RuleNode createRuleNode(AnalyzerController analyzerController, String ruleName) {
-    	return new RuleNode(this, analyzerController, ruleName);
+    public RuleNode createRuleNode(Component owner, String ruleName) {
+    	return new RuleNode(this, owner, ruleName);
     }
 
-    public MetricNode createMetricNode(MonitorController monitorController, String metricName) {
-    	return new MetricNode(this, monitorController, metricName);
+    public MetricNode createMetricNode(Component owner, String metricName) {
+    	return new MetricNode(this, owner, metricName);
     }
 
     /**

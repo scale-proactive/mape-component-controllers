@@ -22,6 +22,8 @@ import org.objectweb.proactive.extra.component.fscript.model.GCMComponentNode;
  * 
  * This class is used instead of the Connector/Disconnector procedures to avoid
  * the necessity of create a element node before connect it with the component node.
+ * To create a element node a reference to the owner component is needed, so the
+ * post-instantiation connection is redundant.
  * 
  * @author mibanez
  *

@@ -1,6 +1,8 @@
 package org.objectweb.proactive.extensions.autonomic.console;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,13 +18,13 @@ import org.objectweb.proactive.extensions.autonomic.exceptions.NotAutonomicExcep
 public class Console implements Runnable {
 
 	// Communication with the component through the executor controller
-	protected ExecutorController executor;
+	protected ExecutorController executorController;
 	
 	// Communication with the user through JLine library
 	protected ConsoleReader reader;
 
 	// Loaded commands: name -> implementation
-	protected Map<String, AbstractCommand> commands;
+	private Map<String, AbstractCommand> commands;
 
 	// Prompt
 	protected String PROMPT = "GCMScript>";
@@ -37,8 +39,8 @@ public class Console implements Runnable {
 	 */
 	public Console(Component comp) throws NotAutonomicException, IOException {
 		try {
-			executor = Remmos.getExecutorController(comp);
-			executor.execute("true();"); // ping, to ensure that executor is initialized
+			executorController = Remmos.getExecutorController(comp);
+			executorController.execute("true();"); // ping, to ensure that executor is initialized
 		} catch (NoSuchInterfaceException e) {
 			throw new NotAutonomicException(e);
 		}
@@ -130,13 +132,28 @@ public class Console implements Runnable {
 		printMsg("Error: " + msg);
 	}
 
+	protected void printError(String msg, String cause) {
+		printMsg("Error: " + msg);
+		printMsg("Cause: " + cause);
+	}
+
 	protected void printError(String msg, Throwable cause) {
+		cause.printStackTrace();
 		printMsg("Error: " + msg);
 		printMsg("Cause: " + cause.getMessage());
 	}
 
 	protected void quit() {
 		finished = true;
+		reader.shutdown();
+	}
+
+	/**
+	 * Returns a read-only collection with the current registered commands
+	 * @return
+	 */
+	protected Collection<AbstractCommand> getCommands() {
+		return Collections.unmodifiableCollection(commands.values());
 	}
 
 }
