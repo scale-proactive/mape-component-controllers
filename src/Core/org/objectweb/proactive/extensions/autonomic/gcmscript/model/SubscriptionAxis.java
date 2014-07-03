@@ -81,4 +81,37 @@ public class SubscriptionAxis extends AbstractAxis {
 		}
 	}
 
+	/**
+     * Removes the arc in the underlying model connecting the given source and destination
+     * nodes with this axis.
+     * 
+     * @param source
+     *            the source node of the arc to remove.
+     * @param dest
+     *            the destination node of the arc to remove.
+     * @throws UnsupportedOperationException
+     *             if this axis does not support direct manipulation of its arcs.
+     * @throws IllegalArgumentException
+     *             if it is not possible to remove the requested arc or if it does not
+     *             exist.
+     */
+	@Override
+    public void disconnect(Node source, Node dest) {
+		RuleNode ruleNode = (RuleNode) source;
+		MetricNode metricNode = (MetricNode) dest;
+
+		AnalyzerController analyzer;
+		try {
+			analyzer = Remmos.getAnalyzerController(ruleNode.getOwner());
+		} catch (NoSuchInterfaceException e) {
+			throw new IllegalArgumentException("Fail to get access to AnalyzerController", e);
+		}
+
+		Wrapper<Boolean> result = analyzer.unsubscribeRuleFrom(ruleNode.getName(), metricNode.getName());
+
+		if (!result.isValid() || !result.getValue()) {
+			throw new IllegalArgumentException("Fail during the unsubscription: " + result.getMessage());
+		}
+	}
+
 }

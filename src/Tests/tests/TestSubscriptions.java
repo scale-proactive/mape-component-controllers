@@ -1,8 +1,8 @@
 package tests;
 
-import java.util.Set;
+import static org.junit.Assert.fail;
 
-import junit.framework.Assert;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +68,7 @@ public class TestSubscriptions extends CommonSetup {
 			mnode = (MetricNode) ((Set<?>) engine.execute("$this/metric::avgOut;")).toArray()[0];
 		} catch (FScriptException e) {
 			e.printStackTrace();
-			Assert.fail();
+			fail();
 			return;
 		}
 

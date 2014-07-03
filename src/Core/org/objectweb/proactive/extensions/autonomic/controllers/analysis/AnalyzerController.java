@@ -52,4 +52,11 @@ public interface AnalyzerController {
 	 */
 	public Wrapper<Boolean> subscribeRuleTo(String ruleName, String metricName);
 
+	/**
+	 * Unsubscribe a rule from a metric
+	 * @param ruleName
+	 * @param metricName
+	 * @return
+	 */
+	public Wrapper<Boolean> unsubscribeRuleFrom(String ruleName, String metricName);
 }

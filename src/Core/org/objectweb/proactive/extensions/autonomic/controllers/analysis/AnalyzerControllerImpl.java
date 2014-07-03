@@ -74,6 +74,17 @@ public class AnalyzerControllerImpl extends AbstractPAComponentController implem
 		return new WrongWrapper<Boolean>("No rule was found with name \"" + ruleName + "\"");
 	}
 
+	@Override
+	public Wrapper<Boolean> unsubscribeRuleFrom(String ruleName, String metricName) {
+		if (rules.containsKey(ruleName)) {
+			boolean unsubscription = rules.get(ruleName).unsubscribeFromMetric(metricName);
+			if (unsubscription) {
+				return new ValidWrapper<Boolean>(true);
+			}
+			return new ValidWrapper<Boolean>(false, "The unsubscription failed inside the rule.");
+		}
+		return new WrongWrapper<Boolean>("No rule was found with name \"" + ruleName + "\"");
+	}
 
 	// METRIC EVENT LISTENER
 
