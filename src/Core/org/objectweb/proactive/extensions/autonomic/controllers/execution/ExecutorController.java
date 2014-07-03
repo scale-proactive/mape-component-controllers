@@ -36,7 +36,7 @@ public interface ExecutorController {
      * @return The value of the code fragment, if successfully executed.
      * @throws ReconfigurationException If an error occurred during the execution of the code fragment.
      */
-    public Wrapper<String> execute(String source);
+    public <T extends Serializable> Wrapper<T> execute(String source);
 
     // ----- API -----
     

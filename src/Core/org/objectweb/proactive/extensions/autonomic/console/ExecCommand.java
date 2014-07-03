@@ -1,5 +1,8 @@
 package org.objectweb.proactive.extensions.autonomic.console;
 
+import java.io.Serializable;
+
+import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 public class ExecCommand extends AbstractCommand {
@@ -20,9 +23,13 @@ public class ExecCommand extends AbstractCommand {
 
 	@Override
 	public void execute(String args) throws Exception {
-		Wrapper<String> result = console.executorController.execute(args);
+		Wrapper<Serializable> result = console.executorController.execute(args);
 		if (result.isValid()) {
-			console.printMsg(result.getValue());
+			if (result.getValue() instanceof PAComponent) {
+				console.printMsg(((PAComponent) result.getValue()).getComponentParameters().getName());
+			} else {
+				console.printMsg(result.getValue().toString());
+			}
 		} else {
 			console.printError(result.getMessage());
 		}

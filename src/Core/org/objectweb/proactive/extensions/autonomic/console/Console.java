@@ -38,6 +38,18 @@ public class Console implements Runnable {
 	 * @throws IOException 
 	 */
 	public Console(Component comp) throws NotAutonomicException, IOException {
+		
+		this.currentComponent(comp);
+
+		commands = new HashMap<String, AbstractCommand>();
+		reader = new ConsoleReader();
+		reader.setPrompt(PROMPT);
+		finished = false;
+
+		registerCommands();
+	}
+
+	public void currentComponent(Component comp) throws NotAutonomicException {
 		try {
 			executorController = Remmos.getExecutorController(comp);
 			executorController.execute("true();"); // ping, to ensure that executor is initialized
@@ -50,18 +62,13 @@ public class Console implements Runnable {
 		} catch (NoSuchInterfaceException e) {
 			e.printStackTrace();
 		}
-		commands = new HashMap<String, AbstractCommand>();
-		reader = new ConsoleReader();
-		reader.setPrompt(PROMPT);
-		finished = false;
-
-		registerCommands();
 	}
 
 	protected void registerCommands() {
 		registerCommand(new HelpCommand(this));
 		registerCommand(new QuitCommand(this));
 		registerCommand(new ExecCommand(this));
+		registerCommand(new ChangeCommand(this));
 	}
 
 	protected void registerCommand(AbstractCommand command) {

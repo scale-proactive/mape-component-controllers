@@ -70,10 +70,10 @@ public class TestAGCMSupport extends CommonSetup {
 		
 		ExecutorController executor = Remmos.getExecutorController(composite);
 		
-		String result2 = executor.execute("$this/child::Master/metric::avgInc;").getValue();
+		Object result2 = executor.execute("$this/child::Master/metric::avgInc;").getValue();
 		System.out.println(result2);
 
-		String result = executor.execute("name($this/child::Master/metric::avgInc);").getValue();
+		Object result = executor.execute("name($this/child::Master/metric::avgInc);").getValue();
 		System.out.println(result);
 		assert "avgInc".equals(result);
 	}

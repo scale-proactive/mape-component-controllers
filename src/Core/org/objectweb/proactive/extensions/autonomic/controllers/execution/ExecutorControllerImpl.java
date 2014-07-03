@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,6 +61,7 @@ import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapper;
 import org.objectweb.proactive.extra.component.fscript.GCMScript;
 import org.objectweb.proactive.extra.component.fscript.exceptions.ReconfigurationException;
+import org.objectweb.proactive.extra.component.fscript.model.GCMComponentNode;
 import org.objectweb.proactive.extra.component.fscript.model.GCMNodeFactory;
 
 /**
@@ -134,18 +136,36 @@ public class ExecutorControllerImpl extends AbstractPAComponentController implem
 	}
 
 	/** {@inheritDoc} */
+	@SuppressWarnings("unchecked")
 	@Override
-	public Wrapper<String> execute(String source) {
+	public <T extends Serializable> Wrapper<T> execute(String source) {
 		try {
-
 			checkADLInitialized();
 			Object result = this.engine.execute(source);
-			return new ValidWrapper<String>(result == null ? "(void)" : result.toString());
+			return new ValidWrapper<T>( (T) getRepresentation(result) );
 
 		} catch (ReconfigurationException | FScriptException re) {
 			re.printStackTrace();
-			return new WrongWrapper<String>("Fail to execute: " + source);
+			return new WrongWrapper<T>("Fail to execute: " + source);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends Serializable> T getRepresentation(Object object) {
+		if (object == null) {
+			return (T) "(void)";
+		}
+		if (object instanceof GCMComponentNode) {
+			return (T) ((GCMComponentNode) object).getComponent();
+		}
+		if (object instanceof Set) {
+			HashSet<T> hset = new HashSet<T>();
+			for (Object obj : ((Set<?>) object).toArray()) {
+				hset.add((T) getRepresentation(obj));
+			}
+			return (T) hset;
+		}
+		return (T) object.toString();		
 	}
 
 	// ----- API -----

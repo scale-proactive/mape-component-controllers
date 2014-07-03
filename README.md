@@ -7,7 +7,7 @@ NF Controllers to provide autonomic behavior to GCM/ProActive components.
 
 - metrics:
   - add-metric(component_node, name, metric-class)
-  - remove-metric(metric_node) [TODO]
+  - remove-metric(metric_node)
   - name(metric_node)
   - value(metric_node)
   - calculate(metric_node)
@@ -16,7 +16,7 @@ NF Controllers to provide autonomic behavior to GCM/ProActive components.
 
 - rules:
   - add-rule(component_node, name, rule-class)
-  - remove-rule(rule_node) [TODO]
+  - remove-rule(rule_node)
   - name(rule_node)
   - check(rule_node)
 
