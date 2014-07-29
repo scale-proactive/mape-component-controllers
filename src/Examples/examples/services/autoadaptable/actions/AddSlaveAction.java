@@ -37,7 +37,7 @@ public class AddSlaveAction extends Action {
 			System.out.println("Stopping solver");
 			PAGCMLifeCycleController lc = Utils.getPAGCMLifeCycleController(solver);
 			lc.stopFc();
-			
+
 			System.out.println("add slave to solver");
 			Utils.getPAContentController(solver).addFcSubComponent(slave);
 			System.out.println("bind slave to master");

@@ -67,7 +67,7 @@ public class AvgRespTimeIncomingMetric extends Metric<Double> {
 		recordList = recordStore.getIncomingRequestRecords(new Condition<IncomingRequestRecord>(){
 			private static final long serialVersionUID = 1L;
 			public boolean evaluate(IncomingRequestRecord irr) {
-				return true;
+				return irr.isFinished();
 			}
 		});
 
@@ -75,12 +75,10 @@ public class AvgRespTimeIncomingMetric extends Metric<Double> {
 		double sum = 0.0;
 		double nRecords = recordList.size();
 		for(IncomingRequestRecord irr : recordList) {
-			if(irr.isFinished()) {
-				sum += (double)(irr.getReplyTime() - irr.getArrivalTime());
-			}
+			sum += (double)(irr.getReplyTime() - irr.getArrivalTime());
 		}
 
-		return (value = nRecords > 0 ? sum/nRecords: 0);
+		return (value = nRecords > 0 ? sum/nRecords : 0.0);
 	}
 
 	@Override

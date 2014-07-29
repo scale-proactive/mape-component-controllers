@@ -44,37 +44,16 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metri
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
 
-public interface MonitorController extends org.etsi.uri.gcm.api.control.MonitorController {
+public interface MonitorController {
 
 	public static final String ITF_NAME = "monitor-service-nf";
 
-    
-    /**
-     * Get the list of all requests that have been entered this component
-     * 
-     */
-    //List<ComponentRequestID> getListOfIncomingRequestIDs();
-    //List<ComponentRequestID> getListOfOutgoingRequestIDs();
-    
-    /** 
-     * Get the path followed by an specific request
-     * 
-     * @param id
-     * @return
-     */
-    //RequestPath getPathForID(ComponentRequestID id);
-    //RequestPath getPathForID(ComponentRequestID id, ComponentRequestID rootID, Set<String> visited);
-    
-    /**
-     * Same from above, but with statistical information attached
-     * 
-     * @param id
-     * @return
-     */
-    //RequestPath getPathStatisticsForId(ComponentRequestID id);
-    
-    List<String> getNotificationsReceived(); 
-    
+	void startGCMMonitoring();
+	void stopGCMMonitoring();
+	void resetGCMMonitoring();
+	Wrapper<Boolean> isGCMMonitoringStarted();
+
+    List<String> getNotificationsReceived();     
     String getMonitoredComponentName();
 
     // ---------------------------------------------------------------------------

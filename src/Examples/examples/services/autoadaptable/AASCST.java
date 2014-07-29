@@ -1,8 +1,9 @@
 package examples.services.autoadaptable;
 
-public interface AASCST {
+import examples.services.SCST;
 
-	public static final String SERVICE = "service-itf";
+public interface AASCST extends SCST {
+
 	public static final String MANAGER = "manager-itf";
 
 	public static final String SOLVER = "solver-itf";
@@ -14,7 +15,7 @@ public interface AASCST {
 	public static final String SLAVE = "slave-itf";
 	public static final String SLAVE_MULTICAST = "slave-multicast-itf";
 
-	public static final String ALPHA = "abcdefghijklmnopqrstuvwxyz0123456789";
+	public static final String ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	
 	public static final String SERVICE_COMP_NAME = "Service";
 	public static final String MANAGER_COMP_NAME = "Manager";

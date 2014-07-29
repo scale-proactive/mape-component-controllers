@@ -10,7 +10,6 @@ import org.objectweb.proactive.extensions.autonomic.controllers.utils.WrongWrapp
 import examples.services.Service;
 import examples.services.autoadaptable.AASCST;
 
-
 public class ManagerImpl implements Service, ManagerAttributes, BindingController, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -60,24 +59,34 @@ public class ManagerImpl implements Service, ManagerAttributes, BindingControlle
 	public Wrapper<String> crack(byte[] hash, int maxLength) {
 		
 		long possibilities = 0;
-		for (int i = 1; i <= maxLength; i++)
+		for (int i = 1; i <= maxLength; i++) {
 			possibilities += Math.pow(AASCST.ALPHA.length(), i);
+		}
 
 		assert(p1 <= 1);
 		assert(p2 <= 1);
 		assert(p1 < p2);
 		
+		// solver 1
 		long from = 0;
 		long to = (long) Math.floor(possibilities * p1);
 		Wrapper<String> r1 = solver1.crack(from, to, hash, maxLength);
+
+		// solver 2
 		from = (long) Math.ceil(possibilities * p1);
-		if (from == to) from++;
+		if (from == to) {
+			from++;
+		}
 		to = (long) Math.floor(possibilities * p2);
 		Wrapper<String> r2 = solver2.crack(from, to, hash, maxLength);
+
+		// solver 3
 		from = (long) Math.ceil(possibilities * p2);
-		if (from == to) from++;
+		if (from == to) {
+			from++;
+		}
 		Wrapper<String> r3 = solver3.crack(from, possibilities, hash, maxLength);
-	
+
 		boolean b1 = r1.isValid();
 		boolean b2 = r2.isValid();
 		boolean b3 = r3.isValid();
@@ -92,7 +101,7 @@ public class ManagerImpl implements Service, ManagerAttributes, BindingControlle
 	}
 
 	/**
-	 * Format: "p1up2", with p1<p2
+	 * Format: "p1up2", with p1 < p2
 	 * Example: "0.4u0.7"
 	 */
 	@Override
@@ -107,7 +116,7 @@ public class ManagerImpl implements Service, ManagerAttributes, BindingControlle
 				return;
 			}
 		}
-		
+
 		System.out.println("MANAGER ATTRIBUTES WARNING: set points \"" + points + "\" fails");
 	}
 

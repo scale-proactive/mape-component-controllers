@@ -2,6 +2,7 @@ package org.objectweb.proactive.extensions.autonomic.adl;
 
 import java.util.Map;
 
+import org.objectweb.fractal.adl.ADLException;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.Utils;
@@ -31,5 +32,24 @@ public class ABasicFactory extends PABasicFactory implements AFactory {
 				addAutonomicControlles(subComp);
 			}
 		}
+	}
+
+	@Override
+	public Object[] newComponentsInParallel(String name, Map context, int nbComponents)
+			throws ADLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object newComponent(String arg0, Map arg1) throws ADLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object newComponentType(String arg0, Map arg1) throws ADLException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

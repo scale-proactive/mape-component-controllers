@@ -37,10 +37,9 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.monitoring;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
-import org.objectweb.proactive.core.ProActiveRuntimeException;
 import org.objectweb.proactive.core.component.type.annotations.multicast.ClassDispatchMetadata;
 import org.objectweb.proactive.core.component.type.annotations.multicast.ParamDispatchMetadata;
 import org.objectweb.proactive.core.component.type.annotations.multicast.ParamDispatchMode;
@@ -58,67 +57,29 @@ import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 @ClassDispatchMetadata(mode = @ParamDispatchMetadata(mode = ParamDispatchMode.BROADCAST))
 public interface MonitorControllerMulticast {
 
-	//-------------------------------------------------------------------------------------------
-	// Methods from the MonitorController interface, extended for use with Multicast
 	void startGCMMonitoring();
 	void stopGCMMonitoring();
 	void resetGCMMonitoring();
-	List<Boolean> isGCMMonitoringStarted();
-	List<Object> getGCMStatistics(String itfName, String methodName) throws ProActiveRuntimeException;
-	//List<Object> getGCMStatistics(String itfName, String methodName, Class<?>[] parameterTypes) throws ProActiveRuntimeException;
-	List<Map<String, Object>> getAllGCMStatistics();
+	List<Wrapper<Boolean>> isGCMMonitoringStarted();
 
-    //--------------------------------------------------------------------------------------------
-    // Extensions for the Monitoring Framework
-    //
-    
-    /**
-     * Get the list of all requests that have been entered/sent by this component
-     * 
-     */
-    //List<List<ComponentRequestID>> getListOfIncomingRequestIDs();
-    //List<List<ComponentRequestID>> getListOfOutgoingRequestIDs();
-    
-    /** 
-     * Get the path followed by an specific request
-     * 
-     * @param id
-     * @return
-     */
-    //List<RequestPath> getPathForID(ComponentRequestID id);
-    //List<RequestPath> getPathForID(ComponentRequestID id, ComponentRequestID rootID, Set<String> visited);
-    
-    /**
-     * Same from above, but with statistical information attached
-     * 
-     * @param id
-     * @return
-     */
-    //List<RequestPath> getPathStatisticsForId(ComponentRequestID id);
-    
-    /**
-     * Get the list of entries in the Incoming Request Log
-     * @return
-     */
-    //List<Map<ComponentRequestID, IncomingRequestRecord>> getIncomingRequestLog();
-    
-    /**
-     * Get the list of entries in the Outgoing Request Log
-     * @return
-     */
-    //List<Map<ComponentRequestID, OutgoingRequestRecord>> getOutgoingRequestLog();
-    
     List<List<String>> getNotificationsReceived(); 
-    
     List<String> getMonitoredComponentName();
 
     // ------------------------------------------------------------------------------
 
-    public List<List<String>> getMetricList();
+    public void setRecordStoreCapacity(int maxCapacity);
+    
+    // ------------------------------------------------------------------------------
 
-    public List<List<String>> getMetricList(String itfPath);
+    public List<Wrapper<String>> getMetricState(String metricName);
+    public List<Wrapper<Boolean>> enableMetric(String metricName);
+    public List<Wrapper<Boolean>> disableMetric(String metricName);
 
-    public void addMetric(String name, Metric<?> metric);
+    public List<Wrapper<HashSet<String>>> getMetricList();
+    public List<Wrapper<HashSet<String>>> getMetricList(String itfPath);
+
+    public List<Wrapper<Boolean>> addMetric(String name, Metric<?> metric);
+	public List<Wrapper<Boolean>> removeMetric(String metricName);
 
     public <T extends Serializable> List<Wrapper<T>> calculateMetric(String name);
 

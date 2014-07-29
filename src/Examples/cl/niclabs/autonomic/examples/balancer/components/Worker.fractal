@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC "-//objectweb.org//DTD Fractal ADL 2.0//EN" "classpath://org/objectweb/proactive/core/component/adl/xml/proactive.dtd">
+
+<definition name="cl.niclabs.autonomic.examples.balancer.components.Worker">
+
+	<interface name="worker" role="server" signature="cl.niclabs.autonomic.examples.balancer.components.WorkerItf"/>
+	<content class="cl.niclabs.autonomic.examples.balancer.components.WorkerImpl"/>
+	<controller desc="primitive"/>
+
+</definition>

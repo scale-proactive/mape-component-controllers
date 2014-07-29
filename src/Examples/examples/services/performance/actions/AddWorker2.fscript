@@ -1,0 +1,17 @@
+action add-worker() {
+
+	gcma = deploy-gcma("src/Examples/examples/md5cracker/GCMALocal.xml");
+	worker = gcm-new("examples.md5cracker.cracker.solver.Worker", $gcma);
+	set-name($worker, "Generated Worker");
+	
+	stop($this);
+	add($this, $worker);
+	workerMItf = ;
+	bind($this/child::SolverManager/interface::worker-multicast, $worker/interface::worker-itf);
+	start($this);
+
+	numOfWorkers = value($this/child::SolverManager/attribute::numberOfWorkers) + 1;
+	set-value($this/child::SolverManager/attribute::numberOfWorkers, $numOfWorkers);
+	
+	return $numOfWorkers;
+}

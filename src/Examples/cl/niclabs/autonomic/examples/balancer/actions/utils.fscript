@@ -1,0 +1,38 @@
+action add-worker(solver, gcma) {
+
+	worker = gcm-new-autonomic("cl.niclabs.autonomic.examples.balancer.components.Worker", $gcma);
+	set-name($worker, "Worker");
+
+	stop($solver/parent::*);
+
+	add($solver, $worker);
+	bind($solver/child::Dispatcher/interface::worker-multicast, $worker/interface::worker);
+
+	number = value($solver/child::Dispatcher/attribute::workers) + 1;
+	set-value($solver/child::Dispatcher/attribute::workers, $number);
+	
+	start($solver/parent::*);
+	return true();
+
+}
+
+action remove-worker(solver) {
+	
+	number = value($solver/child::Dispatcher/attribute::workers)
+	if ( $number <= 1.0 ) {
+		return false();
+	}
+
+	worker = false();
+	for w : $solver/child::"Worker" {
+		worker = $w;
+	}
+
+	stop($solver);
+	unbind-unit($solver/child::Dispatcher/interface::worker-multicast, $worker/interface::worker);
+	set-value($solver/child::Dispatcher/attribute::workers, $number - 1);
+	remove($solver, $worker);
+	start($solver);
+	
+	return true();
+}

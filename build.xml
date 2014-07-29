@@ -8,6 +8,7 @@
 	
 	<path id="lib.path">		
 		<fileset dir="${build.dir}" includes="**/*.jar"/>
+		<fileset dir="${base.dir}/lib" includes="**/*.jar"/>
 		<fileset dir="${base.dir}/../programming-multiactivities/dist/lib" includes="**/*.jar"/>
 		<fileset dir="${base.dir}/../gcmscript/dist/lib" includes="**/*.jar"/>
 	</path>

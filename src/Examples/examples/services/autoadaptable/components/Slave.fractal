@@ -7,6 +7,6 @@
 
 	<content class="examples.services.autoadaptable.components.SlaveImpl"/>
 
-	<controller desc="/org/objectweb/proactive/core/component/config/default-primitive-config.xml"/>
+	<controller desc="primitive"/>
 
 </definition>

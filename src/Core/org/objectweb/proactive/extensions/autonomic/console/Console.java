@@ -1,16 +1,26 @@
 package org.objectweb.proactive.extensions.autonomic.console;
 
 import java.io.IOException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.naming.NamingException;
+
 import jline.console.ConsoleReader;
 
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
 import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.fractal.api.NoSuchInterfaceException;
+import org.objectweb.proactive.core.component.Fractive;
+import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.autonomic.exceptions.NotAutonomicException;
@@ -163,4 +173,43 @@ public class Console implements Runnable {
 		return Collections.unmodifiableCollection(commands.values());
 	}
 
+	public static void main(String[] args) throws Exception {
+		Options options = new Options();
+		options.addOption("c", true, "component url");
+		options.addOption("l", false, "print remi objects");
+		options.addOption("h", true, "host");
+		options.addOption("p", true, "port");
+
+		CommandLineParser parser = new BasicParser();
+		CommandLine cmd = parser.parse( options, args);
+
+		int PORT = 1099;
+		if(cmd.hasOption("p")) {
+			PORT = Integer.parseInt(cmd.getOptionValue("p"));
+		}
+
+		String HOST = "localhost";
+		if (cmd.hasOption("h")) {
+			HOST = cmd.getOptionValue("h");
+		}
+
+		if (cmd.hasOption("c")) {
+			String url = cmd.getOptionValue("c");
+			try {
+				Component c = Fractive.lookup(url);
+				String name = ((PAComponent)c).getComponentParameters().getName();
+				System.out.println("Opening console on ["+name+"] @ ["+url+"]");
+				(new Console(c)).run();
+			} catch (NamingException ne) {
+				System.err.println("url not found: " + url);
+			}
+		}
+
+		if (cmd.hasOption("l")) {
+			Registry registry = LocateRegistry.getRegistry(HOST, PORT);
+			String[] boundNames = registry.list();
+			for (String name : boundNames) { System.out.println("\t" + name); }
+		}
+		
+	}
 }

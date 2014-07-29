@@ -1,5 +1,6 @@
 package examples.services.autoadaptable.metrics;
 
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.event.RemmosEventType;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.metrics.Metric;
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 
@@ -10,13 +11,18 @@ public class OptimalPointsMetric extends Metric<String> {
 	private static final long serialVersionUID = 1L;
 	private String points = 1.0/3 + "u" + 2.0/3;
 
+	public OptimalPointsMetric() {
+		//this.subscribeTo(RemmosEventType.NEW_OUTGOING_REQUEST_EVENT);
+	}
+
 	@Override
 	public String calculate() {
+
 		Wrapper<Double> mv1, mv2, mv3;
-		mv1 = this.metricStore.calculate(AASCST.RESPONSE_TIME_METRIC, "/" + AASCST.SERVICE + "/" + AASCST.SOLVER_C1);
-		mv2 = this.metricStore.calculate(AASCST.RESPONSE_TIME_METRIC, "/" + AASCST.SERVICE + "/" + AASCST.SOLVER_C2);
-		mv3 = this.metricStore.calculate(AASCST.RESPONSE_TIME_METRIC, "/" + AASCST.SERVICE + "/" + AASCST.SOLVER_C3);
-		
+		mv1 = this.metricStore.calculate("avgInc", "/" + AASCST.SERVICE + "/" + AASCST.SOLVER_C1);
+		mv2 = this.metricStore.calculate("avgInc", "/" + AASCST.SERVICE + "/" + AASCST.SOLVER_C2);
+		mv3 = this.metricStore.calculate("avgInc", "/" + AASCST.SERVICE + "/" + AASCST.SOLVER_C3);
+
 		double v1, v2, v3;
 
 		Object obj = mv1.getValue();

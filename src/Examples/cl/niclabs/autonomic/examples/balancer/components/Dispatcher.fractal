@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC "-//objectweb.org//DTD Fractal ADL 2.0//EN" "classpath://org/objectweb/proactive/core/component/adl/xml/proactive.dtd">
+
+<definition name="cl.niclabs.autonomic.examples.balancer.components.Dispatcher">
+
+	<interface name="solver" role="server" signature="cl.niclabs.autonomic.examples.balancer.components.SolverItf"/>
+	<interface name="worker-multicast" role="client" cardinality="multicast" signature="cl.niclabs.autonomic.examples.balancer.components.WorkerMulticastItf"/>
+	
+	<content class="cl.niclabs.autonomic.examples.balancer.components.DispatcherImpl"/>
+	
+	<attributes signature="cl.niclabs.autonomic.examples.balancer.components.DispatcherAttr">
+		<attribute name="workers" value="1"/>
+	</attributes>
+	
+	<controller desc="primitive"/>
+
+</definition>

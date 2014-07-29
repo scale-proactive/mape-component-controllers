@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE definition PUBLIC "-//objectweb.org//DTD Fractal ADL 2.0//EN" "classpath://org/objectweb/proactive/core/component/adl/xml/proactive.dtd">
+
+<definition name="cl.niclabs.autonomic.examples.balancer.components.Balancer">
+
+	<interface name="cracker" role="server" signature="cl.niclabs.autonomic.examples.balancer.components.CrackerItf"/>
+	<interface name="solver-1" role="client" signature="cl.niclabs.autonomic.examples.balancer.components.SolverItf"/>
+	<interface name="solver-2" role="client" signature="cl.niclabs.autonomic.examples.balancer.components.SolverItf"/>
+	<interface name="solver-3" role="client" signature="cl.niclabs.autonomic.examples.balancer.components.SolverItf"/>
+
+	<content class="cl.niclabs.autonomic.examples.balancer.components.BalancerImpl"/>
+
+	<attributes signature="cl.niclabs.autonomic.examples.balancer.components.BalancerAttr">
+		<attribute name="points" value="0.334u0.667"/>
+	</attributes>
+
+	<controller desc="primitive"/>
+
+</definition>

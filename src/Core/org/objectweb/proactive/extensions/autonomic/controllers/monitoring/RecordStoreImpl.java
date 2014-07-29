@@ -70,7 +70,7 @@ public class RecordStoreImpl extends AbstractPAComponentController implements Re
     private Map<ComponentRequestID, IncomingRequestRecord> inMap = new HashMap<ComponentRequestID, IncomingRequestRecord>();
     private Map<ComponentRequestID, OutgoingRequestRecord> outMap = new HashMap<ComponentRequestID, OutgoingRequestRecord>();
 
-    private int maxSize = 256;
+    private int maxSize = 64;
 
     public void setMaxSize(int maxSize) {
     	this.maxSize = maxSize;
