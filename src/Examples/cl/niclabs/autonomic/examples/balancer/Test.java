@@ -1,6 +1,9 @@
 package cl.niclabs.autonomic.examples.balancer;
 
+import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Utils;
@@ -11,6 +14,8 @@ import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
+import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
+import org.objectweb.proactive.gcmdeployment.GCMApplication;
 
 import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
 import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
@@ -19,9 +24,19 @@ import cl.niclabs.autonomic.examples.balancer.rules.AlwaysAlarmRule;
 public class Test {
 
 	public static void main(String[] args) throws Exception {
+
+		File appDescriptor = new File((new URL("file:///user/mibanez/mape-component-controllers/src/Examples"
+    			+ "/cl/niclabs/autonomic/examples/balancer/Balancer.xml")).toURI().getPath());
+		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(appDescriptor);
+		gcmad.startDeployment();
+		gcmad.waitReady();
+
+		Map<String, Object> context = new HashMap<String, Object>();
+		context.put("deployment-descriptor", gcmad);
+		
 		AFactory factory = (AFactory) AFactoryFactory.getAFactory();
-		String adl = "cl.niclabs.autonomic.examples.balancer.components.Cracker";
-		Component component = (Component) factory.newAutonomicComponent(adl, null);
+		Component component = (Component) factory.newAutonomicComponent("cl.niclabs.autonomic.examples.balancer"
+				+ ".components.Cracker", context);
 
     	// MONITOR
     	Remmos.enableMonitoring(component);
