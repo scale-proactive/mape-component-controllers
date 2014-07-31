@@ -33,23 +33,5 @@ public class ABasicFactory extends PABasicFactory implements AFactory {
 			}
 		}
 	}
-
-	@Override
-	public Object[] newComponentsInParallel(String name, Map context, int nbComponents)
-			throws ADLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object newComponent(String arg0, Map arg1) throws ADLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object newComponentType(String arg0, Map arg1) throws ADLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
+

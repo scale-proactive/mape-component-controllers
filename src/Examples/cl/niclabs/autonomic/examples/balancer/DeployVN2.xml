@@ -5,7 +5,7 @@
 	xsi:schemaLocation="urn:gcm:deployment:1.0 http://proactive.inria.fr/schemas/gcm/1.0/ExtensionSchemas.xsd	">
 
 	<resources>
-		<group refid="group1">
+		<group refid="group2">
 	        	<host refid="titan" />
 	    	</group>
 	</resources>
@@ -19,7 +19,7 @@
 		</hosts>
 	
 		<groups>
-	        	<sshGroup id="group1" hostList="titan" />
+	        	<sshGroup id="group2" hostList="titan" />
 		</groups>
 
 	</infrastructure>

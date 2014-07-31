@@ -15,7 +15,7 @@
 				<log4jProperties base="root" relpath="/user/mibanez/programming-multiactivities/dist/proactive-log4j"/>
 			</configuration>
 			
-			<virtualNode id="VN0" capacity="1">
+			<virtualNode id="VN0" capacity="8">
 				<nodeProvider refid="NP0"/>
 			</virtualNode>
 
@@ -24,7 +24,7 @@
 
 	<resources>
 		<nodeProvider id="NP0">
-			<file path="DeployOnVN0.xml"/>
+			<file path="DeployVN0.xml"/>
 		</nodeProvider>
 	</resources>
 

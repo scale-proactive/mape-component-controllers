@@ -16,6 +16,7 @@ import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.Monit
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
 import org.objectweb.proactive.gcmdeployment.GCMApplication;
+import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 
 import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
 import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
@@ -30,6 +31,8 @@ public class Test {
 		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(appDescriptor);
 		gcmad.startDeployment();
 		gcmad.waitReady();
+		GCMVirtualNode vn = gcmad.getVirtualNode("VN0");
+		vn.waitReady();
 
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("deployment-descriptor", gcmad);

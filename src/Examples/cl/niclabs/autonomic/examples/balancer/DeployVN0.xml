@@ -5,7 +5,7 @@
 	xsi:schemaLocation="urn:gcm:deployment:1.0 http://proactive.inria.fr/schemas/gcm/1.0/ExtensionSchemas.xsd	">
 
 	<resources>
-		<group refid="group1">
+		<group refid="group0">
 	        	<host refid="tripio" />
 	    	</group>
 	</resources>
@@ -13,13 +13,13 @@
 	<infrastructure>
 
 		<hosts>
-			<host id="tripio" os="unix" hostCapacity="1" vmCapacity="1">
+			<host id="tripio" os="unix" hostCapacity="2" vmCapacity="8">
 				<homeDirectory base="root" relpath="/user/mibanez"/>
 			</host>
 		</hosts>
 	
 		<groups>
-	        	<sshGroup id="group1" hostList="tripio" />
+	        	<sshGroup id="group0" hostList="tripio" />
 		</groups>
 
 	</infrastructure>
