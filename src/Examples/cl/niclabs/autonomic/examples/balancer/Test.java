@@ -47,11 +47,13 @@ public class Test {
     	// EXECUTOR
     	ExecutorController exec = Remmos.getExecutorController(component);
     
-    	String path = "file:///home/mibanez/Taller/memoria/mape-component-controllers/src/Examples"
+    	String path = "file:///user/mibanez/mape-component-controllers/src/Examples"
     			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
-    	exec.execute("gcma = deploy-gcma(\"src/Examples/cl/niclabs/autonomic/examples/balancer/DeployPudge.xml\");");
-   
+    	exec.execute("gcma = deploy-gcma(\"src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml\");");
+		//exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1);");
+		//exec.execute("add-worker($this/child::Solver2, $gcma/gcmvn::VN2);");
+		//exec.execute("add-worker($this/child::Solver3, $gcma/gcmvn::VN3);");   
     	Utils.getPAGCMLifeCycleController(component).startFc();
     	
     	System.out.println("*\n*\n* Cracker ready: " + ((PAComponent) component).getID().toString() + "\n*\n*");

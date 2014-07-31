@@ -35,7 +35,7 @@ public class PointsMetric extends Metric<String> {
 	@Override
 	public String calculate() {
 		
-		counter = (counter + 1) % 5;
+		counter = (counter + 1) % 1;
 		if (counter != 0) return p1 + "u" + p2;
 
 		Wrapper<Double> w1 = this.metricStore.calculate("avgInc", "/cracker/solver-1");
@@ -65,8 +65,8 @@ public class PointsMetric extends Metric<String> {
 		System.out.printf("Times (%.3f, %.3f, %.3f) -- ", w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
 		System.out.printf("New Points (%.3f, %.3f)\n", np1, np2);
 		
-		p1 = np1;
-		p2 = np2;
+		//p1 = np1;
+		//p2 = np2;
 		
 		return p1 + "u" + p2;
 	}

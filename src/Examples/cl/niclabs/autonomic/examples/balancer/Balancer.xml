@@ -1,0 +1,32 @@
+<GCMApplication xmlns="urn:gcm:application:1.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="urn:gcm:application:1.0 http://proactive.inria.fr/schemas/gcm/1.0/ApplicationDescriptorSchema.xsd">
+
+	<application>
+		<proactive base="root" relpath="/user/mibanez/programming-multiactivities">
+			<configuration>
+				<applicationClasspath>
+					<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/build/test-src.jar"/>
+	           		<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/build/test.jar"/>
+					<pathElement base="root" relpath="/user/mibanez/programming-multiactivities/dist/lib/ProActive.jar"/>
+				</applicationClasspath>
+
+				<securityPolicy base="root" relpath="/user/mibanez/programming-multiactivities/dist/proactive.java.policy"/>
+				<log4jProperties base="root" relpath="/user/mibanez/programming-multiactivities/dist/proactive-log4j"/>
+			</configuration>
+			
+			<virtualNode id="VN0" capacity="1">
+				<nodeProvider refid="NP0"/>
+			</virtualNode>
+
+		</proactive>
+	</application>
+
+	<resources>
+		<nodeProvider id="NP0">
+			<file path="DeployOnVN0.xml"/>
+		</nodeProvider>
+	</resources>
+
+</GCMApplication>
+

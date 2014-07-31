@@ -19,6 +19,11 @@
 		<mkdir  dir="${build.dir}"/>
 		<delete dir="${compile.dir}"/>
 		<mkdir  dir="${compile.dir}"/>
+		<copy todir="${compile.dir}">
+			<fileset dir="${src.dir}/Core" excludes="**/*.java"/>
+			<fileset dir="${src.dir}/Examples" excludes="**/*.java"/>
+			<fileset dir="${src.dir}/Tests" excludes="**/*.java"/>
+		</copy>
 		<javac  srcdir="${src.dir}" destdir="${compile.dir}" classpathref="lib.path" source="${source.level}" debug="true"/>
 	</target>
 
@@ -38,3 +43,4 @@
 	</target>
 		
 </project>
+

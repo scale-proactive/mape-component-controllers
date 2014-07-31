@@ -4,12 +4,13 @@
 <definition name="cl.niclabs.autonomic.examples.balancer.components.Dispatcher">
 
 	<interface name="solver" role="server" signature="cl.niclabs.autonomic.examples.balancer.components.SolverItf"/>
-	<interface name="worker-multicast" role="client" cardinality="multicast" signature="cl.niclabs.autonomic.examples.balancer.components.WorkerMulticastItf"/>
+	<interface name="worker-multicast" role="client" cardinality="multicast" contingency="optional"
+			signature="cl.niclabs.autonomic.examples.balancer.components.WorkerMulticastItf"/>
 	
 	<content class="cl.niclabs.autonomic.examples.balancer.components.DispatcherImpl"/>
 	
 	<attributes signature="cl.niclabs.autonomic.examples.balancer.components.DispatcherAttr">
-		<attribute name="workers" value="1"/>
+		<attribute name="workers" value="0"/> <!-- 0 becouse ill add the first worker using gcmscript -->
 	</attributes>
 	
 	<controller desc="primitive"/>

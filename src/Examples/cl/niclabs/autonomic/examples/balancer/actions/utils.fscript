@@ -36,3 +36,16 @@ action remove-worker(solver) {
 	
 	return true();
 }
+
+action wos1(cracker, appd) {
+	add-worker($cracker/child::Solver1, $appd/gcmvn::VN1);
+}
+
+action wos2(cracker, appd) {
+    add-worker($cracker/child::Solver2, $appd/gcmvn::VN2);
+}
+
+action wos3(cracker, appd) {
+    add-worker($cracker/child::Solver3, $appd/gcmvn::VN3);
+}
+

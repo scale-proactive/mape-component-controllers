@@ -6,10 +6,14 @@
 	<interface name="solver" role="server" signature="cl.niclabs.autonomic.examples.balancer.components.SolverItf"/>
 
 	<component name="Dispatcher" definition="cl.niclabs.autonomic.examples.balancer.components.Dispatcher"/>
+	<!-- ill add this worker using gcmscript
 	<component name="Worker" definition="cl.niclabs.autonomic.examples.balancer.components.Worker"/>
+	-->
 
 	<binding client="this.solver" server="Dispatcher.solver"/>
+	<!--
 	<binding client="Dispatcher.worker-multicast" server="Worker.worker"/>
+	-->
 
 	<controller desc="composite"/>
 
