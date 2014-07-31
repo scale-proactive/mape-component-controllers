@@ -2,7 +2,6 @@ package org.objectweb.proactive.extensions.autonomic.adl;
 
 import java.util.Map;
 
-import org.objectweb.fractal.adl.ADLException;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.Utils;

@@ -8,13 +8,11 @@ import org.objectweb.fractal.adl.Definition;
 import org.objectweb.fractal.adl.components.Component;
 import org.objectweb.fractal.adl.components.ComponentContainer;
 import org.objectweb.fractal.task.core.TaskMap;
-import org.objectweb.proactive.Active;
 import org.objectweb.proactive.Body;
 import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.ContentDescription;
 import org.objectweb.proactive.core.component.ControllerDescription;
 import org.objectweb.proactive.core.component.adl.implementations.PAImplementationCompiler;
-import org.objectweb.proactive.core.component.body.ComponentRunActive;
 import org.objectweb.proactive.core.component.type.Composite;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
@@ -75,7 +73,8 @@ public class AImplementationCompiler extends PAImplementationCompiler {
         ContentDescription contentDesc = null;
         ControllerDescription controllerDesc = null;
 
-        Active active = new ComponentRunActive() {
+        AComponentRunActive active = new AComponentRunActive() {
+			private static final long serialVersionUID = 1L;
 			public void runComponentActivity(Body body) {
 				(new ComponentMultiActiveService(body)).multiActiveServing();
 			}
