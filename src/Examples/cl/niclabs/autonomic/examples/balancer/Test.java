@@ -2,13 +2,16 @@ package cl.niclabs.autonomic.examples.balancer;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.control.PAContentController;
 import org.objectweb.proactive.core.component.identity.PAComponent;
+import org.objectweb.proactive.core.node.Node;
 import org.objectweb.proactive.extensions.autonomic.adl.AFactory;
 import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
@@ -33,9 +36,11 @@ public class Test {
 		gcmad.waitReady();
 		GCMVirtualNode vn = gcmad.getVirtualNode("VN0");
 		vn.waitReady();
+		List<Node> nodeList = new ArrayList<Node>();
+		nodeList.add(vn.getANode());
 
 		Map<String, Object> context = new HashMap<String, Object>();
-		context.put("deployment-descriptor", gcmad);
+		context.put(org.objectweb.proactive.core.component.adl.nodes.ADLNodeProvider.NODES_ID, nodeList);
 		
 		AFactory factory = (AFactory) AFactoryFactory.getAFactory();
 		Component component = (Component) factory.newAutonomicComponent("cl.niclabs.autonomic.examples.balancer"
