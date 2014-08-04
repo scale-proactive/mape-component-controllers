@@ -29,7 +29,7 @@ public class Test {
 
 	public static void main(String[] args) throws Exception {
 
-		File appDescriptor = new File((new URL("file:///user/mibanez/mape-component-controllers/src/Examples"
+		/*File appDescriptor = new File((new URL("file:///user/mibanez/mape-component-controllers/src/Examples"
     			+ "/cl/niclabs/autonomic/examples/balancer/Balancer.xml")).toURI().getPath());
 		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(appDescriptor);
 		gcmad.startDeployment();
@@ -41,10 +41,10 @@ public class Test {
 
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put(org.objectweb.proactive.core.component.adl.nodes.ADLNodeProvider.NODES_ID, nodeList);
-		
+		*/
 		AFactory factory = (AFactory) AFactoryFactory.getAFactory();
 		Component component = (Component) factory.newAutonomicComponent("cl.niclabs.autonomic.examples.balancer"
-				+ ".components.Cracker", context);
+				+ ".components.Cracker", null);
 
     	// MONITOR
     	Remmos.enableMonitoring(component);
@@ -74,9 +74,9 @@ public class Test {
     			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
     	exec.execute("gcma = deploy-gcma(\"src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml\");");
-		//exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1);");
-		//exec.execute("add-worker($this/child::Solver2, $gcma/gcmvn::VN2);");
-		//exec.execute("add-worker($this/child::Solver3, $gcma/gcmvn::VN3);");   
+		exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1);");
+		exec.execute("add-worker($this/child::Solver2, $gcma/gcmvn::VN2);");
+		exec.execute("add-worker($this/child::Solver3, $gcma/gcmvn::VN3);");   
     	Utils.getPAGCMLifeCycleController(component).startFc();
     	
     	System.out.println("*\n*\n* Cracker ready: " + ((PAComponent) component).getID().toString() + "\n*\n*");

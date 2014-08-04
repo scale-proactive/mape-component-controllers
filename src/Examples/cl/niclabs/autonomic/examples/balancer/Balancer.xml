@@ -8,13 +8,14 @@
 				<applicationClasspath>
 					<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/build/test-src.jar"/>
 	           		<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/build/test.jar"/>
+					<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/lib/gson-2.2.4.jar"/>
+					<pathElement base="root" relpath="/user/mibanez/gcmscript/dist/lib/ProActive-GCMScript.jar"/>
 					<pathElement base="root" relpath="/user/mibanez/programming-multiactivities/dist/lib/ProActive.jar"/>
 				</applicationClasspath>
-
 				<securityPolicy base="root" relpath="/user/mibanez/programming-multiactivities/dist/proactive.java.policy"/>
 				<log4jProperties base="root" relpath="/user/mibanez/programming-multiactivities/dist/proactive-log4j"/>
 			</configuration>
-			
+
 			<virtualNode id="VN0" capacity="8">
 				<nodeProvider refid="NP0"/>
 			</virtualNode>

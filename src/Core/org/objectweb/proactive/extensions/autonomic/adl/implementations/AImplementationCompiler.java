@@ -73,19 +73,12 @@ public class AImplementationCompiler extends PAImplementationCompiler {
         ContentDescription contentDesc = null;
         ControllerDescription controllerDesc = null;
 
-        AComponentRunActive active = new AComponentRunActive() {
-			private static final long serialVersionUID = 1L;
-			public void runComponentActivity(Body body) {
-				(new ComponentMultiActiveService(body)).multiActiveServing();
-			}
-		};
-
         if (implementation == null) {
             // a composite component without attributes
             if ("composite".equals(controller) || (controller == null)) {
                 controllerDesc = new ControllerDescription(name, Constants.COMPOSITE,
                 		getControllerPath(AUTONOMIC_COMPONENT_CONFIG_FILE_LOCATION, name));
-                contentDesc = new ContentDescription(Composite.class.getName(), null, active, null);
+                contentDesc = new ContentDescription(Composite.class.getName());
             } else {
                 controllerDesc = new ControllerDescription(name, Constants.COMPOSITE,
                 		getControllerPath(controller, name));
@@ -96,7 +89,7 @@ public class AImplementationCompiler extends PAImplementationCompiler {
             // a composite component with attributes 
             //    in that case it must have an Attributes node, and the class implementation must implement
             //    the Attributes signature
-            contentDesc = new ContentDescription(implementation, null, active, null);
+            contentDesc = new ContentDescription(implementation);
 
             // treat it as a composite
             if ("composite".equals(controller) || (controller == null)) {
@@ -109,7 +102,7 @@ public class AImplementationCompiler extends PAImplementationCompiler {
 
         } else {
             // a primitive component
-            contentDesc = new ContentDescription(implementation, null, active, null);
+            contentDesc = new ContentDescription(implementation);
 
             if ("primitive".equals(controller) || (controller == null)) {
                 controllerDesc = new ControllerDescription(name, Constants.PRIMITIVE,
