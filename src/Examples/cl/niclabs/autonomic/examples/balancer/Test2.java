@@ -1,10 +1,7 @@
 package cl.niclabs.autonomic.examples.balancer;
 
-import java.io.File;
-import java.net.URL;
-
+import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
-import org.objectweb.proactive.core.component.Constants;
 import org.objectweb.proactive.core.component.ContentDescription;
 import org.objectweb.proactive.core.component.ControllerDescription;
 import org.objectweb.proactive.core.component.Utils;
@@ -145,7 +142,6 @@ public class Test2 {
 		Utils.getPABindingController(balancerComp).bindFc("solver-3", solver3Comp.getFcInterface("solver"));
 
 		// Workers -----------------------------------------------------
-		//File appDescriptor = new File((new URL(Test2.class.getResource("Workers.xml").toString())).toURI().getPath());
 		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(Test2.class.getResource("Workers.xml"));
 		gcmad.startDeployment();
 		gcmad.waitReady();
@@ -161,6 +157,7 @@ public class Test2 {
 
 		Utils.getPAContentController(solver1Comp).addFcSubComponent(worker1Comp);
 		Utils.getPABindingController(dispatcher1Comp).bindFc("worker-multicast", worker1Comp.getFcInterface("worker"));
+		((DispatcherAttr) GCM.getAttributeController(dispatcher1Comp)).setWorkers(1);
 
 		GCMVirtualNode VN2 = gcmad.getVirtualNode("VN2");
 		VN2.waitReady();
@@ -173,6 +170,7 @@ public class Test2 {
 
 		Utils.getPAContentController(solver2Comp).addFcSubComponent(worker2Comp);
 		Utils.getPABindingController(dispatcher2Comp).bindFc("worker-multicast", worker2Comp.getFcInterface("worker"));
+		((DispatcherAttr) GCM.getAttributeController(dispatcher2Comp)).setWorkers(1);
 
 		GCMVirtualNode VN3 = gcmad.getVirtualNode("VN3");
 		VN3.waitReady();
@@ -185,6 +183,7 @@ public class Test2 {
 
 		Utils.getPAContentController(solver3Comp).addFcSubComponent(worker3Comp);
 		Utils.getPABindingController(dispatcher3Comp).bindFc("worker-multicast", worker3Comp.getFcInterface("worker"));
+		((DispatcherAttr) GCM.getAttributeController(dispatcher3Comp)).setWorkers(1);
 
 		// Init ------------------------------------------
 		Remmos.enableMonitoring(crackerComp);
