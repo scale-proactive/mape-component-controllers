@@ -66,7 +66,7 @@ public class Test2 {
 				new ControllerDescription("Balancer", "primitive"), new ContentDescription(BalancerImpl.class.getName()), null);
 	
 		Utils.getPAMembraneController(balancerComp).startMembrane();
-		Remmos.addMonitoring(crackerComp);
+		Remmos.addMonitoring(balancerComp);
 
 		// Solver 1 -----------------------------------------------------
 		PAGCMInterfaceType[] solver1Itftypes = new PAGCMInterfaceType[] {
@@ -145,8 +145,8 @@ public class Test2 {
 		Utils.getPABindingController(balancerComp).bindFc("solver-3", solver3Comp.getFcInterface("solver"));
 
 		// Workers -----------------------------------------------------
-		File appDescriptor = new File((new URL(Test2.class.getResource("Workers.xml").toString())).toURI().getPath());
-		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(appDescriptor);
+		//File appDescriptor = new File((new URL(Test2.class.getResource("Workers.xml").toString())).toURI().getPath());
+		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(Test2.class.getResource("Workers.xml"));
 		gcmad.startDeployment();
 		gcmad.waitReady();
 		
