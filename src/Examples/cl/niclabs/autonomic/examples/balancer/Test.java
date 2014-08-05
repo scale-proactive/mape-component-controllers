@@ -74,9 +74,9 @@ public class Test {
     			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
     	exec.execute("gcma = deploy-gcma(\"src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml\");");
-		exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1);");
-		exec.execute("add-worker($this/child::Solver2, $gcma/gcmvn::VN2);");
-		exec.execute("add-worker($this/child::Solver3, $gcma/gcmvn::VN3);");   
+		exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1/gcmnode::*);");
+		exec.execute("add-worker($this/child::Solver2, $gcma/gcmvn::VN2/gcmnode::*);");
+		exec.execute("add-worker($this/child::Solver3, $gcma/gcmvn::VN3/gcmnode::*);");   
     	Utils.getPAGCMLifeCycleController(component).startFc();
     	
     	System.out.println("*\n*\n* Cracker ready: " + ((PAComponent) component).getID().toString() + "\n*\n*");

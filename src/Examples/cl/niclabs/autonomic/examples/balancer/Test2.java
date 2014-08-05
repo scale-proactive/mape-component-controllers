@@ -142,18 +142,24 @@ public class Test2 {
 		Utils.getPABindingController(balancerComp).bindFc("solver-3", solver3Comp.getFcInterface("solver"));
 
 		// Workers -----------------------------------------------------
+		System.out.println("Loading Application Descriptor......................");
 		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(Test2.class.getResource("Workers.xml"));
+		System.out.println("Starting deployment...................................");
 		gcmad.startDeployment();
+		System.out.println("Waiting ready ...............................");
 		gcmad.waitReady();
-		
+
+		System.out.println("Getting Node on VN1.........................");
 		GCMVirtualNode VN1 = gcmad.getVirtualNode("VN1");
 		VN1.waitReady();
 		Node N1 = VN1.getANode();
 
+		System.out.println("Crating worker on VN1.........................................");
 		PAGCMInterfaceType[] worker1ItfTypes = new PAGCMInterfaceType[] {
 				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
 		Component worker1Comp = remmos.newFcInstance(remmos.createFcType(worker1ItfTypes, "primitive"),
 				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N1);
+		Utils.getPAMembraneController(worker1Comp).startMembrane();
 
 		Utils.getPAContentController(solver1Comp).addFcSubComponent(worker1Comp);
 		Utils.getPABindingController(dispatcher1Comp).bindFc("worker-multicast", worker1Comp.getFcInterface("worker"));
@@ -167,6 +173,7 @@ public class Test2 {
 				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
 		Component worker2Comp = remmos.newFcInstance(remmos.createFcType(worker2ItfTypes, "primitive"),
 				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N2);
+		Utils.getPAMembraneController(worker2Comp).startMembrane();
 
 		Utils.getPAContentController(solver2Comp).addFcSubComponent(worker2Comp);
 		Utils.getPABindingController(dispatcher2Comp).bindFc("worker-multicast", worker2Comp.getFcInterface("worker"));
@@ -180,16 +187,20 @@ public class Test2 {
 				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
 		Component worker3Comp = remmos.newFcInstance(remmos.createFcType(worker3ItfTypes, "primitive"),
 				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N3);
+		Utils.getPAMembraneController(worker3Comp).startMembrane();
 
 		Utils.getPAContentController(solver3Comp).addFcSubComponent(worker3Comp);
 		Utils.getPABindingController(dispatcher3Comp).bindFc("worker-multicast", worker3Comp.getFcInterface("worker"));
 		((DispatcherAttr) GCM.getAttributeController(dispatcher3Comp)).setWorkers(1);
 
 		// Init ------------------------------------------
+		System.out.println("Enabling Monitoring..........................");
 		Remmos.enableMonitoring(crackerComp);
-
+		Thread.sleep(2000);
+		System.out.println("Starting Cracker ................................");
     	Utils.getPAGCMLifeCycleController(crackerComp).startFc();
-    	
+    	System.out.println("Cracker started......____");
+
     	System.out.println("*\n*\n* Cracker ready: " + ((PAComponent) crackerComp).getID().toString() + "\n*\n*");
 
     	while(true) {

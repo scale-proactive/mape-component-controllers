@@ -13,7 +13,7 @@
 	<infrastructure>
 
 		<hosts>
-			<host id="caleuche" os="unix" hostCapacity="1" vmCapacity="1">
+			<host id="caleuche" os="unix" hostCapacity="1" vmCapacity="4">
 				<homeDirectory base="root" relpath="/user/mibanez"/>
 			</host>
 		</hosts>
