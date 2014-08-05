@@ -2,7 +2,6 @@ package cl.niclabs.autonomic.examples.balancer;
 
 import java.net.URL;
 
-import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.ContentDescription;
 import org.objectweb.proactive.core.component.ControllerDescription;
@@ -12,13 +11,9 @@ import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
-import org.objectweb.proactive.core.node.Node;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
-import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
-import org.objectweb.proactive.gcmdeployment.GCMApplication;
-import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 
 import cl.niclabs.autonomic.examples.balancer.components.BalancerAttr;
 import cl.niclabs.autonomic.examples.balancer.components.BalancerImpl;
@@ -26,8 +21,6 @@ import cl.niclabs.autonomic.examples.balancer.components.CrackerItf;
 import cl.niclabs.autonomic.examples.balancer.components.DispatcherAttr;
 import cl.niclabs.autonomic.examples.balancer.components.DispatcherImpl;
 import cl.niclabs.autonomic.examples.balancer.components.SolverItf;
-import cl.niclabs.autonomic.examples.balancer.components.WorkerImpl;
-import cl.niclabs.autonomic.examples.balancer.components.WorkerItf;
 import cl.niclabs.autonomic.examples.balancer.components.WorkerMulticastItf;
 import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
 import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
@@ -150,6 +143,7 @@ public class Test2 {
 		Utils.getPABindingController(balancerComp).bindFc("solver-3", solver3Comp.getFcInterface("solver"));
 
 		// Workers -----------------------------------------------------
+		/*
 		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(Test2.class.getResource("Workers.xml"));
 		gcmad.startDeployment();
 		gcmad.waitReady();
@@ -192,6 +186,7 @@ public class Test2 {
 		Utils.getPAContentController(solver3Comp).addFcSubComponent(worker3Comp);
 		Utils.getPABindingController(dispatcher3Comp).bindFc("worker-multicast", worker3Comp.getFcInterface("worker"));
 		((DispatcherAttr) GCM.getAttributeController(dispatcher3Comp)).setWorkers(1);
+		*/
 
 		// Init ------------------------------------------
 		Remmos.enableMonitoring(crackerComp);
@@ -221,7 +216,15 @@ public class Test2 {
     	String path = "file:///user/mibanez/mape-component-controllers/src/Examples"
     			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
-   
+    	exec.execute("gcma = deploy-gcma(\"src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml\");");
+    	Thread.sleep(1000);
+		exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1);");
+		Thread.sleep(1000);
+		exec.execute("add-worker($this/child::Solver2, $gcma/gcmvn::VN2);");
+		Thread.sleep(1000);
+		exec.execute("add-worker($this/child::Solver3, $gcma/gcmvn::VN3);");
+		Thread.sleep(1000);
+
     	Utils.getPAGCMLifeCycleController(crackerComp).startFc();
     	
     	System.out.println("*\n*\n* Cracker ready: " + ((PAComponent) crackerComp).getID().toString() + "\n*\n*");

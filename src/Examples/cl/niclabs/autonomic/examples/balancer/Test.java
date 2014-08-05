@@ -1,25 +1,16 @@
 package cl.niclabs.autonomic.examples.balancer;
 
-import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.Utils;
 import org.objectweb.proactive.core.component.control.PAContentController;
 import org.objectweb.proactive.core.component.identity.PAComponent;
-import org.objectweb.proactive.core.node.Node;
 import org.objectweb.proactive.extensions.autonomic.adl.AFactory;
 import org.objectweb.proactive.extensions.autonomic.adl.AFactoryFactory;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
-import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
-import org.objectweb.proactive.gcmdeployment.GCMApplication;
-import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 
 import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
 import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
