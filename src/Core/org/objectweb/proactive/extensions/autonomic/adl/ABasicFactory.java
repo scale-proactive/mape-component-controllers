@@ -20,7 +20,8 @@ public class ABasicFactory extends PABasicFactory implements AFactory {
 	}
 
 	protected void addAutonomicControlles(Component comp) throws Exception {
-		
+
+		Utils.getPAMembraneController(comp).startMembrane();
 		Remmos.addMonitoring(comp);
 		Remmos.addAnalysis(comp);
 		Remmos.addPlannerController(comp);
