@@ -1,15 +1,20 @@
 package cl.niclabs.autonomic.examples.balancer;
 
+import java.net.URL;
+
 import org.etsi.uri.gcm.util.GCM;
 import org.objectweb.fractal.api.Component;
 import org.objectweb.proactive.core.component.ContentDescription;
 import org.objectweb.proactive.core.component.ControllerDescription;
 import org.objectweb.proactive.core.component.Utils;
+import org.objectweb.proactive.core.component.control.PAContentController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
+import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
+import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
 import org.objectweb.proactive.gcmdeployment.GCMApplication;
@@ -24,6 +29,9 @@ import cl.niclabs.autonomic.examples.balancer.components.SolverItf;
 import cl.niclabs.autonomic.examples.balancer.components.WorkerImpl;
 import cl.niclabs.autonomic.examples.balancer.components.WorkerItf;
 import cl.niclabs.autonomic.examples.balancer.components.WorkerMulticastItf;
+import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
+import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
+import cl.niclabs.autonomic.examples.balancer.rules.AlwaysAlarmRule;
 
 public class Test2 {
 
@@ -159,7 +167,9 @@ public class Test2 {
 				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
 		Component worker1Comp = remmos.newFcInstance(remmos.createFcType(worker1ItfTypes, "primitive"),
 				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N1);
+
 		Utils.getPAMembraneController(worker1Comp).startMembrane();
+        Remmos.addMonitoring(worker1Comp);
 
 		Utils.getPAContentController(solver1Comp).addFcSubComponent(worker1Comp);
 		Utils.getPABindingController(dispatcher1Comp).bindFc("worker-multicast", worker1Comp.getFcInterface("worker"));
@@ -173,7 +183,9 @@ public class Test2 {
 				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
 		Component worker2Comp = remmos.newFcInstance(remmos.createFcType(worker2ItfTypes, "primitive"),
 				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N2);
+
 		Utils.getPAMembraneController(worker2Comp).startMembrane();
+		Remmos.addMonitoring(worker2Comp);
 
 		Utils.getPAContentController(solver2Comp).addFcSubComponent(worker2Comp);
 		Utils.getPABindingController(dispatcher2Comp).bindFc("worker-multicast", worker2Comp.getFcInterface("worker"));
@@ -187,7 +199,9 @@ public class Test2 {
 				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
 		Component worker3Comp = remmos.newFcInstance(remmos.createFcType(worker3ItfTypes, "primitive"),
 				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N3);
+
 		Utils.getPAMembraneController(worker3Comp).startMembrane();
+		Remmos.addMonitoring(worker3Comp);
 
 		Utils.getPAContentController(solver3Comp).addFcSubComponent(worker3Comp);
 		Utils.getPABindingController(dispatcher3Comp).bindFc("worker-multicast", worker3Comp.getFcInterface("worker"));
@@ -198,6 +212,32 @@ public class Test2 {
 		Remmos.enableMonitoring(crackerComp);
 		Thread.sleep(2000);
 		System.out.println("Starting Cracker ................................");
+
+	   	MonitorController mon = Remmos.getMonitorController(crackerComp);
+    	mon.startGCMMonitoring();
+    	Thread.sleep(1000);
+
+    	PAContentController cc = Utils.getPAContentController(crackerComp);
+    	for (Component subComp : cc.getFcSubComponents()) {
+    		Remmos.getMonitorController(subComp).setRecordStoreCapacity(16);
+    	}
+
+    	mon.addMetric("points", new PointsMetric());
+    	mon.enableMetric("points");
+
+    	// RULE
+    	Remmos.getAnalyzerController(crackerComp).addRule("always", new AlwaysAlarmRule());
+    	
+    	// PLAN
+    	Remmos.getPlannerController(crackerComp).setPlan(new UpdatePointsPlan());
+    	
+    	// EXECUTOR
+    	ExecutorController exec = Remmos.getExecutorController(crackerComp);
+    
+    	String path = "file:///user/mibanez/mape-component-controllers/src/Examples"
+    			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
+    	exec.load((new URL(path)).toURI().getPath());
+   
     	Utils.getPAGCMLifeCycleController(crackerComp).startFc();
     	System.out.println("Cracker started......____");
 
