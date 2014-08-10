@@ -178,17 +178,26 @@ public class ExecutorControllerImpl extends AbstractPAComponentController implem
 		}
 	}
 
-	/** {@inheritDoc} */
 	@Override
-	public boolean addAction(String name, Action action) {
-		if (actions.containsKey(name)) return false;
-		return actions.put(name, action) == null;
+	public Wrapper<Boolean> addAction(String actionName, Action action) {
+		if (actions.containsKey(actionName))
+			return new ValidWrapper<Boolean>(false, "the name " + actionName + " is already registered");
+		actions.put(actionName, action);
+		return new ValidWrapper<Boolean>(true);
 	}
 
-	/** {@inheritDoc} */
 	@Override
-	public void removeAction(String name) {
-		actions.remove(name);
+	public Wrapper<HashSet<String>> getActionNames() {
+		HashSet<String> set = new HashSet<String>();
+		set.addAll(actions.keySet());
+		return new ValidWrapper<HashSet<String>>(set);
+	}
+
+	@Override
+	public Wrapper<Boolean> removeAction(String actionName) {
+		if (actions.remove(actionName) == null)
+			return new ValidWrapper<Boolean>(false, String.format(MSG_NOT_FOUND, actionName));
+		return new ValidWrapper<Boolean>(true);
 	}
 
 	/** {@inheritDoc} */

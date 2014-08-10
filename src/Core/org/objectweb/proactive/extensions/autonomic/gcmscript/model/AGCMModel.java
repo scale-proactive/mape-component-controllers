@@ -76,6 +76,8 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
         addKind("metric", new Property("name", STRING, false), new Property("value", OBJECT, false),
         		new Property("calculate", OBJECT, false), new Property("state", STRING, true));
         addKind("rule", new Property("name", STRING, false), new Property("check", STRING, false));
+        addKind("jaction", new Property("name", STRING, false), new Property("info", STRING, false),
+        		new Property("execute", OBJECT, false));
     }
 
     /**
@@ -89,6 +91,7 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
         addAxis(new MetricAxis(this));
         addAxis(new RuleAxis(this));
         addAxis(new SubscriptionAxis(this));
+        addAxis(new ActionAxis(this));
     }
 
     /**
@@ -102,14 +105,18 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
         List<GCMProcedure> procedures = new ArrayList<GCMProcedure>();
         procedures.add(new AGCMNewAction());
 
+        
         procedures.add(new AddMetricAction());
         procedures.add(new AddRuleAction());
-        
+        procedures.add(new AddActionAction());
+
         procedures.add(new RemoveMetricAction());
         procedures.add(new RemoveRuleAction());
-        
+        procedures.add(new RemoveActionAction());
+
         procedures.add(new PrintMetricsFunction());
         procedures.add(new PrintRulesFunction());
+        procedures.add(new PrintActionsFunction());
 
         for (GCMProcedure procedure : procedures) {
             try {
@@ -119,6 +126,10 @@ public class AGCMModel extends GCMModel implements GCMNodeFactory, BindingContro
             }
             addProcedure(procedure);
         }
+    }
+
+    public ActionNode createActionNode(Component owner, String actionName) {
+    	return new ActionNode(this, owner, actionName);
     }
 
     public RuleNode createRuleNode(Component owner, String ruleName) {

@@ -1,6 +1,7 @@
 package org.objectweb.proactive.extensions.autonomic.controllers.execution;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
@@ -47,13 +48,15 @@ public interface ExecutorController {
 	 * @param action the action to be stored
 	 * @return true if success
 	 */
-	public boolean addAction(String name, Action action);
+	public Wrapper<Boolean> addAction(String name, Action action);
+
+	public Wrapper<HashSet<String>> getActionNames();
 
 	/**
 	 * Remove the action identified by the given name.
 	 * @param name the name of the action to be removed
 	 */
-	public void removeAction(String name);
+	public Wrapper<Boolean> removeAction(String name);
 
 	/**
 	 * Executes the stored action identified by the given name
