@@ -16,3 +16,4 @@ VM="$VM -Djline.terminal=jline.UnsupportedTerminal"
 export TEST=cl.niclabs.autonomic.examples.balancer.Test2
 
 java -cp $JCP $VM $TEST "$@"
+

@@ -88,6 +88,7 @@ public class AddWorkerAction extends Action {
 
 		} catch (NoSuchInterfaceException | IllegalLifeCycleException | IllegalContentException | IllegalBindingException e) {
 			e.printStackTrace();
+			return "ERROR: " + e.getMessage();
 		}
 
 		return true;

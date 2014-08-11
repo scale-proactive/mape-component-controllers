@@ -193,8 +193,8 @@ public class Test2 {
     		Remmos.getMonitorController(subComp).setRecordStoreCapacity(16);
     	}
 
-    	mon.addMetric("points", new PointsMetric());
-    	mon.enableMetric("points");
+    	//mon.addMetric("points", new PointsMetric());
+    	//mon.enableMetric("points");
 
     	// RULE
     	Remmos.getAnalyzerController(crackerComp).addRule("always", new AlwaysAlarmRule());
@@ -208,6 +208,7 @@ public class Test2 {
     	String path = "file:///user/mibanez/mape-component-controllers/src/Examples"
     			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
+		exec.execute("wos($this)");
 
     	Utils.getPAGCMLifeCycleController(crackerComp).startFc();
     	System.out.println("Cracker started......____");

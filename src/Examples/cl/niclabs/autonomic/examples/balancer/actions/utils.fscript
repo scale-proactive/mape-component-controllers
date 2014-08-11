@@ -41,15 +41,21 @@ action get-gcma() {
 	return deploy-gcma("mape-component-controllers/src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml");
 }
 
-action wos1(cracker, appd) {
-	add-worker($cracker/child::Solver1, $appd/gcmvn::VN1/gcmnode::*);
+action wos1(cracker) {
+	execute($cracker/child::Solver1/jaction::addWorker);
 }
 
-action wos2(cracker, appd) {
-    add-worker($cracker/child::Solver2, $appd/gcmvn::VN2/gcmnode::*);
+action wos2(cracker) {
+    execute($cracker/child::Solver2/jaction::addWorker);
 }
 
-action wos3(cracker, appd) {
-    add-worker($cracker/child::Solver3, $appd/gcmvn::VN3/gcmnode::*);
+action wos3(cracker) {
+    execute($cracker/child::Solver3/jaction::addWorker);
+}
+
+action wos(cracker) {
+	wos1($cracker);
+	wos2($cracker);
+	wos3($cracker);
 }
 
