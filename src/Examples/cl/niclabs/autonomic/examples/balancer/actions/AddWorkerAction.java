@@ -50,7 +50,6 @@ public class AddWorkerAction extends Action {
 			return "Add worker failed. Dispatcher with name \"" + dispatcherName + "\" not found.";
 		}
 
-
 		Component worker = null;
 		try {			
 			PAGCMInterfaceType[] workerItfTypes = new PAGCMInterfaceType[] {
@@ -64,7 +63,10 @@ public class AddWorkerAction extends Action {
 					new ControllerDescription("Worker", "primitive"),
 					new ContentDescription(WorkerImpl.class.getName()),
 					node);
-		} catch (InstantiationException e1) {
+
+			Utils.getPAMembraneController(worker).startMembrane();
+
+		} catch (InstantiationException | IllegalLifeCycleException | NoSuchInterfaceException e1) {
 			e1.printStackTrace();
 		}
 		
