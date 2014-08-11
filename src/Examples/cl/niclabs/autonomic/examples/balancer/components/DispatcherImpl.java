@@ -19,6 +19,8 @@ public class DispatcherImpl implements DispatcherAttr, SolverItf, BindingControl
 	@Override
 	public Wrapper<String> solve(byte[] hash, int maxLength, long from, long to) {
 		
+		if (BalancerCST.DEBUG) System.out.println("... ... Entrando a dispatcher ...");
+
 		if (workersNumber <= 0) {
 			System.err.println("[WARNING] A solver has 0 available workers, this shouldn't happens");
 			return new WrongWrapper<String>("0 available workers, nothing to do");
@@ -36,6 +38,8 @@ public class DispatcherImpl implements DispatcherAttr, SolverItf, BindingControl
 		List<Wrapper<String>> results = workers.workOn(tasks);
 
 		Wrapper<String> validResult = null;
+
+		if (BalancerCST.DEBUG) System.out.println("... ... revisando resultados en dispatcher ...");
 
 		for (Wrapper<String> ow : results) {
 			if (ow.isValid()) {

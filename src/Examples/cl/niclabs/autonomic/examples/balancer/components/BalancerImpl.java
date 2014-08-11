@@ -21,6 +21,8 @@ public class BalancerImpl implements BalancerAttr, CrackerItf, BindingController
 	@Override
 	public Wrapper<String> crack(byte[] hash, int maxLength) {
 
+		if (BalancerCST.DEBUG) System.out.println("... Entrando a balancer ...");
+
 		long pos = 0;
 		for (int i = 1; i <= maxLength; i++) pos += Math.pow(BalancerCST.ALPHABET.length(), i);
 
@@ -43,6 +45,7 @@ public class BalancerImpl implements BalancerAttr, CrackerItf, BindingController
 		if (start == end) start++;
 		results.add(s3.solve(hash, maxLength, start, end));
 
+		if (BalancerCST.DEBUG) System.out.println("... checking results en balancer ...");
 		for (Wrapper<String> r : results) {
 			if (r.isValid()) {
 				return r;
