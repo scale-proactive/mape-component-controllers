@@ -11,10 +11,15 @@ import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.identity.PAComponent;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
+import org.objectweb.proactive.core.node.Node;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.ExecutorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.monitoring.MonitorController;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
+import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment;
+import org.objectweb.proactive.gcmdeployment.GCMApplication;
+import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 
+import cl.niclabs.autonomic.examples.balancer.actions.AddWorkerAction;
 import cl.niclabs.autonomic.examples.balancer.components.BalancerAttr;
 import cl.niclabs.autonomic.examples.balancer.components.BalancerImpl;
 import cl.niclabs.autonomic.examples.balancer.components.CrackerItf;
@@ -74,6 +79,7 @@ public class Test2 {
 
 		Utils.getPAMembraneController(solver1Comp).startMembrane();
 		Remmos.addMonitoring(solver1Comp);
+		Remmos.addExecutorController(solver1Comp);
 
 		PAGCMInterfaceType[] dispatcher1Itftypes = new PAGCMInterfaceType[] {
 				(PAGCMInterfaceType) tf.createGCMItfType("solver", SolverItf.class.getName(), false, false, "singleton"),
@@ -93,6 +99,7 @@ public class Test2 {
 
 		Utils.getPAMembraneController(solver2Comp).startMembrane();
 		Remmos.addMonitoring(solver2Comp);
+		Remmos.addExecutorController(solver2Comp);
 
 		PAGCMInterfaceType[] dispatcher2Itftypes = new PAGCMInterfaceType[] {
 				(PAGCMInterfaceType) tf.createGCMItfType("solver", SolverItf.class.getName(), false, false, "singleton"),
@@ -112,6 +119,7 @@ public class Test2 {
 	
 		Utils.getPAMembraneController(solver3Comp).startMembrane();
 		Remmos.addMonitoring(solver3Comp);
+		Remmos.addExecutorController(solver3Comp);
 	
 		PAGCMInterfaceType[] dispatcher3Itftypes = new PAGCMInterfaceType[] {
 				(PAGCMInterfaceType) tf.createGCMItfType("solver", SolverItf.class.getName(), false, false, "singleton"),
@@ -144,8 +152,9 @@ public class Test2 {
 
 		// Workers -----------------------------------------------------
 
-		/*
+
 		System.out.println("Loading Application Descriptor......................");
+
 		GCMApplication gcmad = PAGCMDeployment.loadApplicationDescriptor(Test2.class.getResource("Workers.xml"));
 		System.out.println("Starting deployment...................................");
 		gcmad.startDeployment();
@@ -157,51 +166,17 @@ public class Test2 {
 		VN1.waitReady();
 		Node N1 = VN1.getANode();
 
-		System.out.println("Crating worker on VN1.........................................");
-		PAGCMInterfaceType[] worker1ItfTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
-		Component worker1Comp = remmos.newFcInstance(remmos.createFcType(worker1ItfTypes, "primitive"),
-				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N1);
-
-		Utils.getPAMembraneController(worker1Comp).startMembrane();
-        Remmos.addMonitoring(worker1Comp);
-
-		Utils.getPAContentController(solver1Comp).addFcSubComponent(worker1Comp);
-		Utils.getPABindingController(dispatcher1Comp).bindFc("worker-multicast", worker1Comp.getFcInterface("worker"));
-		((DispatcherAttr) GCM.getAttributeController(dispatcher1Comp)).setWorkers(1);
-
 		GCMVirtualNode VN2 = gcmad.getVirtualNode("VN2");
 		VN2.waitReady();
 		Node N2 = VN2.getANode();
 
-		PAGCMInterfaceType[] worker2ItfTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
-		Component worker2Comp = remmos.newFcInstance(remmos.createFcType(worker2ItfTypes, "primitive"),
-				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N2);
+        GCMVirtualNode VN3 = gcmad.getVirtualNode("VN3");
+        VN3.waitReady();
+        Node N3 = VN3.getANode();
 
-		Utils.getPAMembraneController(worker2Comp).startMembrane();
-		Remmos.addMonitoring(worker2Comp);
-
-		Utils.getPAContentController(solver2Comp).addFcSubComponent(worker2Comp);
-		Utils.getPABindingController(dispatcher2Comp).bindFc("worker-multicast", worker2Comp.getFcInterface("worker"));
-		((DispatcherAttr) GCM.getAttributeController(dispatcher2Comp)).setWorkers(1);
-
-		GCMVirtualNode VN3 = gcmad.getVirtualNode("VN3");
-		VN3.waitReady();
-		Node N3 = VN3.getANode();
-
-		PAGCMInterfaceType[] worker3ItfTypes = new PAGCMInterfaceType[] {
-				(PAGCMInterfaceType) tf.createGCMItfType("worker", WorkerItf.class.getName(), false, false, "singleton")};
-		Component worker3Comp = remmos.newFcInstance(remmos.createFcType(worker3ItfTypes, "primitive"),
-				new ControllerDescription("Worker", "primitive"), new ContentDescription(WorkerImpl.class.getName()), N3);
-
-		Utils.getPAMembraneController(worker3Comp).startMembrane();
-		Remmos.addMonitoring(worker3Comp);
-
-		Utils.getPAContentController(solver3Comp).addFcSubComponent(worker3Comp);
-		Utils.getPABindingController(dispatcher3Comp).bindFc("worker-multicast", worker3Comp.getFcInterface("worker"));
-		((DispatcherAttr) GCM.getAttributeController(dispatcher3Comp)).setWorkers(1);
-		*/
+		Remmos.getExecutorController(solver1Comp).addAction("addWorker", new AddWorkerAction("Dispatcher1", N1));
+		Remmos.getExecutorController(solver2Comp).addAction("addWorker", new AddWorkerAction("Dispatcher2", N2));
+		Remmos.getExecutorController(solver3Comp).addAction("addWorker", new AddWorkerAction("Dispatcher3", N3));
 
 		// Init ------------------------------------------
 		System.out.println("Enabling Monitoring..........................");
@@ -233,14 +208,6 @@ public class Test2 {
     	String path = "file:///user/mibanez/mape-component-controllers/src/Examples"
     			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
-    	exec.execute("gcma = deploy-gcma(\"src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml\");");
-    	Thread.sleep(1000);
-		exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1);");
-		Thread.sleep(1000);
-		exec.execute("add-worker($this/child::Solver2, $gcma/gcmvn::VN2);");
-		Thread.sleep(1000);
-		exec.execute("add-worker($this/child::Solver3, $gcma/gcmvn::VN3);");
-		Thread.sleep(1000);
 
     	Utils.getPAGCMLifeCycleController(crackerComp).startFc();
     	System.out.println("Cracker started......____");
