@@ -9,4 +9,6 @@ public class BalancerCST {
 	public final static String ITF_SOLVER_3 = "solver-3";
 	public final static String ITF_WORKER_MULTICAST = "worker-multicast";
 
+	public final static boolean DEBUG = true;
+
 }
