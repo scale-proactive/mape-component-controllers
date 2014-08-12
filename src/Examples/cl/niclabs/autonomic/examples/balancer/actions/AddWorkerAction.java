@@ -7,16 +7,20 @@ import org.objectweb.fractal.api.control.IllegalBindingException;
 import org.objectweb.fractal.api.control.IllegalContentException;
 import org.objectweb.fractal.api.control.IllegalLifeCycleException;
 import org.objectweb.fractal.api.factory.InstantiationException;
+import org.objectweb.proactive.Body;
 import org.objectweb.proactive.core.component.ContentDescription;
 import org.objectweb.proactive.core.component.ControllerDescription;
 import org.objectweb.proactive.core.component.Utils;
+import org.objectweb.proactive.core.component.body.ComponentRunActive;
 import org.objectweb.proactive.core.component.control.PAGCMLifeCycleController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
 import org.objectweb.proactive.core.component.type.PAGCMTypeFactory;
 import org.objectweb.proactive.core.node.Node;
+import org.objectweb.proactive.extensions.autonomic.adl.implementations.AComponentRunActive;
 import org.objectweb.proactive.extensions.autonomic.controllers.execution.Action;
 import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
+import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
 import cl.niclabs.autonomic.examples.balancer.components.DispatcherAttr;
 import cl.niclabs.autonomic.examples.balancer.components.WorkerImpl;
@@ -61,7 +65,12 @@ public class AddWorkerAction extends Action {
 			worker = remmos.newFcInstance(
 					remmos.createFcType(workerItfTypes, "primitive"),
 					new ControllerDescription("Worker", "primitive"),
-					new ContentDescription(WorkerImpl.class.getName()),
+					new ContentDescription(WorkerImpl.class.getName(), null, new AComponentRunActive() {
+						private static final long serialVersionUID = 1L;
+						public void runComponentActivity(Body body) {
+							(new ComponentMultiActiveService(body)).multiActiveServing();
+						}
+					}, null),
 					node);
 
 			Utils.getPAMembraneController(worker).startMembrane();
