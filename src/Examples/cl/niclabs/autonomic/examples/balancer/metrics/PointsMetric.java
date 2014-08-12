@@ -10,7 +10,7 @@ public class PointsMetric extends Metric<String> {
 	private String state; // POINTS or "BUFFERING"
 	private double p1, p2;
 	private int buffer;
-	private int counter;
+	private long counter;
 
 	public PointsMetric() {
 		state = "OK";
@@ -38,34 +38,28 @@ public class PointsMetric extends Metric<String> {
 			System.err.println("[WARNING] PointsMetric fail when trying to get cracker avgOut or solvers avgInc values");
 		}
 
-		double c1 = p1 / w1.getValue();
-		double c2 = (p2 - p1) / w2.getValue();
-		double c3 = 0.0;
-		try {
-			c3 = (1 - p2) / w3.getValue();
-		} catch (ClassCastException e) {
-			System.out.println("-------------__> " + w3.getValue());
-			return "FAIL";
-		}
-		double alpha = 1.0 / (c1 + c2 + c3);
+		counter++;
 
-		double np1 = alpha * c1;
-		double np2 = alpha * (c1 + c2);
+		if ((counter % buffer) == 0) {
+			double c1 = p1 / w1.getValue();
+			double c2 = (p2 - p1) / w2.getValue();
+			double c3 = 0.0;
+			try {
+				c3 = (1 - p2) / w3.getValue();
+			} catch (ClassCastException e) {
+				System.out.println("-------------__> " + w3.getValue());
+				return "FAIL";
+			}
+			double alpha = 1.0 / (c1 + c2 + c3);
+	
+			p1 = alpha * c1;
+			p2 = alpha * (c1 + c2);
+		}
 
 		double n = 1000000.0;
-		System.out.printf("Times: %.3f (%.3f, %.3f, %.3f) -- ", w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
-		System.out.printf("Old Points (%.3f, %.3f) -> ", p1, p2);
-		System.out.printf("New Points (%.3f, %.3f)\n", np1, np2);
-		
-		counter = (counter + 1) % buffer;
-		if (counter != 0) {
-			state = "BUFFERING";
-			return state;
-		}
+		System.out.printf("%d\t%.3f\t%.3f\t%.3f\t%.3f", counter, w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
+		System.out.printf("\t%.3f\t%.3f\n", p1, p2);
 
-		p1 = np1;
-		p2 = np2;
-		
 		state = p1 + "u" + p2;
 		return state;
 	}

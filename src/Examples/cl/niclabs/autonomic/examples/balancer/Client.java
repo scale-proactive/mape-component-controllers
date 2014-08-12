@@ -51,14 +51,17 @@ public class Client {
 				CrackerItf cracker = (CrackerItf) c.getFcInterface("cracker");
 
 		    	MessageDigest md5 = MessageDigest.getInstance("MD5");
+		    	long counter = 0;
+
 		    	while (true) {
 			    	String word = getRandomWord(MAX_LENGTH);
 			    	long init = System.currentTimeMillis();
+			    	counter++;
+			  
 					Wrapper<String> ow = cracker.crack(md5.digest(word.getBytes()), MAX_LENGTH);
 					if (ow.isValid()) {
 						double time = (System.currentTimeMillis() - init) * 1.0 / 1000;
-						//System.out.println("Time: " + time + " [s] (" + word + " -> " + md5.digest(word.getBytes()) + " -> " + ow.getValue() + ")");
-						System.out.println("Time: " + time + " [s]");
+						System.out.println(counter + "\t" + time);
 					} else {
 						System.out.println("[FAIL] " + ow.getMessage());
 					}

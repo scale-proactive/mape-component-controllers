@@ -7,8 +7,13 @@ import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 public class TimesMetric extends Metric<String> {
 
 	private static final long serialVersionUID = 1L;
+	private long counter;
+	private double p1, p2;
 
 	public TimesMetric() {
+		p1 = 0.334;
+		p2 = 0.667;
+		counter = 0;
 		subscribeTo(RemmosEventType.OUTGOING_REQUEST_EVENT);
 	}
 
@@ -24,9 +29,11 @@ public class TimesMetric extends Metric<String> {
 			System.err.println("[WARNING] PointsMetric fail when trying to get cracker avgOut or solvers avgInc values");
 		}
 
-		double n = 1000000.0;
-		System.out.printf("Times: %.3f (%.3f, %.3f, %.3f)\n", w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
+		counter++;
 
+		double n = 1000000.0;
+		System.out.printf("%d\t%.3f\t%.3f\t%.3f\t%.3f", counter, w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
+		System.out.printf("\t%.3f\t%.3f\n", p1, p2);
 		return "ok";
 	}
 
