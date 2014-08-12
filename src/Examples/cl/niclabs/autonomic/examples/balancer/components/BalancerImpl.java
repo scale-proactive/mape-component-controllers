@@ -46,13 +46,14 @@ public class BalancerImpl implements BalancerAttr, CrackerItf, BindingController
 		results.add(s3.solve(hash, maxLength, start, end));
 
 		if (BalancerCST.DEBUG) System.out.println("... checking results en balancer ...");
+		Wrapper<String> ok = null;
 		for (Wrapper<String> r : results) {
 			if (r.isValid()) {
-				return r;
+				ok = r;
 			}
 		}
-
-		return new WrongWrapper<String>("FAIL", "Solution not found...");
+		
+		return ok != null ? ok : new WrongWrapper<String>("FAIL", "Solution not found...");
 	}
 
 	@Override

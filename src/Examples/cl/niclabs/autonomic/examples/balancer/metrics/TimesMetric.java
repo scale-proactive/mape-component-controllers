@@ -25,7 +25,7 @@ public class TimesMetric extends Metric<String> {
 		}
 
 		double n = 1000000.0;
-		System.out.printf("Times: %.3f (%.3f, %.3f, %.3f)", w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
+		System.out.printf("Times: %.3f (%.3f, %.3f, %.3f)\n", w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
 
 		return "ok";
 	}

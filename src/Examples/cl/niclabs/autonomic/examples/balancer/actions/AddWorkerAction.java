@@ -11,7 +11,6 @@ import org.objectweb.proactive.Body;
 import org.objectweb.proactive.core.component.ContentDescription;
 import org.objectweb.proactive.core.component.ControllerDescription;
 import org.objectweb.proactive.core.component.Utils;
-import org.objectweb.proactive.core.component.body.ComponentRunActive;
 import org.objectweb.proactive.core.component.control.PAGCMLifeCycleController;
 import org.objectweb.proactive.core.component.factory.PAGenericFactory;
 import org.objectweb.proactive.core.component.type.PAGCMInterfaceType;
