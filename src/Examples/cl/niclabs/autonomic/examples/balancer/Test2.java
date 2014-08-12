@@ -34,7 +34,7 @@ import cl.niclabs.autonomic.examples.balancer.components.WorkerMulticastItf;
 import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
 import cl.niclabs.autonomic.examples.balancer.metrics.TimesMetric;
 import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
-import cl.niclabs.autonomic.examples.balancer.rules.AlwaysAlarmRule;
+import cl.niclabs.autonomic.examples.balancer.rules.PointsChangeRule;
 
 public class Test2 {
 
@@ -261,7 +261,7 @@ public class Test2 {
     	mon.enableMetric("times");
 
     	// RULE
-    	Remmos.getAnalyzerController(crackerComp).addRule("always", new AlwaysAlarmRule());
+    	Remmos.getAnalyzerController(crackerComp).addRule("always", new PointsChangeRule());
     	
     	// PLAN
     	Remmos.getPlannerController(crackerComp).setPlan(new UpdatePointsPlan());

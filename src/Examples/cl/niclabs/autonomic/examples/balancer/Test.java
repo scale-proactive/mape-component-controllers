@@ -14,7 +14,7 @@ import org.objectweb.proactive.extensions.autonomic.controllers.remmos.Remmos;
 
 import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
 import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
-import cl.niclabs.autonomic.examples.balancer.rules.AlwaysAlarmRule;
+import cl.niclabs.autonomic.examples.balancer.rules.PointsChangeRule;
 
 public class Test {
 
@@ -53,7 +53,7 @@ public class Test {
     	}
 
     	// RULE
-    	Remmos.getAnalyzerController(component).addRule("always", new AlwaysAlarmRule());
+    	Remmos.getAnalyzerController(component).addRule("always", new PointsChangeRule());
     	
     	// PLAN
     	Remmos.getPlannerController(component).setPlan(new UpdatePointsPlan());

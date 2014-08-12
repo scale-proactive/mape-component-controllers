@@ -7,7 +7,7 @@ import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 public class PointsMetric extends Metric<String> {
 
 	private static final long serialVersionUID = 1L;
-	private String state; // "OK" or "BUFFERING"
+	private String state; // POINTS or "BUFFERING"
 	private double p1, p2;
 	private int buffer;
 	private int counter;
@@ -66,7 +66,7 @@ public class PointsMetric extends Metric<String> {
 		p1 = np1;
 		p2 = np2;
 		
-		state = "OK";
+		state = p1 + "u" + p2;
 		return state;
 	}
 

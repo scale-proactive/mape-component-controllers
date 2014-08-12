@@ -12,11 +12,14 @@ public class UpdatePointsPlan extends Plan {
 
 	@Override
 	public void planActionFor(String ruleName, Alarm alarm, MonitorController monitor, ExecutorController executor) {
-		Wrapper<String> p = monitor.getMetricValue("points");
-		if (p.isValid()) {
-			executor.execute("set-value($this/child::Balancer/attribute::points, \"" + p.getValue() + "\");");
-		} else {
-			System.out.println("monitor.getMetricValue(\"points\") invalid ???");
+		
+		if (alarm.equals(Alarm.VIOLATION)) {
+			Wrapper<String> p = monitor.getMetricValue("points");
+			if (p.isValid()) {
+				executor.execute("set-value($this/child::Balancer/attribute::points, \"" + p.getValue() + "\");");
+			} else {
+				System.out.println("monitor.getMetricValue(\"points\") invalid ???");
+			}
 		}
 	}
 
