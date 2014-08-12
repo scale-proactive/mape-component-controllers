@@ -29,12 +29,6 @@ public class PointsMetric extends Metric<String> {
 	@Override
 	public String calculate() {
 
-		counter = (counter + 1) % buffer;
-		if (counter != 0) {
-			state = "BUFFERING";
-			return state;
-		}
-
 		Wrapper<Double> w = this.metricStore.calculate("avgOut");
 		Wrapper<Double> w1 = this.metricStore.calculate("avgInc", "/cracker/solver-1");
 		Wrapper<Double> w2 = this.metricStore.calculate("avgInc", "/cracker/solver-2");
@@ -63,6 +57,12 @@ public class PointsMetric extends Metric<String> {
 		System.out.printf("Old Points (%.3f, %.3f) -> ", p1, p2);
 		System.out.printf("New Points (%.3f, %.3f)\n", np1, np2);
 		
+		counter = (counter + 1) % buffer;
+		if (counter != 0) {
+			state = "BUFFERING";
+			return state;
+		}
+
 		p1 = np1;
 		p2 = np2;
 		

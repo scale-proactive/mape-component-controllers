@@ -275,7 +275,10 @@ public class Test2 {
     	   		+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
 		exec.execute("wos($this)");
-
+		exec.execute("wos2($this)");
+		exec.execute("wos3($this)");
+		exec.execute("wos3($this)");
+		exec.execute("wos3($this)");
     	Utils.getPAGCMLifeCycleController(crackerComp).startFc();
     	System.out.println("Cracker started......____");
 
