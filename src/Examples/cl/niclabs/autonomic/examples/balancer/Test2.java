@@ -31,6 +31,8 @@ import cl.niclabs.autonomic.examples.balancer.components.DispatcherAttr;
 import cl.niclabs.autonomic.examples.balancer.components.DispatcherImpl;
 import cl.niclabs.autonomic.examples.balancer.components.SolverItf;
 import cl.niclabs.autonomic.examples.balancer.components.WorkerMulticastItf;
+import cl.niclabs.autonomic.examples.balancer.metrics.PointsMetric;
+import cl.niclabs.autonomic.examples.balancer.metrics.TimesMetric;
 import cl.niclabs.autonomic.examples.balancer.plans.UpdatePointsPlan;
 import cl.niclabs.autonomic.examples.balancer.rules.AlwaysAlarmRule;
 
@@ -247,13 +249,16 @@ public class Test2 {
     	mon.startGCMMonitoring();
     	Thread.sleep(1000);
 
+    	int RECORDS_CAPACITY = 8;
+    	mon.setRecordStoreCapacity(RECORDS_CAPACITY);
     	PAContentController cc = Utils.getPAContentController(crackerComp);
     	for (Component subComp : cc.getFcSubComponents()) {
-    		Remmos.getMonitorController(subComp).setRecordStoreCapacity(16);
+    		Remmos.getMonitorController(subComp).setRecordStoreCapacity(RECORDS_CAPACITY);
     	}
 
-    	//mon.addMetric("points", new PointsMetric());
-    	//mon.enableMetric("points");
+    	mon.addMetric("times", new TimesMetric());
+    	mon.addMetric("points", new PointsMetric());
+    	mon.enableMetric("times");
 
     	// RULE
     	Remmos.getAnalyzerController(crackerComp).addRule("always", new AlwaysAlarmRule());

@@ -62,6 +62,8 @@ public class Client {
 					} else {
 						System.out.println("[FAIL] " + ow.getMessage());
 					}
+					
+					Thread.sleep(100);
 		    	}
 			} catch (NamingException ne) {
 				System.err.println("url not found: " + url);

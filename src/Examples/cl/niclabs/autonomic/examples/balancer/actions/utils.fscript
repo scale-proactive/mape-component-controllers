@@ -37,9 +37,6 @@ action remove-worker(solver) {
 	return true();
 }
 
-action get-gcma() {
-	return deploy-gcma("mape-component-controllers/src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml");
-}
 
 action wos1(cracker) {
 	execute($cracker/child::Solver1/jaction::addWorker);
@@ -59,3 +56,7 @@ action wos(cracker) {
 	wos3($cracker);
 }
 
+action swap(cracker) {
+	set-state($cracker/metric::times, "DISABLED");
+	set-state($cracker/metric::points, "ENABLED");
+}
