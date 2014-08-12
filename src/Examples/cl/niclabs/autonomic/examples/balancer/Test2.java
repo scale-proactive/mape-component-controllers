@@ -249,7 +249,7 @@ public class Test2 {
     	mon.startGCMMonitoring();
     	Thread.sleep(1000);
 
-    	int RECORDS_CAPACITY = 8;
+    	int RECORDS_CAPACITY = 5;
     	mon.setRecordStoreCapacity(RECORDS_CAPACITY);
     	PAContentController cc = Utils.getPAContentController(crackerComp);
     	for (Component subComp : cc.getFcSubComponents()) {
@@ -257,7 +257,7 @@ public class Test2 {
     	}
 
     	mon.addMetric("times", new TimesMetric());
-    	mon.addMetric("points", new PointsMetric());
+    	mon.addMetric("points", new PointsMetric(RECORDS_CAPACITY));
     	mon.enableMetric("times");
 
     	// RULE

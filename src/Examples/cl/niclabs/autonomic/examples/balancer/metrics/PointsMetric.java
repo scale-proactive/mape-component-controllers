@@ -7,29 +7,33 @@ import org.objectweb.proactive.extensions.autonomic.controllers.utils.Wrapper;
 public class PointsMetric extends Metric<String> {
 
 	private static final long serialVersionUID = 1L;
+	private String state; // "OK" or "BUFFERING"
 	private double p1, p2;
+	private int buffer;
+	private int counter;
 
 	public PointsMetric() {
+		state = "OK";
 		p1 = 0.334;
 		p2 = 0.667;
+		counter = 0;
+		buffer = 1;
 		subscribeTo(RemmosEventType.OUTGOING_REQUEST_EVENT);
 	}
 
-	public PointsMetric(String points) {
+	public PointsMetric(int buffer) {
 		this();
-		String[] split = points.split("u");
-		if (split.length == 2) {
-			double np1 = Double.parseDouble(split[0]);
-			double np2 = Double.parseDouble(split[1]);
-			if (np1 <= 1 && np2 <= 1 && np1 <= np2) {
-				p1 = np1;
-				p2 = np2;
-			}
-		}
+		this.buffer = buffer;
 	}
 
 	@Override
 	public String calculate() {
+
+		counter = (counter + 1) % buffer;
+		if (counter != 0) {
+			state = "BUFFERING";
+			return state;
+		}
 
 		Wrapper<Double> w = this.metricStore.calculate("avgOut");
 		Wrapper<Double> w1 = this.metricStore.calculate("avgInc", "/cracker/solver-1");
@@ -62,25 +66,18 @@ public class PointsMetric extends Metric<String> {
 		p1 = np1;
 		p2 = np2;
 		
-		return p1 + "u" + p2;
+		state = "OK";
+		return state;
 	}
 
 	@Override
 	public String getValue() {
-		return p1 + "u" + p2;
+		return state;
 	}
 
 	@Override
 	public void setValue(String value) {
-		String[] split = value.split("u");
-		if (split.length == 2) {
-			double np1 = Double.parseDouble(split[0]);
-			double np2 = Double.parseDouble(split[1]);
-			if (np1 <= 1 && np2 <= 1 && np1 <= np2) {
-				p1 = np1;
-				p2 = np2;
-			}
-		}
+		state = value;
 	}
 
 }
