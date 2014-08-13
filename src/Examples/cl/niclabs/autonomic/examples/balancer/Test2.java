@@ -24,6 +24,7 @@ import org.objectweb.proactive.gcmdeployment.GCMVirtualNode;
 import org.objectweb.proactive.multiactivity.component.ComponentMultiActiveService;
 
 import cl.niclabs.autonomic.examples.balancer.actions.AddWorkerAction;
+import cl.niclabs.autonomic.examples.balancer.actions.RemoveWorkerAction;
 import cl.niclabs.autonomic.examples.balancer.components.BalancerAttr;
 import cl.niclabs.autonomic.examples.balancer.components.BalancerImpl;
 import cl.niclabs.autonomic.examples.balancer.components.CrackerItf;
@@ -235,10 +236,6 @@ public class Test2 {
         VN3.waitReady();
         Node N3 = VN3.getANode();
 
-		Remmos.getExecutorController(solver1Comp).addAction("addWorker", new AddWorkerAction("Dispatcher1", N1));
-		Remmos.getExecutorController(solver2Comp).addAction("addWorker", new AddWorkerAction("Dispatcher2", N2));
-		Remmos.getExecutorController(solver3Comp).addAction("addWorker", new AddWorkerAction("Dispatcher3", N3));
-
 		// Init ------------------------------------------
 		System.out.println("Enabling Monitoring..........................");
 		Remmos.enableMonitoring(crackerComp);
@@ -267,6 +264,14 @@ public class Test2 {
     	Remmos.getPlannerController(crackerComp).setPlan(new UpdatePointsPlan());
     	
     	// EXECUTOR
+		Remmos.getExecutorController(solver1Comp).addAction("addWorker", new AddWorkerAction("Dispatcher1", N1));
+		Remmos.getExecutorController(solver2Comp).addAction("addWorker", new AddWorkerAction("Dispatcher2", N2));
+		Remmos.getExecutorController(solver3Comp).addAction("addWorker", new AddWorkerAction("Dispatcher3", N3));
+
+		Remmos.getExecutorController(solver1Comp).addAction("removeWorker", new RemoveWorkerAction("Dispatcher1"));
+		Remmos.getExecutorController(solver2Comp).addAction("removeWorker", new RemoveWorkerAction("Dispatcher2"));
+		Remmos.getExecutorController(solver3Comp).addAction("removeWorker", new RemoveWorkerAction("Dispatcher3"));
+
     	ExecutorController exec = Remmos.getExecutorController(crackerComp);
     
     	//String path = "file:///home/mibanez/Taller/memoria/mape-component-controllers/src/Examples"
