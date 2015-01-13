@@ -14,7 +14,7 @@
 
 		<hosts>
 			<host id="caleuche" os="unix" hostCapacity="1" vmCapacity="4">
-				<homeDirectory base="root" relpath="/user/mibanez"/>
+				<homeDirectory base="root" relpath="/user/cruz/git"/>
 			</host>
 		</hosts>
 	

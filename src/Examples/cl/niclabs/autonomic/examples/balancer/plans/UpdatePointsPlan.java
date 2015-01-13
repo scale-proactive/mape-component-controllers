@@ -15,6 +15,7 @@ public class UpdatePointsPlan extends Plan {
 		
 		if (alarm.equals(Alarm.VIOLATION)) {
 			Wrapper<String> p = monitor.getMetricValue("points");
+			System.out.println("VIOLATION RULE!!!!!!!!!!!!!!!!--------------------------\n");
 			if (p.isValid()) {
 				executor.execute("set-value($this/child::Balancer/attribute::points, \"" + p.getValue() + "\");");
 			} else {

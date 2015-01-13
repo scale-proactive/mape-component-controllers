@@ -61,8 +61,9 @@ public class Test {
     	// EXECUTOR
     	ExecutorController exec = Remmos.getExecutorController(component);
     
-    	String path = "file:///user/mibanez/mape-component-controllers/src/Examples"
+    	String path = "file:///user/cruz/git/mape-component-controllers/src/Examples"
     			+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
+        System.out.println("Loading path to GCMScript engine ... " + path);
     	exec.load((new URL(path)).toURI().getPath());
     	exec.execute("gcma = deploy-gcma(\"src/Examples/cl/niclabs/autonomic/examples/balancer/Workers.xml\");");
 		exec.execute("add-worker($this/child::Solver1, $gcma/gcmvn::VN1/gcmnode::*);");
@@ -74,6 +75,7 @@ public class Test {
 
     	while(true) {
     	    try {
+                System.out.println("Waiting 10 ...");
     	        Thread.sleep(10000);
     	    } catch (InterruptedException e) {
     	        e.printStackTrace();

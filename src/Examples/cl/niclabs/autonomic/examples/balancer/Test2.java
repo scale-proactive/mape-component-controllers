@@ -256,6 +256,7 @@ public class Test2 {
     	mon.addMetric("times", new TimesMetric());
     	mon.addMetric("points", new PointsMetric(RECORDS_CAPACITY));
     	mon.enableMetric("times");
+    	mon.enableMetric("points");
 
     	// RULE
     	Remmos.getAnalyzerController(crackerComp).addRule("always", new PointsChangeRule());
@@ -276,7 +277,7 @@ public class Test2 {
     
     	//String path = "file:///home/mibanez/Taller/memoria/mape-component-controllers/src/Examples"
     	//		+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
-    	String path = "file:///user/mibanez/mape-component-controllers/src/Examples"
+    	String path = "file:///user/cruz/git/mape-component-controllers/src/Examples"
     	   		+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
 		exec.execute("wos($this)");

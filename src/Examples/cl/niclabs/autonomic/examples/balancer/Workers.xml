@@ -3,18 +3,18 @@
 		xsi:schemaLocation="urn:gcm:application:1.0 http://proactive.inria.fr/schemas/gcm/1.0/ApplicationDescriptorSchema.xsd">
 
 	<application>
-		<proactive base="root" relpath="/user/mibanez/programming-multiactivities">
+		<proactive base="root" relpath="/user/cruz/git/programming-multiactivities">
 			<configuration>
 				<applicationClasspath>
-					<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/build/test-src.jar"/>
-	           		<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/build/test.jar"/>
-					<pathElement base="root" relpath="/user/mibanez/mape-component-controllers/lib/gson-2.2.4.jar"/>
-                    <pathElement base="root" relpath="/user/mibanez/gcmscript/dist/lib/ProActive-GCMScript.jar"/>
-					<pathElement base="root" relpath="/user/mibanez/programming-multiactivities/dist/lib/ProActive.jar"/>
+					<pathElement base="root" relpath="/user/cruz/git/mape-component-controllers/build/test-src.jar"/>
+	           		<pathElement base="root" relpath="/user/cruz/git/mape-component-controllers/build/test.jar"/>
+					<pathElement base="root" relpath="/user/cruz/git/mape-component-controllers/lib/gson-2.2.4.jar"/>
+                    <pathElement base="root" relpath="/user/cruz/git/gcmscript/dist/lib/ProActive-GCMScript.jar"/>
+					<pathElement base="root" relpath="/user/cruz/git/programming-multiactivities/dist/lib/ProActive.jar"/>
 				</applicationClasspath>
 
-				<securityPolicy base="root" relpath="/user/mibanez/programming-multiactivities/dist/proactive.java.policy"/>
-				<log4jProperties base="root" relpath="/user/mibanez/programming-multiactivities/dist/proactive-log4j"/>
+				<securityPolicy base="root" relpath="/user/cruz/git/programming-multiactivities/dist/proactive.java.policy"/>
+				<log4jProperties base="root" relpath="/user/cruz/git/programming-multiactivities/dist/proactive-log4j"/>
 			</configuration>
 			
 			<virtualNode id="VN1" capacity="4">

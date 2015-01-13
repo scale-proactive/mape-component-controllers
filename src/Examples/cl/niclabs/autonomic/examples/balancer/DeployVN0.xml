@@ -14,7 +14,7 @@
 
 		<hosts>
 			<host id="tripio" os="unix" hostCapacity="2" vmCapacity="8">
-				<homeDirectory base="root" relpath="/user/mibanez"/>
+				<homeDirectory base="root" relpath="/user/cruz/git"/>
 			</host>
 		</hosts>
 	

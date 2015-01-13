@@ -46,6 +46,7 @@ public class Client {
 
 		if (cmd.hasOption("c")) {
 			String url = cmd.getOptionValue("c");
+			System.out.println("Connecting...");
 			try {
 				Component c = Fractive.lookup(url);
 				CrackerItf cracker = (CrackerItf) c.getFcInterface("cracker");
@@ -57,7 +58,7 @@ public class Client {
 			    	String word = getRandomWord(MAX_LENGTH);
 			    	long init = System.currentTimeMillis();
 			    	counter++;
-			  
+
 					Wrapper<String> ow = cracker.crack(md5.digest(word.getBytes()), MAX_LENGTH);
 					if (ow.isValid()) {
 						double time = (System.currentTimeMillis() - init) * 1.0 / 1000;
@@ -71,6 +72,7 @@ public class Client {
 			} catch (NamingException ne) {
 				System.err.println("url not found: " + url);
 			}
+
 		}
 
 		if (cmd.hasOption("l")) {

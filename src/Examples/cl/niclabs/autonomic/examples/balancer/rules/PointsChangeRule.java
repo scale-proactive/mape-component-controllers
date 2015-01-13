@@ -19,6 +19,7 @@ public class PointsChangeRule extends Rule {
 
 	@Override
 	public Alarm check(MonitorController monitor) {
+		System.out.println("CHECK!!!!!!!!!!!!!!!!!!");
 		Wrapper<String> ws = monitor.getMetricValue("points");
 		if (ws.isValid()) {
 			String[] split = ws.getValue().split("u");
@@ -28,8 +29,10 @@ public class PointsChangeRule extends Rule {
 				if (np1 != p1 || np2 != p2) {
 					p1 = np1;
 					p2 = np2;
+                                        System.out.println("Point VIOLATED !!!!!!!!!!!!");
 					return Alarm.VIOLATION;
 				}
+                                System.out.println("Point OK!!!!!!!!!!!!");
 				return Alarm.OK;
 			}
 			System.err.println("WARNING: invalid metric value \"points\": " + ws.getValue());

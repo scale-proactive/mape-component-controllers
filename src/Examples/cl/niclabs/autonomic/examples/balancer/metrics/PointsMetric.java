@@ -29,6 +29,7 @@ public class PointsMetric extends Metric<String> {
 	@Override
 	public String calculate() {
 
+		System.out.println("[PointsMetric] Calculating ...");
 		Wrapper<Double> w = this.metricStore.calculate("avgOut");
 		Wrapper<Double> w1 = this.metricStore.calculate("avgInc", "/cracker/solver-1");
 		Wrapper<Double> w2 = this.metricStore.calculate("avgInc", "/cracker/solver-2");
@@ -57,7 +58,7 @@ public class PointsMetric extends Metric<String> {
 		}
 
 		double n = 1000000.0;
-		System.out.printf("%d\t%.3f\t%.3f\t%.3f\t%.3f", counter, w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
+		System.out.printf("[PointsMetric] %d\t%.3f\t%.3f\t%.3f\t%.3f", counter, w.getValue()/n, w1.getValue()/n, w2.getValue()/n, w3.getValue()/n);
 		System.out.printf("\t%.3f\t%.3f\n", p1, p2);
 
 		state = p1 + "u" + p2;
