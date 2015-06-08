@@ -12,9 +12,8 @@ VM="$VM -Dlog4j.configuration=file:/user/cruz/git/programming-multiactivities/di
 VM="$VM -Duser.home=/user/cruz/git"
 VM="$VM -Dproactive.home=/user/cruz/git/programming-multiactivities"
 VM="$VM -Djline.terminal=jline.UnsupportedTerminal"
-VM="$VM -Dproactive.runtime.ping=false"
 
-export TEST=cl.niclabs.autonomic.examples.balancer.Test2
+export TEST=cl.niclabs.autonomic.examples.qosaware.Test
 
 java -cp $JCP $VM $TEST "$@"
 

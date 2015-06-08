@@ -222,7 +222,10 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Serializable> Wrapper<T> calculate(String name, String itfPath) {
+		//cruz:delete
+		//if(name.equals("avgInc")) System.out.println("[MetricStoreImpl.calculate] " + itfPath);
 		String nextItfName = getNextItfName(itfPath);
+		//System.out.println("[MetricStoreImpl.calculate] " + nextItfName);
 		if (nextItfName == null) {
 			return this.calculate(name);
 		}
@@ -230,12 +233,16 @@ public class MetricStoreImpl extends AbstractPAComponentController implements Me
 		Object remoteMon = getRemoteMonitorController(nextItfName);
 		
 		if (remoteMon instanceof MonitorController) {
+			//System.out.println("[MetricStoreImpl.calculate] RemoteMon calculate " + nextItfName);
 			return ((MonitorController) remoteMon).calculateMetric(name, getNextItfPath(itfPath));
 		}
 		else if (remoteMon instanceof MonitorControllerMulticast) {
 			List<Wrapper<T>> l = ((MonitorControllerMulticast) remoteMon).calculateMetric(name, getNextItfPath(itfPath));
 			return new ValidWrapper<T>((T) l);
 		}
+		//else {
+			//System.out.println("[MetricStoreImpl.calculate] RemoteMon cant reach " + nextItfName);
+		//}
 	
 		return new WrongWrapper<T>("Monitor cant reach interface \"" + nextItfName + "\".");
 	}

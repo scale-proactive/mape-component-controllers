@@ -14,6 +14,6 @@ VM="$VM -Dproactive.home=/user/cruz/git/programming-multiactivities"
 VM="$VM -Djline.terminal=jline.UnsupportedTerminal"
 VM="$VM -Dproactive.runtime.ping=false"
 
-export TEST=cl.niclabs.autonomic.examples.balancer.Client
+export TEST=cl.niclabs.autonomic.examples.qosaware.Client
 
 java -cp $JCP $VM $TEST "$@"

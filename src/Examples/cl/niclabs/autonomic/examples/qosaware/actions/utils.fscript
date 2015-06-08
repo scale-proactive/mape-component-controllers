@@ -1,0 +1,62 @@
+action add-worker(solver, gcma) {
+
+	worker = gcm-new("cl.niclabs.autonomic.examples.qosaware.components.Worker", $gcma);
+	set-name($worker, "Worker");
+
+	stop($solver/parent::*);
+
+	add($solver, $worker);
+	bind($solver/child::Dispatcher/interface::worker-multicast, $worker/interface::worker);
+
+	number = value($solver/child::Dispatcher/attribute::workers) + 1;
+	set-value($solver/child::Dispatcher/attribute::workers, $number);
+	
+	start($solver/parent::*);
+	return true();
+
+}
+
+action remove-worker(solver) {
+	
+	number = value($solver/child::Dispatcher/attribute::workers)
+	if ( $number <= 1.0 ) {
+		return false();
+	}
+
+	worker = false();
+	for w : $solver/child::"Worker" {
+		worker = $w;
+	}
+
+	stop($solver);
+	unbind-unit($solver/child::Dispatcher/interface::worker-multicast, $worker/interface::worker);
+	set-value($solver/child::Dispatcher/attribute::workers, $number - 1);
+	remove($solver, $worker);
+	start($solver);
+	
+	return true();
+}
+
+
+action wos1(cracker) {
+	execute($cracker/child::Solver1/jaction::addWorker);
+}
+
+action wos2(cracker) {
+    execute($cracker/child::Solver2/jaction::addWorker);
+}
+
+action wos3(cracker) {
+    execute($cracker/child::Solver3/jaction::addWorker);
+}
+
+action wos(cracker) {
+	wos1($cracker);
+	wos2($cracker);
+	wos3($cracker);
+}
+
+action swap(cracker) {
+	set-state($cracker/metric::times, "DISABLED");
+	set-state($cracker/metric::points, "ENABLED");
+}
