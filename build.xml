@@ -9,8 +9,8 @@
 	<path id="lib.path">		
 		<fileset dir="${build.dir}" includes="**/*.jar"/>
 		<fileset dir="${base.dir}/lib" includes="**/*.jar"/>
-		<fileset dir="${base.dir}/../programming-multiactivities/dist/lib" includes="**/*.jar"/>
-		<fileset dir="${base.dir}/../gcmscript/dist/lib" includes="**/*.jar"/>
+		<fileset dir="${base.dir}/lib/pa-ma-lib" includes="**/*.jar"/>
+		<fileset dir="${base.dir}/lib/gcmscript-lib" includes="**/*.jar"/>
 	</path>
 
 	<target name="all"  depends="clean, test.jar, test-src.jar" description="Compile"/>
