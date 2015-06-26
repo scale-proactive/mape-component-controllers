@@ -17,7 +17,11 @@ This create the build/ directory with the compiled classes
 ## Running the Springoo Application
 In the file `qosaware.sh`, update the variable $SPRINGOO\_HOME to the path to your mape-component-controllers directory.
 
-Once the paths are set, the test is started by running `qosaware.sh`.
+The application is deployed using the file $SPRINGOO\_HOME/src/Examples/cl/niclabs/autonomic/examples/qosaware/Workers.xml,
+which makes reference to several files DeployVNi.xml. Each one of those files must be updated to the name of a host
+that may be used as worker.
+
+The test is started by running `qosaware.sh`.
 
 After the application is set up and running, the script `client.sh` can be used
 to start tests on the Springoo Application.
