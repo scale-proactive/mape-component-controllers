@@ -5,11 +5,18 @@ This code contains an example implementation of the Springoo component applicati
 using MAPE Component Controllers to provide QoS Awareness.
 
 ## Requisites
-ProActive library
-GCMScript library
+ProActive library (included in $SPRINGOO\_HOME/lib/pa-ma-lib/)
+
+GCMScript library (included in $SPRINGOO\_HOME/lib/gcmscript-lib/)
+
+## Compiling
+ant build.xml
+
+This create the build/ directory with the compiled classes
 
 ## Running the Springoo Application
-The path to both libraries must be given in the script `qosaware.sh`.
+In the file `qosaware.sh`, update the variable $SPRINGOO\_HOME to the path to your mape-component-controllers directory.
+
 Once the paths are set, the test is started by running `qosaware.sh`.
 
 After the application is set up and running, the script `client.sh` can be used
