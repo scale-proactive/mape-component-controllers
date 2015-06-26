@@ -434,8 +434,10 @@ public class Test {
     	//		+ "/cl/niclabs/autonomic/examples/balancer/actions/utils.fscript";
     	String path = "file:///user/cruz/git/mape-component-controllers/src/Examples"
     	   		+ "/cl/niclabs/autonomic/examples/qosaware/actions/utils.fscript";
+    	path = "file://"+System.getProperty("user.home")+"/src/Examples"
+    			+ "/cl/niclabs/autonomic/examples/qosaware/actions/utils.fscript";
     	exec.load((new URL(path)).toURI().getPath());
-		//exec.execute("wos($this)");
+    	//exec.execute("wos($this)");
 		//exec.execute("wos2($this)");
 		//exec.execute("wos3($this)");
 		//exec.execute("wos3($this)");
