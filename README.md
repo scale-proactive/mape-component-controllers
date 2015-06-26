@@ -10,7 +10,7 @@ ProActive library (included in $SPRINGOO\_HOME/lib/pa-ma-lib/)
 GCMScript library (included in $SPRINGOO\_HOME/lib/gcmscript-lib/)
 
 ## Compiling
-ant build.xml
+ant all
 
 This create the build/ directory with the compiled classes
 
