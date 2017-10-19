@@ -19,7 +19,7 @@ public class HelpCommand extends AbstractCommand {
 	@Override
 	public void execute(String args) throws Exception {
 		String msg = "This is a console to execute GCMScript commands directly over the system.\n";
-		msg += "Additionaly provide some utils commands that can be call by using the color\n";
+		msg += "Additionally provide some utils commands that can be call by using the color\n";
 		msg += "\":\" prefix. The list of available commands are listed below:\n"; 
 		console.printMsg(msg);
 		
